@@ -29,8 +29,9 @@ var OrangeChangeSaveFileName = OrangeChangeSaveFileName || {};
   "use strict";
 
   $.Parameters = PluginManager.parameters('OrangeChangeSaveFileName');
-  $.Param = $.Param || {};
-
+  
+  // If a new localFilePattern was defined, alias the localFilePath method
+  // from the StorageManager and use the new pattern
   if ($.Parameters["localFilePattern"] !== undefined) {
     var saveFilePattern = $.Parameters["localFilePattern"];
 
@@ -45,6 +46,8 @@ var OrangeChangeSaveFileName = OrangeChangeSaveFileName || {};
     };
   }
 
+  // If a new webStorageKeyPattern was defined, alias the webStorageKey method
+  // from the StorageManager and use the new pattern
   if ($.Parameters["webStorageKeyPattern"] !== undefined) {
     var webStorageKeyPattern = $.Parameters["webStorageKeyPattern"];
 
@@ -59,6 +62,7 @@ var OrangeChangeSaveFileName = OrangeChangeSaveFileName || {};
   }
 })(OrangeChangeSaveFileName);
 
+// If MVCommons is imported, register the plugin with it's PluginManager.
 if (Imported['MVCommons'] !== undefined) {
   PluginManager.register("OrangeChangeSaveFileName", "1.0.0", "This plugin will let you change the base name of the save files", {
     email: "plugins@hudell.com",
