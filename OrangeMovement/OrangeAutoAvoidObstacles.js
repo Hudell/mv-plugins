@@ -64,7 +64,6 @@ var OrangeAutoAvoidObstacles = OrangeAutoAvoidObstacles || {};
   $.Parameters = PluginManager.parameters('OrangeAutoAvoidObstacles');
   $.Param = $.Param || {};
 
-  // #ToDo: Load params from RPG Maker
   $.Param.AvoidEvents = $.Param["AvoidEvents"] !== "false";
   $.Param.OnlyWhenDashing = $.Param["OnlyWhenDashing"] === "true";
   $.Param.DashingDelay = Number($.Param["DashingDelay"] || 0);
