@@ -4,7 +4,8 @@
  * OrangeChangeSaveFileName.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc This plugin will help you change the base name of the save files
  * @author Hudell
  *
