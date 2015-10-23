@@ -4,7 +4,8 @@
  * OrangeCustomEventCreator.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc This plugin Will let you create virtual events with script calls
  *             
  * @author Hudell
