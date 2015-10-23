@@ -4,7 +4,8 @@
  * OrangeTimeSystem.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Adds a time system to your game
  * @author Hudell
  *
