@@ -1,15 +1,23 @@
 /*=============================================================================
-* Orange - Trigger Blocked Touch Events
-* By Hudell - www.hudell.com
-* OrangeTriggerBlockedTouchEvents.js
-* Version: 1.0
-* Free for commercial and non commercial use.
-*=============================================================================
-* @plugindesc This plugin will trigger onTouch events on normal priority
-*             if the player tries to walk into them
-* @author Hudell
-*
-*=============================================================================*/
+ * Orange - Trigger Blocked Touch Events
+ * By Hudell - www.hudell.com
+ * OrangeTriggerBlockedTouchEvents.js
+ * Version: 1.0
+ * Free for commercial and non commercial use.
+ *=============================================================================
+ * @plugindesc This plugin will trigger onTouch events on normal priority
+ *             if the player tries to walk into them
+ * @author Hudell
+ *
+ *
+ * @help
+ * ============================================================================
+ * Latest Version
+ * ============================================================================
+ * 
+ * Get the latest version of this script on http://link.hudell.com/trigger-blocked-touch-events
+ * 
+ *=============================================================================*/
 var Imported = Imported || {};
 var OrangeTriggerBlockedTouchEvents = OrangeTriggerBlockedTouchEvents || {};
 
@@ -29,7 +37,7 @@ var OrangeTriggerBlockedTouchEvents = OrangeTriggerBlockedTouchEvents || {};
         // Makes sure the player is blocked before checking the events
         if (!this.isMapPassable(this._x, this._y, this.direction)) {
           this.checkEventTriggerThere([1]);
-          
+
           // Setups the starting event if there's any.
           if ($gameMap.setupStartingEvent()) {
             return;
@@ -47,7 +55,6 @@ if (Imported['MVCommons'] !== undefined) {
     name: "Hudell",
     website: "http://www.hudell.com"
   }, "2015-10-21");
-}
-else {
+} else {
   Imported["OrangeTriggerBlockedTouchEvents"] = true;
 }
