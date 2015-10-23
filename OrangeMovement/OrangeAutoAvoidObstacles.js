@@ -4,7 +4,8 @@
  * OrangeAutoAvoidObstacles.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Makes the player automatically Avoid small obstacles, by walking around them
  *
  * @param AvoidEvents
@@ -48,9 +49,8 @@
  * ============================================================================
  * Latest Version
  * ============================================================================
- * Get the latest version of this script on http://link.hudell.com/auto-avoid
- * ============================================================================
  * 
+ * Get the latest version of this script on http://link.hudell.com/auto-avoid
  * 
  *=============================================================================*/
 
