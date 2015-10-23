@@ -4,7 +4,8 @@
  * OrangeMapChangeEvent.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Will let you call a common event everytime the player is transfered to a new map
  *             
  * @author Hudell
