@@ -18,6 +18,14 @@
  * @desc The ID of the region that should be used to unblock passage on a tile
  * Default: 0
  * @default 0
+ *
+ * @help
+ * ============================================================================
+ * Latest Version
+ * ============================================================================
+ * 
+ * Get the latest version of this script on http://link.hudell.com/region-collisions
+ * 
  *=============================================================================*/
 var Imported = Imported || {};
 var OrangeRegionCollisions = OrangeRegionCollisions || {};
@@ -58,7 +66,6 @@ if (Imported['MVCommons'] !== undefined) {
     name: "Hudell",
     website: "http://www.hudell.com"
   }, "2015-10-21");
-}
-else {
+} else {
   Imported["OrangeRegionCollisions"] = true;
 }
