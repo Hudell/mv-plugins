@@ -4,7 +4,8 @@
  * OrangeInstantTriggerMouseEvents.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc This plugin will trigger events instantly when you click on them
  * @author Hudell
  *
