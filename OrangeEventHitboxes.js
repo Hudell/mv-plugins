@@ -33,6 +33,13 @@
  * size for a specific page, you can add those tags on a comment on that page
  * and the plugin will understand that it should use that configuration
  * for that specific page.
+ *
+ * ============================================================================
+ * Latest Version
+ * ============================================================================
+ * 
+ * Get the latest version of this script on http://link.hudell.com/event-hitboxes
+ * 
  */
 
 var Imported = Imported || {};
@@ -164,13 +171,16 @@ var OrangeEventHitboxes = OrangeEventHitboxes || {};
 
   // Adds a method that searches for a notetag value on all comments of the 
   Game_Event.prototype.findNoteTagValue = function(notetag) {
-    if (this.page().meta === undefined) {
+    var page = this.page();
+    if (page === undefined) return false;
+
+    if (page.meta === undefined) {
       MVC.extractEventMeta(this);
     }
 
     var result = undefined;
-    if (this.page().meta !== undefined) {
-      result = MVC.getProp(this.page().meta, notetag);
+    if (page.meta !== undefined) {
+      result = MVC.getProp(page.meta, notetag);
     }
 
     if (result === undefined) {
