@@ -7,6 +7,14 @@
  *=============================================================================
  * @plugindesc This plugin will trigger events instantly when you click on them
  * @author Hudell
+ *
+ * @help
+ * ============================================================================
+ * Latest Version
+ * ============================================================================
+ * 
+ * Get the latest version of this script on http://link.hudell.com/trigger-mouse-events
+ * 
  *=============================================================================*/
 var Imported = Imported || {};
 var OrangeInstantTriggerMouseEvents = OrangeInstantTriggerMouseEvents || {};
