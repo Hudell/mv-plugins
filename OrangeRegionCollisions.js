@@ -4,7 +4,8 @@
  * OrangeRegionCollisions.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Allows the usage of regions to overwrite the passability configuration
  *             of tiles
  * @author Hudell
