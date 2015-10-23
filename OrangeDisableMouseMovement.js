@@ -7,6 +7,14 @@
  *=============================================================================
  * @plugindesc This plugin will disable the player movement with the use of the mouse
  * @author Hudell
+ *
+ * @help
+ * ============================================================================
+ * Latest Version
+ * ============================================================================
+ * 
+ * Get the latest version of this script on http://link.hudell.com/disable-mouse-movement
+ * 
  *=============================================================================*/
 Game_Temp.prototype.setDestination = function(x, y) {};
 
