@@ -4,7 +4,8 @@
  * OrangeInsideOutsideMaps.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Allow you to mark maps as being 'inside' or 'outside' with a notetag
  *             
  * @author Hudell
