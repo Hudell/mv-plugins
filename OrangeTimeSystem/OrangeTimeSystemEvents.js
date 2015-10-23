@@ -4,7 +4,8 @@
  * OrangeTimeSystemEvents.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Allow you to configure common events to be called when the time system changes
  *             
  * @author Hudell
