@@ -4,7 +4,8 @@
  * OrangeEventManager.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Provides an event listener interface to any plugin
  *
  * @author Hudell
