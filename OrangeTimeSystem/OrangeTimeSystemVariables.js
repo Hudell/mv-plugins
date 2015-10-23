@@ -4,7 +4,8 @@
  * OrangeTimeSystemVariables.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Exports Orange Time System data to variables
  *             
  * @author Hudell
