@@ -35,10 +35,6 @@
  * @desc The number of the common event to call when the year change
  * @default 0
  *
- * @param onChangeWeekDay
- * @desc The number of the common event to call when the week day change
- * @default 0
- *
  * @param onChangeDayPeriod
  * @desc The number of the common event to call when the day period change
  * @default 0
@@ -77,7 +73,6 @@ var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEv
   $.Param.onChangeMinute = Number($.Parameters['onChangeMinute'] || 0);
   $.Param.onChangeSecond = Number($.Parameters['onChangeSecond'] || 0);
   $.Param.onChangeDayPeriod = Number($.Parameters['onChangeDayPeriod'] || 0);
-  $.Param.onChangeWeekDay = Number($.Parameters['onChangeWeekDay'] || 0);
 
   $.onChangeDay = function() {
     if ($.Param.onChangeDay !== undefined && $.Param.onChangeDay > 0) {
@@ -121,12 +116,6 @@ var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEv
     }
   };
 
-  $.onChangeWeekDay = function() {
-    if ($.Param.onChangeWeekDay !== undefined && $.Param.onChangeWeekDay > 0) {
-      this.executeCallback($.Param.onChangeWeekDay);
-    }
-  };
-
   OrangeTimeSystem.on('changeDay', $.onChangeDay);
   OrangeTimeSystem.on('changeMonth', $.onChangeMonth);
   OrangeTimeSystem.on('changeYear', $.onChangeYear);
@@ -134,8 +123,6 @@ var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEv
   OrangeTimeSystem.on('changeMinute', $.onChangeMinute);
   OrangeTimeSystem.on('changeSecond', $.onChangeSecond);
   OrangeTimeSystem.on('changeDayPeriod', $.onChangeDayPeriod);
-  OrangeTimeSystem.on('changeWeekDay', $.onChangeWeekDay);
-
 })(OrangeTimeSystemEvents);
 
 PluginManager.register("OrangeTimeSystemEvents", "1.0.0", "Allow you to configure common events to be called when the time system changes", {
