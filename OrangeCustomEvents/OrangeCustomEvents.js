@@ -4,7 +4,8 @@
  * OrangeCustomEvents.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc This plugin Will let you add or copy events to the current map
  *             
  * @author Hudell
@@ -12,9 +13,8 @@
  * ============================================================================
  * Latest Version
  * ============================================================================
- * Get the latest version of this script on http://link.hudell.com/custom-events
  * 
- * ============================================================================
+ * Get the latest version of this script on http://link.hudell.com/custom-events
  * 
  *=============================================================================*/
 
