@@ -4,7 +4,8 @@
  * SuperOrangeMovement.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Movement Improvements:
  *             Diagonal Movement
  *             Pixel Movement
