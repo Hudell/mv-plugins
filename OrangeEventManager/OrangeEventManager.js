@@ -8,6 +8,14 @@
  * @plugindesc Provides an event listener interface to any plugin
  *
  * @author Hudell
+ *
+ * @help
+ * ============================================================================
+ * Latest Version
+ * ============================================================================
+ * 
+ * Get the latest version of this script on http://link.hudell.com/event-manager
+ * 
  *=============================================================================*/
 var Imported = Imported || {};
 var OrangeEventManager = OrangeEventManager || {};
