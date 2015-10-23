@@ -4,7 +4,8 @@
  * OrangeEventHitboxes.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Allows the configuration of custom hitboxes for events
  * @author Hudell
  *=============================================================================
