@@ -4,7 +4,8 @@
  * OrangeTriggerBlockedTouchEvents.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc This plugin will trigger onTouch events on normal priority
  *             if the player tries to walk into them
  * @author Hudell
