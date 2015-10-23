@@ -4,7 +4,8 @@
  * OrangeAutoAvoidObstaclesDiagonally.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Makes the player automatically Avoid small obstacles, by diagonally
  *
  * @param AvoidEvents
