@@ -64,6 +64,14 @@
  *
  * @author Hudell
  *
+ *
+ * @help
+ * ============================================================================
+ * Latest Version
+ * ============================================================================
+ * 
+ * Get the latest version of this script on http://link.hudell.com/super-orange-movement
+ * 
  *=============================================================================*/
 
 var Imported = Imported || {};
@@ -187,7 +195,7 @@ var Direction = {
   };
 
   var addPropertiesToCharacter = function(character) {
-    
+
     // X position of the character hitbox (in pixels)
     MVC.accessor(character.prototype, 'hitboxX', function(value) {
       this._hitboxX = value;
