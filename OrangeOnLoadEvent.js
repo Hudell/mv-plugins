@@ -4,7 +4,8 @@
  * OrangeOnLoadEvent.js
  * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+ /*:
  * @plugindesc Will let you call a common event immediately after a load game
  *             
  * @author Hudell
