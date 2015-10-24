@@ -2,7 +2,7 @@
  * Orange - Move Character To
  * By Hudell - www.hudell.com
  * OrangeMoveCharacterTo.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -80,15 +80,17 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
     oldGameCharacterBase_update.call(this);
   };
 
-  // Only calls the old updateRoutineMove if there's no destination set.
-  // This is done to prevent the game from moving to the next route command when you use setDestination inside a move command
-  // This way you can add several "setDestination" calls inside a move route and the character will do one after the other.
-  var oldGameCharacter_updateRoutineMove = Game_Character.prototype.updateRoutineMove;
-  Game_Character.prototype.updateRoutineMove = function() {
+  // Change the advanceMoveRouteIndex  to only advance the index when the character reach the destination.
+  var oldGameCharacter_advanceMoveRouteIndex = Game_Character.prototype.advanceMoveRouteIndex;
+  Game_Character.prototype.advanceMoveRouteIndex = function() {
     if (this._xDestination === undefined && this._yDestination === undefined) {
-      oldGameCharacter_updateRoutineMove.call(this);
+      oldGameCharacter_advanceMoveRouteIndex.call(this);
     }
   };
+
+  // // Only calls the old updateRoutineMove if there's no destination set.
+  // // This is done to prevent the game from moving to the next route command when you use setDestination inside a move command
+  // // This way you can add several "setDestination" calls inside a move route and the character will do one after the other.
 
   // Clears the destination automatically if a new move route is set
   var oldGameCharacter_setMoveRoute = Game_Character.prototype.setMoveRoute;
@@ -98,8 +100,10 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
   };
 
   Game_CharacterBase.prototype.setDestination = function(x, y) {
-    this._xDestination = x;
-    this._yDestination = y;
+    if (this._x != x || this._y != y) {
+      this._xDestination = x;
+      this._yDestination = y;
+    }
   };
 
   Game_CharacterBase.prototype.clearDestination = function() {
@@ -110,7 +114,7 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
 
 // If MVCommons is imported, register the plugin with it's PluginManager.
 if (Imported['MVCommons'] !== undefined) {
-  PluginManager.register("OrangeMoveCharacterTo", "1.0.0", "Adds a move route script call that you can use to make a character go to a specific position", {
+  PluginManager.register("OrangeMoveCharacterTo", "1.0.1", "Adds a move route script call that you can use to make a character go to a specific position", {
     email: "plugins@hudell.com",
     name: "Hudell",
     website: "http://www.hudell.com"
