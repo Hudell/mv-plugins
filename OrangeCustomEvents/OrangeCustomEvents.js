@@ -2,7 +2,7 @@
  * Orange - Custom Event
  * By Hudell - www.hudell.com
  * OrangeCustomEvents.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -55,7 +55,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     };
 
     if (window[variableName] === undefined) {
-      MVC.loadFileAsync(filename, undefined, onLoad);
+      MVC.ajaxLoadFileAsync(filename, undefined, onLoad);
     } else {
       callback();
     }
@@ -199,9 +199,14 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
       $gameMap.addEventAt(eventData, x, y, temporary);
     });
   };
+
+  // Compatibility patch:
+  if (MVCommons.ajaxLoadFileAsync === undefined) {
+  	MVCommons.ajaxLoadFileAsync = MVCommons.loadFileAsync;
+  }
 })(OrangeCustomEvents);
 
-PluginManager.register("OrangeCustomEvents", "1.0.0", "This plugin Will let you add or copy events to the current map", {
+PluginManager.register("OrangeCustomEvents", "1.0.1", "This plugin Will let you add or copy events to the current map", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
