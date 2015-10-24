@@ -114,7 +114,7 @@ var DayPeriods = {
   var switchId = parseInt($.Parameters['mainSwitchId'], 10);
 
   if (switchId !== NaN && switchId > 0) {
-    $.Param.mainSwitchId = $.Parameters['mainSwitchId'];
+    $.Param.mainSwitchId = switchId;
   } else {
     $.Param.mainSwitchId = undefined;
   }
@@ -137,6 +137,7 @@ var DayPeriods = {
     this._paused = value;
   }, function() {
     if ($.Param.mainSwitchId !== undefined) {
+      if ($gameSwitches === undefined || $gameSwitches === null) return true;
       return !$gameSwitches.value($.Param.mainSwitchId);
     }
 
