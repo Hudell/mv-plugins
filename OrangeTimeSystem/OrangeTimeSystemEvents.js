@@ -44,7 +44,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/time-system-events
+ * Get the latest version of this script on
+ * http://link.hudell.com/time-system-events
  * 
  *=============================================================================*/
 var Imported = Imported || {};
