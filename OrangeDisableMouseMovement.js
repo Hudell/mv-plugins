@@ -14,7 +14,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/disable-mouse-movement
+ * Get the latest version of this script on
+ * http://link.hudell.com/disable-mouse-movement
  * 
  *=============================================================================*/
 Game_Temp.prototype.setDestination = function(x, y) {};
