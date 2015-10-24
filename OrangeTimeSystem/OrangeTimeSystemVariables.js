@@ -85,25 +85,25 @@ if (PluginManager.version('OrangeTimeSystem', '>=', '0.1.0') === false) {
     if ($.Param.secondVariable !== undefined && $.Param.secondVariable > 0) {
       $gameVariables.setValue($.Param.secondVariable, OrangeTimeSystem.seconds);
     }
-    if ($.Param.minuteVariable !== undefined && $.Param.secondVariable > 0) {
+    if ($.Param.minuteVariable !== undefined && $.Param.minuteVariable > 0) {
       $gameVariables.setValue($.Param.minuteVariable, OrangeTimeSystem.minute);
     }
-    if ($.Param.hourVariable !== undefined && $.Param.secondVariable > 0) {
+    if ($.Param.hourVariable !== undefined && $.Param.hourVariable > 0) {
       $gameVariables.setValue($.Param.hourVariable, OrangeTimeSystem.hour);
     }
-    if ($.Param.dayVariable !== undefined && $.Param.secondVariable > 0) {
+    if ($.Param.dayVariable !== undefined && $.Param.dayVariable > 0) {
       $gameVariables.setValue($.Param.dayVariable, OrangeTimeSystem.day);
     }
-    if ($.Param.monthVariable !== undefined && $.Param.secondVariable > 0) {
+    if ($.Param.monthVariable !== undefined && $.Param.monthVariable > 0) {
       $gameVariables.setValue($.Param.monthVariable, OrangeTimeSystem.month);
     }
-    if ($.Param.yearVariable !== undefined && $.Param.secondVariable > 0) {
+    if ($.Param.yearVariable !== undefined && $.Param.yearVariable > 0) {
       $gameVariables.setValue($.Param.yearVariable, OrangeTimeSystem.year);
     }
-    if ($.Param.weekDayVariable !== undefined && $.Param.secondVariable > 0) {
+    if ($.Param.weekDayVariable !== undefined && $.Param.weekDayVariable > 0) {
       $gameVariables.setValue($.Param.weekDayVariable, OrangeTimeSystem.weekDay);
     }
-    if ($.Param.dayPeriodVariable !== undefined && $.Param.secondVariable > 0) {
+    if ($.Param.dayPeriodVariable !== undefined && $.Param.dayPeriodVariable > 0) {
       $gameVariables.setValue($.Param.dayPeriodVariable, OrangeTimeSystem.dayPeriod);
     }
   };
