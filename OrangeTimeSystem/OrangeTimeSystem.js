@@ -11,62 +11,50 @@
  *
  * @param secondLength
  * @desc How many real time milliseconds should an ingame second last
- * Default: 1000
  * @default 1000
  *
  * @param minuteLength
  * @desc How many ingame seconds should an ingame minute last
- * Default: 6
  * @default 6
  *
  * @param hourLength
  * @desc How many ingame minutes should an ingame hour last
- * Default: 6
  * @default 6
  *
  * @param dayLength
  * @desc How many ingame hours should an ingame day last
- * Default: 24
  * @default 24
  *
  * @param weekLength
  * @desc How many ingame days should an ingame week last
- * Default: 7
  * @default 7
  *
  * @param monthLength
  * @desc How many ingame days should an ingame month last
- * Default: 31
  * @default 31
  *
  * @param yearLength
  * @desc How many ingame months should an ingame year last
- * Default: 4
  * @default 4
  *
  * @param dayPeriod1Hour
  * @desc At what hour does night turn into early morning
- * Default: 6
  * @default 6
  *
  * @param dayPeriod2Hour
  * @desc At what hour does early morning turn into day
- * Default: 9
  * @default 9
  *
  * @param dayPeriod3Hour
  * @desc At what hour does day turn into evening
- * Default: 18
  * @default 18
  *
  * @param dayPeriod4Hour
  * @desc At what hour does evening turn into night
- * Default: 20
  * @default 20
  *
  * @param mainSwitchId
  * @desc The Number of the Switch used to activate the flow of time
- * Default: 0
  * @default 0
  *
  * @help
