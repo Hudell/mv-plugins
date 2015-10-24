@@ -6,8 +6,7 @@
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
- * @plugindesc This plugin will trigger onTouch events on normal priority
- *             if the player tries to walk into them
+ * @plugindesc This plugin will trigger onTouch events on normal priority if the player tries to walk into them
  * @author Hudell
  *
  *
@@ -16,7 +15,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/trigger-blocked-touch-events
+ * Get the latest version of this script on
+ * http://link.hudell.com/trigger-blocked-touch-events
  * 
  *=============================================================================*/
 var Imported = Imported || {};
