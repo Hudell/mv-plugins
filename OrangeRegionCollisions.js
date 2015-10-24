@@ -6,18 +6,15 @@
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
- * @plugindesc Allows the usage of regions to overwrite the passability configuration
- *             of tiles
+ * @plugindesc Allows the usage of regions to overwrite the passability configuration of tiles
  * @author Hudell
  *
  * @param BlockRegionId
  * @desc The ID of the region that should be used to block passage on a tile
- * Default: 0
  * @default 0
  *
  * @param UnblockRegionId
  * @desc The ID of the region that should be used to unblock passage on a tile
- * Default: 0
  * @default 0
  *
  * @help
@@ -25,7 +22,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/region-collisions
+ * Get the latest version of this script on
+ * http://link.hudell.com/region-collisions
  * 
  *=============================================================================*/
 var Imported = Imported || {};
