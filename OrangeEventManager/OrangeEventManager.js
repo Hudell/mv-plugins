@@ -15,7 +15,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/event-manager
+ * Get the latest version of this script on
+ * http://link.hudell.com/event-manager
  * 
  *=============================================================================*/
 var Imported = Imported || {};
