@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -410,7 +410,7 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-PluginManager.register("OrangeTimeSystem", "1.0.0", "Adds a time system to your game", {
+PluginManager.register("OrangeTimeSystem", "1.0.1", "Adds a time system to your game", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
