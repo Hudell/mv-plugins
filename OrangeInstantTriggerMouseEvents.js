@@ -14,7 +14,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/trigger-mouse-events
+ * Get the latest version of this script on
+ * http://link.hudell.com/trigger-mouse-events
  * 
  *=============================================================================*/
 var Imported = Imported || {};
