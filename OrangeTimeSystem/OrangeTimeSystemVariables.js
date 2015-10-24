@@ -2,7 +2,7 @@
  * Orange - Time System Variables
  * By Hudell - www.hudell.com
  * OrangeTimeSystemVariables.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -112,7 +112,7 @@ if (PluginManager.version('OrangeTimeSystem', '>=', '0.1.0') === false) {
   OrangeTimeSystem.on('changeSecond', $.configureVariables);
 })(OrangeTimeSystemVariables);
 
-PluginManager.register("OrangeTimeSystemVariables", "1.0.0", "Exports Orange Time System data to variables", {
+PluginManager.register("OrangeTimeSystemVariables", "1.0.1", "Exports Orange Time System data to variables", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
