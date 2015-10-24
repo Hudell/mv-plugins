@@ -9,7 +9,6 @@
  * @plugindesc Exports Orange Time System data to variables
  *             
  * @author Hudell
- *=============================================================================
  *
  * @param secondVariable
  * @desc The number of the variable where you want to store the seconds
@@ -49,7 +48,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/time-system-variables
+ * Get the latest version of this script on
+ * http://link.hudell.com/time-system-variables
  * 
  *=============================================================================*/
 
