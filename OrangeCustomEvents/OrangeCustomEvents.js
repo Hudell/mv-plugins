@@ -2,7 +2,7 @@
  * Orange - Custom Event
  * By Hudell - www.hudell.com
  * OrangeCustomEvents.js
- * Version: 1.1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -280,13 +280,117 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     }
   };
 
+  var oldGameInterpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+  Game_Interpreter.prototype.pluginCommand = function(command, args) {
+    oldGameInterpreter_pluginCommand.call(this, command, args);
+
+    if (args.length < 2) return;
+
+    if (command.toUpperCase() !== 'COPY' && command.toUpperCase() !== 'SPAWN') return;
+    if (args[0].toUpperCase() !== "EVENT") return;
+
+    var eventIdOrigin = parseInt(args[1], 10);
+    var mapIdOrigin = $gameMap.mapId();
+    var isPosition = true;
+    var x = 0;
+    var y = 0;
+    var regionId = 0;
+    var temporary = true;
+
+    if (eventIdOrigin <= 0) return;
+
+    var nextIndex = 2;
+
+    if (args.length >= nextIndex + 3) {
+      if (args[nextIndex].toUpperCase() == 'FROM' && args[nextIndex + 1].toUpperCase() == 'MAP') {
+        mapIdOrigin = parseInt(args[nextIndex + 2], 10);
+        nextIndex += 3;
+      }
+    }
+
+    if (args.length > nextIndex) {
+      if (args[nextIndex].toUpperCase() !== 'TO' && args[nextIndex].toUpperCase() !== 'ON') {
+        console.error('OrangeCustomEvents', 'Invalid destination', command, args);
+        return;
+      }
+
+      nextIndex++;
+
+      if (args.length > nextIndex && args[nextIndex].toUpperCase() == 'REGION') {
+        isPosition = false;
+        nextIndex++;
+      } else if (args.length > nextIndex && args[nextIndex].toUpperCase() == 'POSITION') {
+        isPosition = true;
+        nextIndex++;
+      }
+    }
+    else {
+      console.error('OrangeCustomEvents', 'Incomplete command', command, args);
+      return;
+    }
+
+    if (isPosition) {
+      if (args.length >= nextIndex + 2) {
+        x = parseInt(args[nextIndex], 10);
+        y = parseInt(args[nextIndex + 1], 10);
+
+        nextIndex += 2;
+      }
+      else {
+        console.error('OrangeCustomEvents', 'What position?', command, args);
+      }
+    }
+    else {
+      if (args.length > nextIndex) {
+        regionId = parseInt(args[nextIndex], 10);
+        nextIndex++;
+      }
+      else {
+        console.error('OrangeCustomEvents', 'What region?', command, args);
+      }
+    }
+
+    if (args.length > nextIndex) {
+      if (args[nextIndex].toUpperCase().startsWith('TEMP')) {
+        temporary = true;
+        nextIndex++;
+      } else if (args[nextIndex].toUpperCase() == 'SAVE') {
+        temporary = false;
+        nextIndex++;
+      }
+    }
+
+    if (isPosition) {
+      if (mapIdOrigin == $gameMap.mapId()) {
+        $gameMap.copyEvent(eventIdOrigin, x, y, temporary);
+      } else {
+        $gameMap.copyEventFrom(mapIdOrigin, eventIdOrigin, x, y, temporary);
+      }
+    }
+    else {
+      if (command.toUpperCase() === 'COPY') {
+        if (mapIdOrigin == $gameMap.mapId()) {
+          $gameMap.copyEventToRegion(eventIdOrigin, regionId, temporary);
+        } else {
+          $gameMap.copyEventFromMapToRegion(mapIdOrigin, eventIdOrigin, regionId, temporary);
+        }
+      } else if (command.toUpperCase() === 'SPAWN') {
+        if (mapIdOrigin == $gameMap.mapId()) {
+          $gameMap.spawnMapEvent(eventIdOrigin, regionId, temporary);
+        } else {
+          $gameMap.spawnMapEventFrom(mapIdOrigin, eventIdOrigin, regionId, temporary);
+        }
+      }
+    }
+  };
+
   // Compatibility patch:
   if (MVCommons.ajaxLoadFileAsync === undefined) {
     MVCommons.ajaxLoadFileAsync = MVCommons.loadFileAsync;
   }
 })(OrangeCustomEvents);
 
-PluginManager.register("OrangeCustomEvents", "1.1.1", "This plugin Will let you add or copy events to the current map", {
+PluginManager.register("OrangeCustomEvents", "1.2", "This plugin Will let you add or copy events to the current map", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
