@@ -6,8 +6,7 @@
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
- * @plugindesc This plugin adds a script call and a plugin command you can use
- *to move the player or an event to a specific position
+ * @plugindesc This plugin adds a script call and a plugin command you can use to move the player or an event to a specific position.
  *             
  * @author Hudell
  *
