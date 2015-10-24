@@ -2,7 +2,7 @@
  * Orange - Custom Event
  * By Hudell - www.hudell.com
  * OrangeCustomEvents.js
- * Version: 1.0.1
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -178,15 +178,22 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     this.addEvent(eventData, temporary);
   };
 
-  Game_Map.prototype.copyEvent = function(eventIdOrigin, x, y, temporary) {
-    var event = $dataMap.events[eventIdOrigin];
-    if (event === undefined) return;
-
-    var eventData = JsonEx.makeDeepCopy(event);
-    $gameMap.addEventAt(eventData, x, y, temporary);
+  Game_Map.prototype.spawnEvent = function(eventData, tileList, temporary) {
+    for (var i = 0; i < tileList.length; i++) {
+      eventData.x = tileList[i].x;
+      eventData.y = tileList[i].y;
+      this.addEvent(eventData, temporary);      
+    }
   };
 
-  Game_Map.prototype.copyEventFrom = function(mapIdOrigin, eventIdOrigin, x, y, temporary) {
+  Game_Map.prototype.getEventData = function(eventIdOrigin) {
+    var event = $dataMap.events[eventIdOrigin];
+    if (event === undefined) return undefined;
+
+    return JsonEx.makeDeepCopy(event);
+  };
+
+  Game_Map.prototype.getEventDataFrom = function(mapIdOrigin, eventIdOrigin, callback) {
     $.getAnotherMapData(mapIdOrigin, function() {
       var variableName = '$Map%1'.format(mapIdOrigin.padZero(3));
 
@@ -196,17 +203,90 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
       if (event === undefined) return;
 
       var eventData = JsonEx.makeDeepCopy(event);
+      callback.call(this, eventData);
+    });    
+  };
+
+  Game_Map.prototype.copyEvent = function(eventIdOrigin, x, y, temporary) {
+    var eventData = this.getEventData(eventIdOrigin);
+    if (eventData) {
+      $gameMap.addEventAt(eventData, x, y, temporary);
+    }
+  };
+
+  Game_Map.prototype.getRegionTileList = function(regionId) {
+    var tileList = [];
+
+    for (var x = 0; x < $gameMap.width(); x++) {
+      for (var y = 0; y < $gameMap.height(); y++) {
+        if ($gameMap.eventsXy(x, y).length === 0) {
+          if ($gameMap.regionId(x, y) == regionId) {
+            tileList.push({x : x, y : y});
+          }
+        }
+      }
+    }
+
+    return tileList;
+  };
+
+  Game_Map.prototype.getRandomRegionTile = function(regionId) {
+    var tileList = this.getRegionTileList(regionId);
+
+    if (tileList.length > 0) {
+      var index = Math.randomInt(tileList.length);
+      return tileList[index];
+    }
+
+    return undefined;
+  };
+
+  Game_Map.prototype.copyEventToRegion = function(eventIdOrigin, regionId, temporary) {
+    var tile = this.getRandomRegionTile(regionId);
+    if (tile !== undefined) {
+      this.copyEvent(eventIdOrigin, tile.x, tile.y, temporary);
+    }
+  };
+
+  Game_Map.prototype.copyEventFrom = function(mapIdOrigin, eventIdOrigin, x, y, temporary) {
+    this.getEventDataFrom(mapIdOrigin, eventIdOrigin, function(eventData) {
       $gameMap.addEventAt(eventData, x, y, temporary);
     });
   };
 
+  Game_Map.prototype.copyEventFromMapToRegion = function(mapIdOrigin, eventIdOrigin, regionId, temporary) {
+    var tile = this.getRandomRegionTile(regionId);
+    if (tile !== undefined) {
+      this.copyEventFrom(mapIdOrigin, eventIdOrigin, tile.x, tile.y, temporary);
+    }    
+  };
+
+  Game_Map.prototype.spawnMapEvent = function(eventIdOrigin, regionId, temporary) {
+    var eventData = this.getEventData(eventIdOrigin);
+    var tileList = this.getRegionTileList(regionId);
+
+    if (eventData && tileList) {
+      this.spawnEvent(eventData, tileList, temporary);
+    }
+  };
+
+  Game_Map.prototype.spawnMapEventFrom = function(mapIdOrigin, eventIdOrigin, regionId, temporary) {
+    var tileList = this.getRegionTileList(regionId);
+
+    if (tileList.length > 0) {
+      this.getEventDataFrom(mapIdOrigin, eventIdOrigin, function(eventData) {
+        $gameMap.spawnEvent(eventData, tileList, temporary);
+      });
+    }
+  };
+
   // Compatibility patch:
   if (MVCommons.ajaxLoadFileAsync === undefined) {
-  	MVCommons.ajaxLoadFileAsync = MVCommons.loadFileAsync;
+    MVCommons.ajaxLoadFileAsync = MVCommons.loadFileAsync;
   }
 })(OrangeCustomEvents);
 
-PluginManager.register("OrangeCustomEvents", "1.0.1", "This plugin Will let you add or copy events to the current map", {
+PluginManager.register("OrangeCustomEvents", "1.1.0", "This plugin Will let you add or copy events to the current map", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
