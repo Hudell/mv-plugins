@@ -7,7 +7,7 @@
  *=============================================================================*/
  /*:
  * @plugindesc This plugin adds a script call and a plugin command you can use
- *             to move the player or an event to a specific position
+ *to move the player or an event to a specific position
  *             
  * @author Hudell
  *
@@ -25,7 +25,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/move-character-to
+ * Get the latest version of this script on
+ * http://link.hudell.com/move-character-to
  * 
  *=============================================================================*/
 var Imported = Imported || {};
