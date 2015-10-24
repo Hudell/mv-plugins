@@ -10,17 +10,11 @@
  * @author Hudell
  *
  * @param localFilePattern
- * @desc The pattern for the local file name.
- *       Include '%1' on the position
- *       where you want the number of the save file to be
- * Default: file%1.rpgsave
+ * @desc The pattern for the local file name. Include '%1' on the position where you want the number of the save file to be.
  * @default file%1.rpgsave
  *
  * @param webStorageKeyPattern
- * @desc The pattern for web storage key name.
- *       Include '%1' on the position
- *       where you want the number of the save file to be
- * Default: RPG File%1
+ * @desc The pattern for web storage key name. Include '%1' on the position where you want the number of the save file to be.
  * @default RPG File%1
  *
  * @help
