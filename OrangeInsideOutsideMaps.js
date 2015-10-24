@@ -21,7 +21,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/inside-outside-maps
+ * Get the latest version of this script on
+ * http://link.hudell.com/inside-outside-maps
  * 
  *=============================================================================*/
 var Imported = Imported || {};
