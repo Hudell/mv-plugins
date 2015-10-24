@@ -2,7 +2,7 @@
  * Orange - Custom Event
  * By Hudell - www.hudell.com
  * OrangeCustomEvents.js
- * Version: 1.2
+ * Version: 1.2.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -296,6 +296,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     var y = 0;
     var regionId = 0;
     var temporary = true;
+    var hasPosition = false;
 
     if (eventIdOrigin <= 0) return;
 
@@ -308,7 +309,14 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
       }
     }
 
-    if (args.length > nextIndex) {
+    if (args.length > nextIndex && args[nextIndex].toUpperCase() == 'HERE') {
+      isPosition = true;
+      hasPosition = true;
+      x = this.character(0).x;
+      y = this.character(0).y;
+      nextIndex++;
+
+    } else if (args.length > nextIndex) {
       if (args[nextIndex].toUpperCase() !== 'TO' && args[nextIndex].toUpperCase() !== 'ON') {
         console.error('OrangeCustomEvents', 'Invalid destination', command, args);
         return;
@@ -330,14 +338,20 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     }
 
     if (isPosition) {
-      if (args.length >= nextIndex + 2) {
-        x = parseInt(args[nextIndex], 10);
-        y = parseInt(args[nextIndex + 1], 10);
+      if (!hasPosition) {
+        if (args.length > nextIndex && args[nextIndex].toUpperCase() == 'PLAYER') {
+          x = $gamePlayer.x;
+          y = $gamePlayer.y;
+          nextIndex++;
+        } else if (args.length >= nextIndex + 2) {
+          x = parseInt(args[nextIndex], 10);
+          y = parseInt(args[nextIndex + 1], 10);
 
-        nextIndex += 2;
-      }
-      else {
-        console.error('OrangeCustomEvents', 'What position?', command, args);
+          nextIndex += 2;
+        }
+        else {
+          console.error('OrangeCustomEvents', 'What position?', command, args);
+        }
       }
     }
     else {
@@ -390,7 +404,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
   }
 })(OrangeCustomEvents);
 
-PluginManager.register("OrangeCustomEvents", "1.2", "This plugin Will let you add or copy events to the current map", {
+PluginManager.register("OrangeCustomEvents", "1.2.1", "This plugin Will let you add or copy events to the current map", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
