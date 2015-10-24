@@ -1,79 +1,79 @@
 /*=============================================================================
- * Orange - Super Movement
- * By Hudell - www.hudell.com
- * SuperOrangeMovement.js
- * Version: 1.0
- * Free for commercial and non commercial use.
- *=============================================================================*/
- /*:
- * @plugindesc Movement Improvements:
- *             Diagonal Movement
- *             Pixel Movement
- *             Actor Hitbox Changer
- *
- * @param Tile_Sections
- * @desc How many pieces do you want to break the tiles into?
- * Default: 4
- * @default 4
- *
- * @param Diagonal_Movement
- * @desc Enable Diagonal Movement?
- * Default: true
- * @default true
- *
- * @param FollowersDistance
- * @desc What's the distance (in tiles) that each party member should keep from
- *       the next one?
- * Default: 0.5
- * @default 0.5
- *
- * @param TriggerAllAvailableEvents
- * @desc If active, the game may trigger multiple events when you press
- *       the action button if there are more than one event in front of you
- * Default: false
- * @default false
- *
- * @param TriggerTouchEventsAfterTeleport
- * @desc If you're using pixel movement and you teleport the player
- *       to a tile with a touch triggered event, that event will be
- *       triggered on the first step the player takes.
- *       If you want that to happen, change this to true.
- * Default: false
- * @default false
- *
- * @param BlockRepeatedTouchEvents
- * @desc If you're using pixel movement and set this param to false,
- *       any touch triggered event will be executed after every step
- *       that the player takes inside that tile.
- * Default: true
- * @default true
- *
- * @param IgnoreEmptyEvents
- * @desc If true, the game won't try to trigger events that have no
- *       commands
- * Default: true
- * @default true
- *
- * @param DisablePixelMovementForMouseRoutes
- * @desc If true, the pixel movement will be disabled when you assign a
- *       fixed move route to the player;
- *       ATTENTION:
- *       If you turn this to false, the player character may get stuck when
- *       controlled with a mouse
- * Default: true
- * @default true
- *
- * @author Hudell
- *
- *
- * @help
- * ============================================================================
- * Latest Version
- * ============================================================================
- * 
- * Get the latest version of this script on http://link.hudell.com/super-orange-movement
- * 
- *=============================================================================*/
+* Orange - Super Movement
+* By Hudell - www.hudell.com
+* SuperOrangeMovement.js
+* Version: 1.0
+* Free for commercial and non commercial use.
+*=============================================================================*/
+/*:
+* @plugindesc Movement Improvements:
+*             Diagonal Movement
+*             Pixel Movement
+*             Actor Hitbox Changer
+*
+* @param Tile_Sections
+* @desc How many pieces do you want to break the tiles into?
+* @default 4
+*
+* @param Diagonal_Movement
+* @desc Enable Diagonal Movement?
+* @default true
+*
+* @param FollowersDistance
+* @desc What's the distance (in tiles) that each party member should keep from the next one?
+* @default 0.5
+*
+* @param TriggerAllAvailableEvents
+* @desc If true, the game may trigger multiple events when you press a button if there are more than one event in front of you.
+* @default false
+*
+* @param TriggerTouchEventsAfterTeleport
+* @desc Check the plugin help for detailed explanation
+* @default false
+*
+* @param BlockRepeatedTouchEvents
+* @desc If false, any touch triggered event will be executed after every step that the player takes inside that tile.
+* @default true
+*
+* @param IgnoreEmptyEvents
+* @desc If true, the game won't try to trigger events that have no commands
+* Default: true
+* @default true
+*
+* @param DisablePixelMovementForMouseRoutes
+* @desc CAUTION: Check the plugin help for info on disabling this
+* @default true
+*
+* @author Hudell
+*
+*
+* @help
+* ============================================================================
+* Latest Version
+* ============================================================================
+* Get the latest version of this script on
+* http://link.hudell.com/super-orange-movement
+* 
+* ============================================================================
+* Params
+* ============================================================================
+* 
+* TriggerTouchEventsAfterTeleport: 
+* If you're using pixel movement and you teleport the player
+* to a tile with a touch triggered event, that event will be
+* triggered on the first step the player takes.
+* If you want that to happen, change this to true.
+*
+*
+* DisablePixelMovementForMouseRoutes:
+* If true, the pixel movement will be disabled when you assign a
+* fixed move route to the player;
+* ATTENTION:
+* If you turn this to false, the player character may get stuck when
+* controlled with a mouse
+
+* 
+*=============================================================================*/
 
 var Imported = Imported || {};
 if (Imported['MVCommons'] === undefined) {
