@@ -197,7 +197,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     $.getAnotherMapData(mapIdOrigin, function() {
       var variableName = '$Map%1'.format(mapIdOrigin.padZero(3));
 
-      if (window[variableName] === undefined) return;
+      if (window[variableName] === undefined || window[variableName] === null) return;
 
       var event = window[variableName].events[eventIdOrigin];
       if (event === undefined) return;
