@@ -5,42 +5,36 @@
  * Version: 1.0
  * Free for commercial and non commercial use.
  *=============================================================================*/
- /*:
- * @plugindesc Makes the player automatically Avoid small obstacles, by diagonally
- *
- * @param AvoidEvents
- * @desc Set this to false if you don't want the player to avoid events
- * Default: true
- * @default true
- *
- * @param OnlyWhenDashing
- * @desc Set this to true to only avoid obstacles when the player is dashing
- * Default: false
- * @default false
- *
- * @param DashingDelay
- * @desc Makes the character wait a little before trying to avoid an obstacle
- *       when dashing. Set this to the number of frames the character should wait
- * Default: 0
- * @default 0
- *
- * @param WalkingDelay
- * @desc Makes the character wait a little before trying to avoid an obstacle
- *       when walking. Set this to the number of frames the character should wait
- * Default: 0
- * @default 0
- *
- * @author Hudell
- *
- *
- * @help
- * ============================================================================
- * Latest Version
- * ============================================================================
- * 
- * Get the latest version of this script on http://link.hudell.com/auto-avoid-diagonal
- * 
- *=============================================================================*/
+/*:
+* @plugindesc Makes the player automatically Avoid small obstacles, by diagonally
+*
+* @param AvoidEvents
+* @desc Set this to false if you don't want the player to avoid events.
+* @default true
+*
+* @param OnlyWhenDashing
+* @desc Set this to true to only avoid obstacles when the player is dashing.
+* @default false
+*
+* @param DashingDelay
+* @desc Makes the character wait a little before trying to avoid an obstacle when dashing. Set this to a number of frames.
+* @default 0
+*
+* @param WalkingDelay
+* @desc Makes the character wait a little before trying to avoid an obstacle when walking. Set this to a number of frames.
+* @default 0
+*
+* @author Hudell
+*
+* @help
+* ============================================================================
+* Latest Version
+* ============================================================================
+* 
+* Get the latest version of this script on
+* http://link.hudell.com/auto-avoid-diagonal
+* 
+*=============================================================================*/
 
 var Imported = Imported || {};
 if (Imported['MVCommons'] === undefined) {
