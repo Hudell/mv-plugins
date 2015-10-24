@@ -88,10 +88,6 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
     }
   };
 
-  // // Only calls the old updateRoutineMove if there's no destination set.
-  // // This is done to prevent the game from moving to the next route command when you use setDestination inside a move command
-  // // This way you can add several "setDestination" calls inside a move route and the character will do one after the other.
-
   // Clears the destination automatically if a new move route is set
   var oldGameCharacter_setMoveRoute = Game_Character.prototype.setMoveRoute;
   Game_Character.prototype.setMoveRoute = function(moveRoute) {
