@@ -19,7 +19,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/map-change-event
+ * Get the latest version of this script on
+ * http://link.hudell.com/map-change-event
  * 
  *=============================================================================*/
 var Imported = Imported || {};
