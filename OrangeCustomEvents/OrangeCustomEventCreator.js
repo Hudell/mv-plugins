@@ -14,7 +14,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/custom-event-creator
+ * Get the latest version of this script on
+ * http://link.hudell.com/custom-event-creator
  * 
  *=============================================================================*/
 
