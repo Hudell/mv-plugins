@@ -2,12 +2,16 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.0.1
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
  * @plugindesc Adds a time system to your game
  * @author Hudell
+ *
+ * @param useRealTime
+ * @desc If true, the time "Length" variables will be ignored and the plugin will use the real time
+ * @default false
  *
  * @param secondLength
  * @desc How many real time milliseconds should an ingame second last
@@ -99,13 +103,20 @@ var DayPeriods = {
   $.Parameters = PluginManager.parameters('OrangeTimeSystem');
   $.Param = $.Param || {};
 
-  $.Param.secondLength = Number($.Parameters['secondLength'] || 1000);
+  $.Param.useRealTime = $.Parameters["useRealTime"] == "true";
+  if ($.Param.useRealTime) {
+    $.Param.secondLength = 1000;
+  } else {
+    $.Param.secondLength = Number($.Parameters['secondLength'] || 1000);
+  }
+  
   $.Param.minuteLength = Number($.Parameters['minuteLength'] || 6);
   $.Param.hourLength = Number($.Parameters['hourLength'] || 6);
   $.Param.dayLength = Number($.Parameters['dayLength'] || 24);
   $.Param.weekLength = Number($.Parameters['weekLength'] || 7);
   $.Param.monthLength = Number($.Parameters['monthLength'] || 31);
-  $.Param.yearLength = Number($.Parameters['yearLength'] || 4);
+  $.Param.yearLength = Number($.Parameters['yearLength'] || 4);    
+
   $.Param.dayPeriod1Hour = Number($.Parameters['dayPeriod1Hour'] || 6);
   $.Param.dayPeriod2Hour = Number($.Parameters['dayPeriod2Hour'] || 9);
   $.Param.dayPeriod3Hour = Number($.Parameters['dayPeriod3Hour'] || 18);
@@ -195,19 +206,7 @@ var DayPeriods = {
     }
 
     var oldDayPeriod = this.dayPeriod;
-
-    // Calculate day period
-    if (this.hour < $.Param.dayPeriod1Hour) {
-      this.dayPeriod = 4;
-    } else if (this.hour < $.Param.dayPeriod2Hour) {
-      this.dayPeriod = 1;
-    } else if (this.hour < $.Param.dayPeriod3Hour) {
-      this.dayPeriod = 2;
-    } else if (this.hour < $.Param.dayPeriod4Hour) {
-      this.dayPeriod = 3;
-    } else {
-      this.dayPeriod = 4;
-    }
+    this.updateDayPeriod();
 
     if (oldDayPeriod != this.dayPeriod) {
       this._onChangeDayPeriod();
@@ -221,6 +220,21 @@ var DayPeriods = {
     this.weekDay = numDays % $.Param.weekLength;
 
     this._onUpdateTime();
+  };
+
+  $.updateDayPeriod = function() {
+    // Calculate day period
+    if (this.hour < $.Param.dayPeriod1Hour) {
+      this.dayPeriod = 4;
+    } else if (this.hour < $.Param.dayPeriod2Hour) {
+      this.dayPeriod = 1;
+    } else if (this.hour < $.Param.dayPeriod3Hour) {
+      this.dayPeriod = 2;
+    } else if (this.hour < $.Param.dayPeriod4Hour) {
+      this.dayPeriod = 3;
+    } else {
+      this.dayPeriod = 4;
+    }
   };
 
   $.isEarlyMorning = function() {
@@ -258,10 +272,52 @@ var DayPeriods = {
     this._intervalHandler = undefined;
   };
 
+  $.loadRealTime = function() {
+    var date = new Date();
+    var oldData = this.getDateTime();
+    var anyChanged = false;
+
+    $.seconds = date.getSeconds();
+    $.minute = date.getMinutes();
+    $.hour = date.getHours();
+    $.day = date.getDate();
+    $.month = date.getMonth() + 1;
+    $.year = date.getFullYear();
+    $.weekDay = date.getDay();
+    $.updateDayPeriod();
+
+    if ($.seconds != oldData.seconds) {
+      $._onChangeSecond();
+    }
+
+    if ($.minute != oldData.minute) {
+      $._onChangeMinute();
+    }
+
+    if ($.hour != oldData.hour) {
+      $._onChangeHour();
+    }
+
+    if ($.day != oldData.day) {
+      $._onChangeDay();
+    }
+
+    if ($.month != oldData.month) {
+      $._onChangeMonth();
+    }
+
+    if ($.year != oldData.year) {
+      $._onChangeYear();
+    }
+  };
+
   $.progressTime = function() {
     if (this.paused) return;
 
-    if (SceneManager._scene instanceof Scene_Map) {
+    if ($.Param.useRealTime) {
+      $.loadRealTime();
+      $.updateTime();
+    } else if (SceneManager._scene instanceof Scene_Map) {
       $.seconds += 1;
       $.updateTime();
       $._onChangeSecond();
@@ -410,7 +466,7 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-PluginManager.register("OrangeTimeSystem", "1.0.1", "Adds a time system to your game", {
+PluginManager.register("OrangeTimeSystem", "1.1.0", "Adds a time system to your game", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
