@@ -20,6 +20,15 @@
  *   this.setDestination(x, y);
  * Example:
  *   this.setDestination(15, 20);
+ *
+ *
+ * You can also add a direction for the character to face after walking,
+ * like this:
+ *
+ * ORANGEMOVETO 0 15 20 left
+ * or
+ * this.setDestination(15, 20, 4);
+ * 
  * ============================================================================
  * Latest Version
  * ============================================================================
@@ -147,7 +156,7 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
 
 // If MVCommons is imported, register the plugin with it's PluginManager.
 if (Imported['MVCommons'] !== undefined) {
-  PluginManager.register("OrangeMoveCharacterTo", "1.1.0", "Adds a move route script call that you can use to make a character go to a specific position", {
+  PluginManager.register("OrangeMoveCharacterTo", "1.1", "Adds a move route script call that you can use to make a character go to a specific position", {
     email: "plugins@hudell.com",
     name: "Hudell",
     website: "http://www.hudell.com"
