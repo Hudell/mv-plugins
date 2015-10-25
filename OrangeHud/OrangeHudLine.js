@@ -17,6 +17,10 @@
  * @desc The number of the variable that will be displayed on this line.
  * @default 1
  *
+ * @param SwitchId
+ * @desc Set this to a switch number to use it to control the visibility of this line
+ * @default 0
+ *
  * @param X
  * @desc The X position of the variable line inside the HUD
  * @default 
