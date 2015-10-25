@@ -2,7 +2,7 @@
  * Orange - Line HUD
  * By HUDell - www.hudell.com
  * OrangeHudLine.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:

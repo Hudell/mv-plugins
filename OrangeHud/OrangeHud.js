@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -138,6 +138,11 @@ var Window_OrangeHud = MVC.extend(Window_Base);
     } else {
       return 0;
     }
+  };
+
+  Window_OrangeHud.prototype.drawPicture = function(filename, x, y) {
+    var bitmap = ImageManager.loadPicture(filename);
+    this.contents.blt(bitmap, 0, 0, bitmap._canvas.width, bitmap._canvas.height, x, y);
   };
 
   Window_OrangeHud.prototype.refresh = function() {

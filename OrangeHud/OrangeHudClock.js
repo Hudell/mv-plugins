@@ -2,7 +2,7 @@
  * Orange - Clock HUD
  * By HUDell - www.hudell.com
  * OrangeHudClock.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -72,10 +72,10 @@ if (Imported["OrangeHud"] === undefined) {
 	throw new Error("Please add OrangeHud before OrangeHudClock!");
 }
 
-var OrangeHudDefaultLine = OrangeHudDefaultLine || {};
+var OrangeHudClock = OrangeHudClock || {};
 
 if (Imported["OrangeHudClock"] === undefined) {
-	OrangeHudDefaultLine.validateParams = function(line) {
+	OrangeHudClock.validateParams = function(line) {
 		if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
       line.ScriptPattern = undefined;
     }
@@ -111,7 +111,7 @@ if (Imported["OrangeHudClock"] === undefined) {
     line.SwitchId = Number(line.SwitchId || 0);
 	};
 
-	OrangeHudDefaultLine.drawLine = function(window, variableData) {
+	OrangeHudClock.drawLine = function(window, variableData) {
 		if (variableData.SwitchId > 0) {
       if (!$gameSwitches.value(variableData.SwitchId)) {
         return;
@@ -130,7 +130,7 @@ if (Imported["OrangeHudClock"] === undefined) {
     window.resetFontSettings();
 	};
 
-	OrangeHudDefaultLine.getValue = function(variableData) {
+	OrangeHudClock.getValue = function(variableData) {
     var pattern = variableData.Pattern;
     if (variableData.ScriptPattern !== undefined) {
       pattern = Function("return " + variableData.ScriptPattern)();
@@ -155,10 +155,10 @@ if (Imported["OrangeHudClock"] === undefined) {
     return pattern.format(hour, minute, second);
 	};
 
-	OrangeHudDefaultLine.getKey = function(variableData) {
+	OrangeHudClock.getKey = function(variableData) {
 		return variableData.VariableHour + ',' + variableData.VariableMinute + ',' + variableData.VariableSecond;
 	};
 
-	OrangeHud.registerLineType('OrangeHudClock', OrangeHudDefaultLine);
+	OrangeHud.registerLineType('OrangeHudClock', OrangeHudClock);
 	Imported["OrangeHudClock"] = true;
 }
