@@ -2,7 +2,7 @@
  * Orange - Move Character To
  * By Hudell - www.hudell.com
  * OrangeMoveCharacterTo.js
- * Version: 1.0.1
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -42,42 +42,64 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
       var character = this.character(parseInt(args[0], 10));
 
       if (args.length > 2) {
-        character.setDestination(parseInt(args[1], 10), parseInt(args[2], 10));
+        var x = parseInt(args[1], 10);
+        var y = parseInt(args[2], 10);
+        var d = 0;
+        if (args.length > 3) {
+          switch(args[3].toUpperCase()) {
+            case 'LEFT' :
+              d = 4;
+              break;
+            case 'RIGHT' :
+              d = 6;
+              break;
+            case 'UP' :
+              d = 8;
+              break;
+            case 'DOWN' :
+              d = 2;
+              break;
+            default :
+              d = parseInt(args[3], 10);
+              break;
+          }
+        } 
+
+        character.setDestination(x, y, d);
       } else {
         character.clearDestination();
       }
     }
   };
 
-  var oldGameCharacterBase_update = Game_CharacterBase.prototype.update;
-  Game_CharacterBase.prototype.update = function() {
-    var canCheckDestination = false;
-    if (this instanceof Game_Event) {
-      canCheckDestination = true;
-    } else if (this instanceof Game_Player) {
-      canCheckDestination = this.isMoveRouteForcing();
-    }
-
-    if (canCheckDestination === true) {
-      if (this._xDestination !== undefined && this._yDestination !== undefined) {
-        if (this._xDestination == this._x && this._yDestination == this._y) {
-          this.clearDestination();
+  var oldGameCharacterBase_updateStop = Game_CharacterBase.prototype.updateStop;
+  Game_CharacterBase.prototype.updateStop = function() {
+    if (this._xDestination !== undefined && this._yDestination !== undefined) {
+      if (this._xDestination == this._x && this._yDestination == this._y) {
+        // If the character reached the destination, check if there's a direction to face
+        if (this._dDestination !== undefined && this._dDestination !== 0) {
+          if (this.isMoving()) {
+            return;
+          }
+          this._direction = this._dDestination;
         }
 
-        if (this._xDestination !== undefined) {
-          if (!this.isMoving()) {
-            var direction = this.findDirectionTo(this._xDestination, this._yDestination);
+        this.clearDestination();
+      }
 
-            if (direction > 0) {
-              this.moveStraight(direction);
-              return;
-            }
+      if (this._xDestination !== undefined) {
+        if (!this.isMoving()) {
+          var direction = this.findDirectionTo(this._xDestination, this._yDestination);
+
+          if (direction > 0) {
+            this.moveStraight(direction);
+            return;
           }
         }
       }
     }
 
-    oldGameCharacterBase_update.call(this);
+    oldGameCharacterBase_updateStop.call(this);
   };
 
   // Change the advanceMoveRouteIndex  to only advance the index when the character reach the destination.
@@ -95,22 +117,37 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
     oldGameCharacter_setMoveRoute.call(this, moveRoute);
   };
 
-  Game_CharacterBase.prototype.setDestination = function(x, y) {
-    if (this._x != x || this._y != y) {
+  Game_CharacterBase.prototype.setDestination = function(x, y, d) {
+    if (this._x != x || this._y != y || this.isMoving()) {
       this._xDestination = x;
       this._yDestination = y;
+      
+      if (d !== undefined) {
+        this._dDestination = d;
+      }
+    } else if (d !== undefined && d !== 0) {
+      this._direction = d;
+    }
+  };
+
+  //Updates Game_Temp.prototype.setDestination to only be executed when the player has no destination set on itself
+  var oldGameTemp_setDestination = Game_Temp.prototype.setDestination;
+  Game_Temp.prototype.setDestination = function(x, y) {
+    if ($gamePlayer._xDestination === undefined) {
+      oldGameTemp_setDestination.call(this, x, y);
     }
   };
 
   Game_CharacterBase.prototype.clearDestination = function() {
     this._xDestination = undefined;
     this._yDestination = undefined;
+    this._dDestination = undefined;
   };
 })(OrangeMoveCharacterTo);
 
 // If MVCommons is imported, register the plugin with it's PluginManager.
 if (Imported['MVCommons'] !== undefined) {
-  PluginManager.register("OrangeMoveCharacterTo", "1.0.1", "Adds a move route script call that you can use to make a character go to a specific position", {
+  PluginManager.register("OrangeMoveCharacterTo", "1.1.0", "Adds a move route script call that you can use to make a character go to a specific position", {
     email: "plugins@hudell.com",
     name: "Hudell",
     website: "http://www.hudell.com"
