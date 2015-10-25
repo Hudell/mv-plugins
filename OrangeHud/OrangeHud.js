@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -94,45 +94,19 @@ var Window_OrangeHud = MVC.extend(Window_Base);
 
   $.Param.SwitchId = Number($.Parameters.SwitchId || 0);
 
-  $.Param.LineList = PluginManager.getParamList('OrangeHudLine');
+  $._addons = {};
 
-  $._lines = {};
+  $.registerLineType = function(lineType, manager) {
+    $._addons[lineType] = {
+      manager : manager,
+      lines : {},
+      params : PluginManager.getParamList(lineType)
+    };
 
-  // Validate Params
-  for (var i = 0; i < $.Param.LineList.length; i++) {
-    var line = $.Param.LineList[i];
-
-    if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
-      line.ScriptPattern = undefined;
+    for (var i = 0; i < $._addons[lineType].params.length; i++) {
+      manager.validateParams($._addons[lineType].params[i]);
     }
-
-    if (line.Pattern === undefined) {
-      line.Pattern = "%1";
-    } else if (line.Pattern.trim() === "") {
-      line.Pattern = "";
-    }
-
-    line.VariableId = Number(line.VariableId || 0);
-    if (line.FontFace === undefined || line.FontFace.trim() === "") {
-      line.FontFace = $.Param.DefaultFontFace;
-    }
-
-    if (line.FontColor === undefined || line.FontColor.trim() === "") {
-      line.FontColor = $.Param.DefaultFontColor;
-    }
-
-    line.FontSize = Number(line.FontSize || $.Param.DefaultFontSize);
-    line.X = Number(line.X || 0);
-    line.Y = Number(line.Y || 0);
-
-    if (line.FontItalic === undefined || line.FontItalic.trim() === "") {
-      line.FontItalic = $.Param.DefaultFontItalic;
-    } else {
-      line.FontItalic = line.FontItalic == "true";
-    }
-
-    line.SwitchId = Number(line.SwitchId || 0);
-  }
+  };
 
   Window_OrangeHud.prototype.initialize = function() {
     Window_Base.prototype.initialize.call(this, 0, 0, this.windowWidth(), this.windowHeight());
@@ -144,30 +118,6 @@ var Window_OrangeHud = MVC.extend(Window_Base);
   };
   Window_OrangeHud.prototype.windowHeight = function() {
     return $.Param.HudHeight;
-  };
-
-  Window_OrangeHud.prototype.drawVariable = function(variableData) {
-    if (variableData.SwitchId > 0) {
-      if (!$gameSwitches.value(variableData.SwitchId)) {
-        return;
-      }
-    }
-
-    var pattern = variableData.Pattern;
-    if (variableData.ScriptPattern !== undefined) {
-      pattern = Function("return " + variableData.ScriptPattern)();
-    }
-
-    var line = pattern.format($gameVariables.value(variableData.VariableId));
-
-    this.contents.fontFace = variableData.FontFace;
-    this.contents.fontSize = variableData.FontSize;
-    this.contents.fontItalic = variableData.FontItalic;
-    this.changeTextColor(variableData.FontColor);
-
-    this.drawTextEx(line, variableData.X, variableData.Y);
-
-    this.resetFontSettings();
   };
 
   Window_OrangeHud.prototype.drawTextEx = function(text, x, y) {
@@ -198,14 +148,17 @@ var Window_OrangeHud = MVC.extend(Window_Base);
   };
 
   Window_OrangeHud.prototype.drawHud = function() {
-    // var y = 0;
     var self = this;
     this._lines = {};
 
-    $.Param.LineList.forEach(function(variable) {
-      self.drawVariable(variable);
-      self._lines[variable.VariableId] = $gameVariables.value(variable.VariableId);
-    });
+    for (var lineType in $._addons) {
+      var addOn = $._addons[lineType];
+
+      addOn.params.forEach(function(line){
+        addOn.manager.drawLine(self, line);
+        addOn.lines[addOn.manager.getKey(line)] = addOn.manager.getValue(line);
+      });
+    }
   };
 
   Window_OrangeHud.prototype.update = function() {
@@ -213,11 +166,19 @@ var Window_OrangeHud = MVC.extend(Window_Base);
 
     var shouldRefresh = false;
     var self = this;
-    $.Param.LineList.forEach(function(variable) {
-      if ($gameVariables.value(variable.VariableId) != self._lines[variable.VariableId]) {
-        shouldRefresh = true;
-      }
-    });
+    
+    for (var lineType in $._addons) {
+      var addOn = $._addons[lineType];
+
+      addOn.params.forEach(function(line){
+        var key = addOn.manager.getKey(line);
+        var value = addOn.manager.getValue(line);
+
+        if (value != addOn.lines[key]) {
+          shouldRefresh = true;
+        }
+      });
+    }
 
     if (shouldRefresh) {
       this.refresh();
@@ -256,7 +217,7 @@ var Window_OrangeHud = MVC.extend(Window_Base);
   };
 })(OrangeHud);
 
-PluginManager.register("OrangeHud", "1.1.0", "Displays a custom HUD on the map", {
+PluginManager.register("OrangeHud", "1.2.0", "Displays a custom HUD on the map", {
   email: "plugins@hudell.com",
   name: "HUDell",
   website: "http://www.hudell.com"

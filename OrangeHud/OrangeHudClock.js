@@ -1,7 +1,7 @@
 /*=============================================================================
- * Orange - Line HUD
+ * Orange - Clock HUD
  * By HUDell - www.hudell.com
- * OrangeHudLine.js
+ * OrangeHudClock.js
  * Version: 1.0
  * Free for commercial and non commercial use.
  *=============================================================================*/
@@ -11,11 +11,19 @@
  *
  * @param Pattern
  * @desc The pattern of the line that will be drawn
- * @default %1
+ * @default %1:%2:%3
  *
- * @param VariableId
- * @desc The number of the variable that will be displayed on this line.
- * @default 1
+ * @param VariableHour
+ * @desc The number of the variable that holds the Hour value.
+ * @default 0
+ *
+ * @param VariableMinute
+ * @desc The number of the variable that holds the Minute value.
+ * @default 0
+ *
+ * @param VariableSecond
+ * @desc The number of the variable that holds the Second value.
+ * @default 0
  *
  * @param SwitchId
  * @desc Set this to a switch number to use it to control the visibility of this line
@@ -61,24 +69,27 @@
 var Imported = Imported || {};
 
 if (Imported["OrangeHud"] === undefined) {
-	throw new Error("Please add OrangeHud before OrangeHudLine!");
+	throw new Error("Please add OrangeHud before OrangeHudClock!");
 }
 
 var OrangeHudDefaultLine = OrangeHudDefaultLine || {};
 
-if (Imported["OrangeHudLine"] === undefined) {
+if (Imported["OrangeHudClock"] === undefined) {
 	OrangeHudDefaultLine.validateParams = function(line) {
 		if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
       line.ScriptPattern = undefined;
     }
 
     if (line.Pattern === undefined) {
-      line.Pattern = "%1";
+      line.Pattern = "%1:%2:%3";
     } else if (line.Pattern.trim() === "") {
       line.Pattern = "";
     }
 
-    line.VariableId = Number(line.VariableId || 0);
+    line.VariableHour = Number(line.VariableHour || 0);
+    line.VariableMinute = Number(line.VariableMinute || 0);
+    line.VariableSecond = Number(line.VariableSecond || 0);
+
     if (line.FontFace === undefined || line.FontFace.trim() === "") {
       line.FontFace = OrangeHud.Param.DefaultFontFace;
     }
@@ -107,12 +118,7 @@ if (Imported["OrangeHudLine"] === undefined) {
       }
     }
 
-    var pattern = variableData.Pattern;
-    if (variableData.ScriptPattern !== undefined) {
-      pattern = Function("return " + variableData.ScriptPattern)();
-    }
-
-    var line = pattern.format($gameVariables.value(variableData.VariableId));
+    var line = this.getValue(variableData);
 
     window.contents.fontFace = variableData.FontFace;
     window.contents.fontSize = variableData.FontSize;
@@ -125,13 +131,34 @@ if (Imported["OrangeHudLine"] === undefined) {
 	};
 
 	OrangeHudDefaultLine.getValue = function(variableData) {
-		return $gameVariables.value(variableData.VariableId);
+    var pattern = variableData.Pattern;
+    if (variableData.ScriptPattern !== undefined) {
+      pattern = Function("return " + variableData.ScriptPattern)();
+    }
+
+    var hour = '';
+    var minute = '';
+    var second = '';
+
+    if (variableData.VariableHour > 0) {
+    	hour = Number($gameVariables.value(variableData.VariableHour)).padZero(2);
+    }
+
+    if (variableData.VariableMinute > 0) {
+    	minute = Number($gameVariables.value(variableData.VariableMinute)).padZero(2);
+    }
+
+    if (variableData.VariableSecond > 0) {
+    	second = Number($gameVariables.value(variableData.VariableSecond)).padZero(2);
+    }
+
+    return pattern.format(hour, minute, second);
 	};
 
 	OrangeHudDefaultLine.getKey = function(variableData) {
-		return variableData.VariableId;
+		return variableData.VariableHour + ',' + variableData.VariableMinute + ',' + variableData.VariableSecond;
 	};
 
-	OrangeHud.registerLineType('OrangeHudLine', OrangeHudDefaultLine);
-	Imported["OrangeHudLine"] = true;
+	OrangeHud.registerLineType('OrangeHudClock', OrangeHudDefaultLine);
+	Imported["OrangeHudClock"] = true;
 }
