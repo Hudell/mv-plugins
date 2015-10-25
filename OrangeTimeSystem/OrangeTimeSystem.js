@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -169,47 +169,70 @@ var DayPeriods = {
   $.dayPeriod = 0;
   $.weekDay = 0;
 
-  $.updateTime = function() {
-    if (this.seconds >= $.Param.minuteLength) {
-      this.minute += 1;
-      this.seconds = 0;
+  $.runTimeChangeEvents = function(oldData) {
+    if (oldData.seconds != this.seconds) {
+      this._onChangeSecond();
+    }
 
+    if (oldData.minute !== this.minute) {
       this._onChangeMinute();
     }
 
-    if (this.minute >= $.Param.hourLength) {
-      this.hour += 1;
-      this.minute = 0;
-
+    if (oldData.hour !== this.hour) {
       this._onChangeHour();
     }
 
-    if (this.hour >= $.Param.dayLength) {
-      this.day += 1;
-      this.hour = 0;
-
+    if (oldData.day !== this.day) {
       this._onChangeDay();
     }
 
-    if (this.day > $.Param.monthLength) {
-      this.month += 1;
-      this.day = 1;
-
+    if (oldData.month !== this.month) {
       this._onChangeMonth();
     }
 
-    if (this.month > $.Param.yearLength) {
-      this.year += 1;
-      this.month = 1;
-
+    if (oldData.year !== this.year) {
       this._onChangeYear();
     }
 
-    var oldDayPeriod = this.dayPeriod;
+    if (oldData.dayPeriod !== this.dayPeriod) {
+      this._onChangeDayPeriod();
+    }
+  };
+
+  $.updateTime = function(runEvents) {
+    if (runEvents === undefined) runEvents = true;
+
+    var oldData = $.getDateTime();
+
+    while (this.seconds >= $.Param.minuteLength) {
+      this.minute += 1;
+      this.seconds -= $.Param.minuteLength;
+    }
+
+    while (this.minute >= $.Param.hourLength) {
+      this.hour += 1;
+      this.minute -= $.Param.hourLength;
+    }
+
+    while (this.hour >= $.Param.dayLength) {
+      this.day += 1;
+      this.hour -= $.Param.dayLength;
+    }
+
+    while (this.day > $.Param.monthLength) {
+      this.month += 1;
+      this.day -= $.Param.monthLength;
+    }
+
+    while (this.month > $.Param.yearLength) {
+      this.year += 1;
+      this.month -= $.Param.yearLength;
+    }
+
     this.updateDayPeriod();
 
-    if (oldDayPeriod != this.dayPeriod) {
-      this._onChangeDayPeriod();
+    if (runEvents) {
+      this.runTimeChangeEvents(oldData);
     }
 
     // Calculate week day
@@ -309,6 +332,51 @@ var DayPeriods = {
     if ($.year != oldData.year) {
       $._onChangeYear();
     }
+  };
+
+  $.setTime = function(seconds, minute, hour, day, month, year) {
+    var oldData = this.getDateTime();
+
+    if (seconds !== undefined) {
+      this.seconds = seconds;
+    }
+
+    if (minute !== undefined) {
+      this.minute = minute;
+    }
+
+    if (hour !== undefined) {
+      this.hour = hour;
+    }
+
+    if (day !== undefined) {
+      this.day = day;
+    }
+
+    if (month !== undefined) {
+      this.month = month;
+    }
+
+    if (year !== undefined) {
+      this.year = year;
+    }
+
+    $.updateTime(false);
+    $.runTimeChangeEvents(oldData);
+  };
+
+  $.passTime = function(seconds, minutes, hours, days, months, years) {
+    var oldData = this.getDateTime();
+
+    this.seconds += Number(seconds || 0);
+    this.minute += Number(minutes || 0);
+    this.hour += Number(hours || 0);
+    this.day += Number(days || 0);
+    this.month += Number(months || 0);
+    this.year += Number(years || 0);
+
+    $.updateTime(false);
+    $.runTimeChangeEvents(oldData);
   };
 
   $.progressTime = function() {
@@ -466,7 +534,7 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-PluginManager.register("OrangeTimeSystem", "1.1.1", "Adds a time system to your game", {
+PluginManager.register("OrangeTimeSystem", "1.2", "Adds a time system to your game", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
