@@ -222,7 +222,7 @@ var Window_OrangeHud = MVC.extend(Window_Base);
   };
 })(OrangeHud);
 
-PluginManager.register("OrangeHud", "1.2.0", "Displays a custom HUD on the map", {
+PluginManager.register("OrangeHud", "1.3.0", "Displays a custom HUD on the map", {
   email: "plugins@hudell.com",
   name: "HUDell",
   website: "http://www.hudell.com"
