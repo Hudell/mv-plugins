@@ -2,7 +2,7 @@
  * Orange - Clock HUD
  * By HUDell - www.hudell.com
  * OrangeHudClock.js
- * Version: 1.0
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -63,7 +63,7 @@
  * ============================================================================
  * 
  * Get the latest version of this script on
- * http://link.hudell.com/hud-line
+ * http://link.hudell.com/hud-line-clock
  * */
 
 var Imported = Imported || {};
