@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.3
+ * Version: 1.3.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -128,7 +128,11 @@ var Window_OrangeHud = MVC.extend(Window_Base);
         y: y,
         left: x
       };
-      textState.text = this.convertEscapeCharacters(text);
+
+      //Adds line break support with \n
+      textState.text = text.replace(/\\n/g, '\n');
+
+      textState.text = this.convertEscapeCharacters(textState.text);
       textState.height = this.calcTextHeight(textState, false);
       // this.resetFontSettings();
       while (textState.index < textState.text.length) {
@@ -222,7 +226,7 @@ var Window_OrangeHud = MVC.extend(Window_Base);
   };
 })(OrangeHud);
 
-PluginManager.register("OrangeHud", "1.3.0", "Displays a custom HUD on the map", {
+PluginManager.register("OrangeHud", "1.3.1", "Displays a custom HUD on the map", {
   email: "plugins@hudell.com",
   name: "HUDell",
   website: "http://www.hudell.com"
