@@ -1,77 +1,76 @@
 /*=============================================================================
-* Orange - Super Movement
-* By Hudell - www.hudell.com
-* SuperOrangeMovement.js
-* Version: 1.0.2
-* Free for commercial and non commercial use.
-*=============================================================================*/
+ * Orange - Super Movement
+ * By Hudell - www.hudell.com
+ * SuperOrangeMovement.js
+ * Version: 1.1
+ * Free for commercial and non commercial use.
+ *=============================================================================*/
 /*:
-* @plugindesc Movement Improvements:
-*Diagonal Movement, Pixel Movement, Actor Hitbox Changer
-*
-* @param Tile_Sections
-* @desc How many pieces do you want to break the tiles into?
-* @default 4
-*
-* @param Diagonal_Movement
-* @desc Enable Diagonal Movement?
-* @default true
-*
-* @param FollowersDistance
-* @desc What's the distance (in tiles) that each party member should keep from the next one?
-* @default 0.5
-*
-* @param TriggerAllAvailableEvents
-* @desc If true, the game may trigger multiple events when you press a button if there are more than one event in front of you.
-* @default false
-*
-* @param TriggerTouchEventsAfterTeleport
-* @desc Check the plugin help for detailed explanation
-* @default false
-*
-* @param BlockRepeatedTouchEvents
-* @desc If false, any touch triggered event will be executed after every step that the player takes inside that tile.
-* @default true
-*
-* @param IgnoreEmptyEvents
-* @desc If true, the game won't try to trigger events that have no commands
-* Default: true
-* @default true
-*
-* @param DisablePixelMovementForMouseRoutes
-* @desc CAUTION: Check the plugin help for info on disabling this
-* @default true
-*
-* @author Hudell
-*
-*
-* @help
-* ============================================================================
-* Latest Version
-* ============================================================================
-* Get the latest version of this script on
-* http://link.hudell.com/super-orange-movement
-* 
-* ============================================================================
-* Params
-* ============================================================================
-* 
-* TriggerTouchEventsAfterTeleport: 
-* If you're using pixel movement and you teleport the player
-* to a tile with a touch triggered event, that event will be
-* triggered on the first step the player takes.
-* If you want that to happen, change this to true.
-*
-*
-* DisablePixelMovementForMouseRoutes:
-* If true, the pixel movement will be disabled when you assign a
-* fixed move route to the player;
-* ATTENTION:
-* If you turn this to false, the player character may get stuck when
-* controlled with a mouse
-
-* 
-*=============================================================================*/
+ * @plugindesc Movement Improvements: Diagonal Movement, Pixel Movement, Actor Hitbox Changer.
+ *
+ * @param Tile_Sections
+ * @desc How many pieces do you want to break the tiles into?
+ * @default 4
+ *
+ * @param Diagonal_Movement
+ * @desc Enable Diagonal Movement?
+ * @default true
+ *
+ * @param FollowersDistance
+ * @desc What's the distance (in tiles) that each party member should keep from the next one?
+ * @default 0.5
+ *
+ * @param TriggerAllAvailableEvents
+ * @desc If true, the game may trigger multiple events when you press a button if there are more than one event in front of you.
+ * @default false
+ *
+ * @param TriggerTouchEventsAfterTeleport
+ * @desc Check the plugin help for detailed explanation
+ * @default false
+ *
+ * @param BlockRepeatedTouchEvents
+ * @desc If false, any touch triggered event will be executed after every step that the player takes inside that tile.
+ * @default true
+ *
+ * @param IgnoreEmptyEvents
+ * @desc If true, the game won't try to trigger events that have no commands
+ * Default: true
+ * @default true
+ *
+ * @param DisablePixelMovementForMouseRoutes
+ * @desc CAUTION: Check the plugin help for info on disabling this
+ * @default true
+ *
+ * @author Hudell
+ *
+ *
+ * @help
+ * ============================================================================
+ * Latest Version
+ * ============================================================================
+ * Get the latest version of this script on
+ * http://link.hudell.com/super-orange-movement
+ * 
+ * ============================================================================
+ * Params
+ * ============================================================================
+ * 
+ * TriggerTouchEventsAfterTeleport: 
+ * If you're using pixel movement and you teleport the player
+ * to a tile with a touch triggered event, that event will be
+ * triggered on the first step the player takes.
+ * If you want that to happen, change this to true.
+ *
+ *
+ * DisablePixelMovementForMouseRoutes:
+ * If true, the pixel movement will be disabled when you assign a
+ * fixed move route to the player;
+ * ATTENTION:
+ * If you turn this to false, the player character may get stuck when
+ * controlled with a mouse
+ 
+ * 
+ *=============================================================================*/
 
 var Imported = Imported || {};
 if (Imported['MVCommons'] === undefined) {
@@ -187,17 +186,56 @@ var Direction = {
 
   Game_Player.prototype.actor = function() {
     if ($gameParty._actors.length > 0) {
-      return $gameParty._actors[0];
+      return $gameActors.actor($gameParty._actors[0]);
     } else {
       return undefined;
     }
   };
 
-  var addPropertiesToCharacter = function(character) {
+  Game_Vehicle.prototype.actor = function() {
+    return undefined;
+  };
 
-    MVC.reader(character.prototype, 'actorData', function(){
-      return $dataActors[this.actor()];
-    });
+  Game_Vehicle.prototype.check_vehicle_passage = function(x, y) {
+    if (this.isBoat()) {
+      return $gameMap.isBoatPassable(x, y);
+    }
+
+    if (this.isShip()) {
+      return $gameMap.isShipPassable(x, y);
+    }
+
+    return this.isAirship();
+  };
+
+  Game_Vehicle.prototype.isLandOk = function(x, y, d) {
+    if (this.isAirship()) {
+      if (!$gameMap.isAirshipLandOk(x, y)) {
+        return false;
+      }
+      if ($gameMap.eventsXy(x, y).length > 0) {
+        return false;
+      }
+    } else {
+      var x2 = $gameMap.roundXWithDirection(x.floor(), d);
+      var y2 = $gameMap.roundYWithDirection(y.floor(), d);
+      
+      if (!$gameMap.isValid(x2, y2)) {
+        return false;
+      }
+
+      if (!$gameMap.isPassable(x2, y2, this.reverseDir(d))) {
+        return false;
+      }
+      
+      if (this.isCollidedWithCharacters(x2, y2)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  var addPropertiesToCharacter = function(character) {
 
     // X position of the character hitbox (in pixels)
     MVC.accessor(character.prototype, 'hitboxX', function(value) {
@@ -205,18 +243,24 @@ var Direction = {
       this._canClearHitboxX = false;
     }, function() {
       if (this._hitboxX === undefined) {
-        var size = MVC.getProp(this.actorData.meta, 'hitboxX');
-        if (size !== undefined) {
-          size = parseInt(size, 10);
-        }
+        var actor = this.actor();
+        if (actor !== undefined) {
+          var size = MVC.getProp(actor.actor().meta, 'hitboxX');
+          if (size !== undefined) {
+            size = parseInt(size, 10);
+          }
 
-        if (typeof(size) == "number") {
-          this._hitboxX = size;
+          if (typeof(size) == "number") {
+            this._hitboxX = size;
+          } else {
+            this._hitboxX = 0;
+          }
+
+          this._canClearHitboxX = true;
         } else {
           this._hitboxX = 0;
+          this._canClearHitboxX = false;
         }
-
-        this._canClearHitboxX = true;
       }
 
       return this._hitboxX;
@@ -228,18 +272,24 @@ var Direction = {
       this._canClearHitboxY = false;
     }, function() {
       if (this._hitboxY === undefined) {
-        var size = MVC.getProp(this.actorData.meta, 'hitboxY');
-        if (size !== undefined) {
-          size = parseInt(size, 10);
-        }
+        var actor = this.actor();
+        if (actor !== undefined) {
+          var size = MVC.getProp(actor.actor().meta, 'hitboxY');
+          if (size !== undefined) {
+            size = parseInt(size, 10);
+          }
 
-        if (typeof(size) == "number") {
-          this._hitboxY = size;
+          if (typeof(size) == "number") {
+            this._hitboxY = size;
+          } else {
+            this._hitboxY = 0;
+          }
+
+          this._canClearHitboxY = true;
         } else {
           this._hitboxY = 0;
+          this._canClearHitboxY = false;
         }
-
-        this._canClearHitboxY = true;
       }
 
       return this._hitboxY;
@@ -251,18 +301,24 @@ var Direction = {
       this._canClearHitboxWidth = false;
     }, function() {
       if (this._hitboxWidth === undefined) {
-        var size = MVC.getProp(this.actorData.meta, 'hitboxWidth');
-        if (size !== undefined) {
-          size = parseInt(size, 10);
-        }
+        var actor = this.actor();
+        if (actor !== undefined) {
+          var size = MVC.getProp(actor.actor().meta, 'hitboxWidth');
+          if (size !== undefined) {
+            size = parseInt(size, 10);
+          }
 
-        if (typeof(size) == "number") {
-          this._hitboxWidth = size;
+          if (typeof(size) == "number") {
+            this._hitboxWidth = size;
+          } else {
+            this._hitboxWidth = $gameMap.tileWidth();
+          }
+
+          this._canClearHitboxWidth = true;
         } else {
           this._hitboxWidth = $gameMap.tileWidth();
+          this._canClearHitboxWidth = false;
         }
-
-        this._canClearHitboxWidth = true;
       }
 
       return this._hitboxWidth;
@@ -274,18 +330,24 @@ var Direction = {
       this._canClearHitboxHeight = false;
     }, function() {
       if (this._hitboxHeight === undefined) {
-        var size = MVC.getProp(this.actorData.meta, 'hitboxHeight');
-        if (size !== undefined) {
-          size = parseInt(size, 10);
-        }
+        var actor = this.actor();
+        if (actor !== undefined) {
+          var size = MVC.getProp(actor.actor().meta, 'hitboxHeight');
+          if (size !== undefined) {
+            size = parseInt(size, 10);
+          }
 
-        if (typeof(size) == "number") {
-          this._hitboxHeight = size;
+          if (typeof(size) == "number") {
+            this._hitboxHeight = size;
+          } else {
+            this._hitboxHeight = $gameMap.tileHeight();
+          }
+
+          this._canClearHitboxHeight = true;
         } else {
           this._hitboxHeight = $gameMap.tileHeight();
+          this._canClearHitboxHeight = false;
         }
-
-        this._canClearHitboxHeight = true;
       }
 
       return this._hitboxHeight;
@@ -404,6 +466,25 @@ var Direction = {
       }
     };
 
+    character.prototype.check_up_passage = function(new_x, the_y, destination_y) {
+      if (this instanceof Game_Player) {
+        var vehicle = this.vehicle();
+        if (vehicle !== undefined && vehicle !== null) {
+          return vehicle.check_vehicle_passage(new_x, the_y.floor()) && vehicle.check_vehicle_passage(new_x, destination_y.floor());
+        }
+      }
+
+      if (!$gameMap.isPassable(new_x, the_y.floor(), Direction.UP)) {
+        return false;
+      }
+
+      if (!$gameMap.isPassable(new_x, destination_y.floor(), Direction.DOWN)) {
+        return false;
+      }
+
+      return null;
+    };
+
     // Method that checks if the character can move up
     character.prototype.can_go_up = function(x, y) {
       // Variables the_x and the_y hold the true position, considering the hitbox configuration
@@ -419,16 +500,31 @@ var Direction = {
 
       // Run the collission check for every X tile the character is touching
       for (var new_x = the_x.floor(); new_x <= end_x.floor(); new_x++) {
-        if (!$gameMap.isPassable(new_x, the_y.floor(), Direction.UP)) {
-          return false;
-        }
-
-        if (!$gameMap.isPassable(new_x, destination_y.floor(), Direction.DOWN)) {
+        if (this.check_up_passage(new_x, the_y, destination_y) === false) {
           return false;
         }
       }
 
       return true;
+    };
+
+    character.prototype.check_down_passage = function(new_x, end_y, destination_end_y) {
+      if (this instanceof Game_Player) {
+        var vehicle = this.vehicle();
+        if (vehicle !== undefined && vehicle !== null) {
+          return vehicle.check_vehicle_passage(new_x, end_y.floor()) && vehicle.check_vehicle_passage(new_x, destination_end_y.floor());
+        }
+      }
+
+      if (!$gameMap.isPassable(new_x, end_y.floor(), Direction.DOWN)) {
+        return false;
+      }
+
+      if (!$gameMap.isPassable(new_x, destination_end_y.floor(), Direction.UP)) {
+        return false;
+      }
+
+      return null;
     };
 
     // Method that checks if the character can move down
@@ -449,16 +545,31 @@ var Direction = {
 
       // Run the collission check for every X tile the character is touching
       for (var new_x = the_x.floor(); new_x <= end_x.floor(); new_x++) {
-        if (!$gameMap.isPassable(new_x, end_y.floor(), Direction.DOWN)) {
-          return false;
-        }
-
-        if (!$gameMap.isPassable(new_x, destination_end_y.floor(), Direction.UP)) {
+        if (this.check_down_passage(new_x, end_y, destination_end_y) === false) {
           return false;
         }
       }
 
       return true;
+    };
+
+    character.prototype.check_left_passage = function(the_x, new_y, destination_x) {
+      if (this instanceof Game_Player) {
+        var vehicle = this.vehicle();
+        if (vehicle !== undefined && vehicle !== null) {
+          return vehicle.check_vehicle_passage(the_x.floor(), new_y) && vehicle.check_vehicle_passage(destination_x.floor(), new_y);
+        }
+      }
+
+      if (!$gameMap.isPassable(the_x.floor(), new_y, Direction.LEFT)) {
+        return false;
+      }
+
+      if (!$gameMap.isPassable(destination_x.floor(), new_y, Direction.RIGHT)) {
+        return false;
+      }
+
+      return null;
     };
 
     // Method that checks if the character can move left
@@ -476,17 +587,33 @@ var Direction = {
 
       // Run the collission check for every Y tile the character is touching
       for (var new_y = the_y.floor(); new_y <= end_y.floor(); new_y++) {
-        if (!$gameMap.isPassable(the_x.floor(), new_y, Direction.LEFT)) {
-          return false;
-        }
-
-        if (!$gameMap.isPassable(destination_x.floor(), new_y, Direction.RIGHT)) {
+        if (this.check_left_passage(the_x, new_y, destination_x) === false) {
           return false;
         }
       }
 
       return true;
     };
+
+    character.prototype.check_right_passage = function(end_x, new_y, destination_end_x) {
+      if (this instanceof Game_Player) {
+        var vehicle = this.vehicle();
+        if (vehicle !== undefined && vehicle !== null) {
+          return vehicle.check_vehicle_passage(end_x.floor(), new_y) && vehicle.check_vehicle_passage(destination_end_x.floor(), new_y);
+        }
+      }
+
+      if (!$gameMap.isPassable(end_x.floor(), new_y, Direction.RIGHT)) {
+        return false;
+      }
+
+      if (!$gameMap.isPassable(destination_end_x.floor(), new_y, Direction.LEFT)) {
+        return false;
+      }
+
+      return null;
+    };
+
 
     // Method that checks if the character can move right
     character.prototype.can_go_right = function(x, y) {
@@ -506,11 +633,7 @@ var Direction = {
 
       // Run the collission check for every Y tile the character is touching
       for (var new_y = the_y.floor(); new_y <= end_y.floor(); new_y++) {
-        if (!$gameMap.isPassable(end_x.floor(), new_y, Direction.RIGHT)) {
-          return false;
-        }
-
-        if (!$gameMap.isPassable(destination_end_x.floor(), new_y, Direction.LEFT)) {
+        if (this.check_right_passage(end_x, new_y, destination_end_x) === false) {
           return false;
         }
       }
@@ -536,6 +659,14 @@ var Direction = {
 
       if (!this.isMapPassable(x, y, d)) {
         return false;
+      }
+
+      if (this instanceof Game_Player) {
+        var vehicle = this.vehicle();
+
+        if (vehicle !== undefined && vehicle !== null) {
+          return true;
+        }
       }
 
       if (!this.isMapPassable(x2, y2, this.reverseDir(d))) {
@@ -618,7 +749,6 @@ var Direction = {
 
     character.prototype.pos = function(x, y) {
       return this.isTouchingTile(x, y);
-      // return this._x === x && this._y === y;
     };
 
     // Run the callback method for all tiles touched by the character on the informed position
@@ -658,6 +788,13 @@ var Direction = {
     };
 
     character.prototype.isCollidedWithVehicles = function(x, y) {
+      if (this instanceof Game_Player) {
+        var vehicle = this.vehicle();
+        if (vehicle !== undefined || vehicle !== null) {
+          return false;
+        }
+      }
+
       return this.runForAllPositions(x, y, function(block_x, block_y) {
         return $gameMap.boat().posNt(block_x, block_y) || $gameMap.ship().posNt(block_x, block_y);
       });
@@ -704,6 +841,7 @@ var Direction = {
 
   addOrangeMovementToCharacter(Game_Player);
   addOrangeMovementToCharacter(Game_Follower);
+  addOrangeMovementToCharacter(Game_Vehicle);
 
   var oldGamePlayer_moveStraight = Game_Player.prototype.moveStraight;
   var oldGamePlayer_moveDiagonally = Game_Player.prototype.moveDiagonally;
@@ -722,6 +860,54 @@ var Direction = {
     }
 
     oldGamePlayer_moveDiagonally.call(this, horz, vert);
+  };
+
+  Game_Player.prototype.triggerTouchAction = function() {
+    if ($gameTemp.isDestinationValid()) {
+      var direction = this.direction();
+      var x1 = this.x;
+      var y1 = this.y;
+      var x2 = $gameMap.roundFractionXWithDirection(x1, direction);
+      var y2 = $gameMap.roundFractionYWithDirection(y1, direction);
+      var x3 = $gameMap.roundFractionXWithDirection(x2, direction);
+      var y3 = $gameMap.roundFractionYWithDirection(y2, direction);
+      var destX = $gameTemp.destinationX();
+      var destY = $gameTemp.destinationY();
+
+      if ((destX.floor() === x1 || destX.ceil() === x1) && (destY.floor() === y1 || destY.ceil() === y1)) {
+        return this.triggerTouchActionD1(x1, y1);
+      } else if ((destX.floor() === x2 || destX.ceil() === x2) && (destY.floor() === y2 || destY.ceil() === y2)) {
+        return this.triggerTouchActionD2(x2, y2);
+      } else if ((destX.floor() === x3 || destX.ceil() === x3) && (destY.floor() === y3 || destY.ceil() === y3)) {
+        return this.triggerTouchActionD3(x2, y2);
+      }
+    }
+    return false;
+  };
+
+  Game_Player.prototype.forceMoveForward = function() {
+    this.setThrough(true);
+    for (var i = 0; i < $.Param.Tile_Sections; i++) {
+      this.moveForward();
+    }
+    this.setThrough(false);
+  };
+
+  Game_Map.prototype.isAirshipLandOk = function(x, y) {
+    var first_x = x.floor();
+    var last_x = x.ceil();
+    var first_y = y.floor();
+    var last_y = y.ceil();
+
+    for (var new_x = first_x; new_x <= last_x; new_x++) {
+      for (var new_y = first_y; new_y <= last_y; new_y++) {
+        if (!this.checkPassage(new_x, new_y, 0x800) || !this.checkPassage(new_x, new_y, 0x0f)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   };
 
   // This method adds or subtracts the step_size to an X position, based on the direction
@@ -745,6 +931,11 @@ var Direction = {
       return y;
     }
   };
+
+  Game_Map.prototype.isValid = function(x, y) {
+    return x >= 0 && x.ceil() < this.width() && y >= 0 && y.ceil() < this.height();
+  };
+
 
   // When using horizontally looped maps, this method gets the real X position
   Game_Map.prototype.roundFractionXWithDirection = function(x, d) {
@@ -969,7 +1160,7 @@ var Direction = {
       return;
     }
 
-    if (this.canPass(this._x, this._y, direction) || this.canPass(this._x, this._y, alternative_d)) {
+    if (this.canPass(this._x, this._y, direction) || (direction != alternative_d && this.canPass(this._x, this._y, alternative_d))) {
       this.onBeforeMove();
 
       // If diagonal movement is active, try it first
@@ -1138,7 +1329,7 @@ var Direction = {
   }
 })(SuperOrangeMovement);
 
-PluginManager.register("SuperOrangeMovement", "1.0.2", "Movement Improvements (Diagonal Movement and Pixel Movement with several settings), ", {
+PluginManager.register("SuperOrangeMovement", "1.1", "Movement Improvements (Diagonal Movement and Pixel Movement with several settings), ", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
