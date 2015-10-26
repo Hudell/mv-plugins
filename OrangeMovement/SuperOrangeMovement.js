@@ -2,7 +2,7 @@
 * Orange - Super Movement
 * By Hudell - www.hudell.com
 * SuperOrangeMovement.js
-* Version: 1.0.1
+* Version: 1.0.2
 * Free for commercial and non commercial use.
 *=============================================================================*/
 /*:
@@ -195,13 +195,17 @@ var Direction = {
 
   var addPropertiesToCharacter = function(character) {
 
+    MVC.reader(character.prototype, 'actorData', function(){
+      return $dataActors[this.actor()];
+    });
+
     // X position of the character hitbox (in pixels)
     MVC.accessor(character.prototype, 'hitboxX', function(value) {
       this._hitboxX = value;
       this._canClearHitboxX = false;
     }, function() {
       if (this._hitboxX === undefined) {
-        var size = MVC.getProp(this.actor().meta, 'hitboxX');
+        var size = MVC.getProp(this.actorData.meta, 'hitboxX');
         if (size !== undefined) {
           size = parseInt(size, 10);
         }
@@ -224,7 +228,7 @@ var Direction = {
       this._canClearHitboxY = false;
     }, function() {
       if (this._hitboxY === undefined) {
-        var size = MVC.getProp(this.actor().meta, 'hitboxY');
+        var size = MVC.getProp(this.actorData.meta, 'hitboxY');
         if (size !== undefined) {
           size = parseInt(size, 10);
         }
@@ -247,7 +251,7 @@ var Direction = {
       this._canClearHitboxWidth = false;
     }, function() {
       if (this._hitboxWidth === undefined) {
-        var size = MVC.getProp(this.actor().meta, 'hitboxWidth');
+        var size = MVC.getProp(this.actorData.meta, 'hitboxWidth');
         if (size !== undefined) {
           size = parseInt(size, 10);
         }
@@ -270,7 +274,7 @@ var Direction = {
       this._canClearHitboxHeight = false;
     }, function() {
       if (this._hitboxHeight === undefined) {
-        var size = MVC.getProp(this.actor().meta, 'hitboxHeight');
+        var size = MVC.getProp(this.actorData.meta, 'hitboxHeight');
         if (size !== undefined) {
           size = parseInt(size, 10);
         }
@@ -1134,7 +1138,7 @@ var Direction = {
   }
 })(SuperOrangeMovement);
 
-PluginManager.register("SuperOrangeMovement", "1.0.1", "Movement Improvements (Diagonal Movement and Pixel Movement with several settings), ", {
+PluginManager.register("SuperOrangeMovement", "1.0.2", "Movement Improvements (Diagonal Movement and Pixel Movement with several settings), ", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
