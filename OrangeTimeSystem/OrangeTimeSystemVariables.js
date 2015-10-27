@@ -2,7 +2,7 @@
  * Orange - Time System Variables
  * By Hudell - www.hudell.com
  * OrangeTimeSystemVariables.js
- * Version: 1.0.1
+ * Version: 1.0.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -82,29 +82,31 @@ if (PluginManager.version('OrangeTimeSystem', '>=', '0.1.0') === false) {
   $.Param.dayPeriodVariable = Number($.Parameters['dayPeriodVariable'] || 0);
 
   $.configureVariables = function() {
-    if ($.Param.secondVariable !== undefined && $.Param.secondVariable > 0) {
-      $gameVariables.setValue($.Param.secondVariable, OrangeTimeSystem.seconds);
-    }
-    if ($.Param.minuteVariable !== undefined && $.Param.minuteVariable > 0) {
-      $gameVariables.setValue($.Param.minuteVariable, OrangeTimeSystem.minute);
-    }
-    if ($.Param.hourVariable !== undefined && $.Param.hourVariable > 0) {
-      $gameVariables.setValue($.Param.hourVariable, OrangeTimeSystem.hour);
-    }
-    if ($.Param.dayVariable !== undefined && $.Param.dayVariable > 0) {
-      $gameVariables.setValue($.Param.dayVariable, OrangeTimeSystem.day);
-    }
-    if ($.Param.monthVariable !== undefined && $.Param.monthVariable > 0) {
-      $gameVariables.setValue($.Param.monthVariable, OrangeTimeSystem.month);
-    }
-    if ($.Param.yearVariable !== undefined && $.Param.yearVariable > 0) {
-      $gameVariables.setValue($.Param.yearVariable, OrangeTimeSystem.year);
-    }
-    if ($.Param.weekDayVariable !== undefined && $.Param.weekDayVariable > 0) {
-      $gameVariables.setValue($.Param.weekDayVariable, OrangeTimeSystem.weekDay);
-    }
-    if ($.Param.dayPeriodVariable !== undefined && $.Param.dayPeriodVariable > 0) {
-      $gameVariables.setValue($.Param.dayPeriodVariable, OrangeTimeSystem.dayPeriod);
+    if ($gameVariables !== undefined && $gameVariables !== null) {
+      if ($.Param.secondVariable !== undefined && $.Param.secondVariable > 0) {
+        $gameVariables.setValue($.Param.secondVariable, OrangeTimeSystem.seconds);
+      }
+      if ($.Param.minuteVariable !== undefined && $.Param.minuteVariable > 0) {
+        $gameVariables.setValue($.Param.minuteVariable, OrangeTimeSystem.minute);
+      }
+      if ($.Param.hourVariable !== undefined && $.Param.hourVariable > 0) {
+        $gameVariables.setValue($.Param.hourVariable, OrangeTimeSystem.hour);
+      }
+      if ($.Param.dayVariable !== undefined && $.Param.dayVariable > 0) {
+        $gameVariables.setValue($.Param.dayVariable, OrangeTimeSystem.day);
+      }
+      if ($.Param.monthVariable !== undefined && $.Param.monthVariable > 0) {
+        $gameVariables.setValue($.Param.monthVariable, OrangeTimeSystem.month);
+      }
+      if ($.Param.yearVariable !== undefined && $.Param.yearVariable > 0) {
+        $gameVariables.setValue($.Param.yearVariable, OrangeTimeSystem.year);
+      }
+      if ($.Param.weekDayVariable !== undefined && $.Param.weekDayVariable > 0) {
+        $gameVariables.setValue($.Param.weekDayVariable, OrangeTimeSystem.weekDay);
+      }
+      if ($.Param.dayPeriodVariable !== undefined && $.Param.dayPeriodVariable > 0) {
+        $gameVariables.setValue($.Param.dayPeriodVariable, OrangeTimeSystem.dayPeriod);
+      }
     }
   };
 
@@ -112,7 +114,7 @@ if (PluginManager.version('OrangeTimeSystem', '>=', '0.1.0') === false) {
   OrangeTimeSystem.on('changeSecond', $.configureVariables);
 })(OrangeTimeSystemVariables);
 
-PluginManager.register("OrangeTimeSystemVariables", "1.0.1", "Exports Orange Time System data to variables", {
+PluginManager.register("OrangeTimeSystemVariables", "1.0.2", "Exports Orange Time System data to variables", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
