@@ -34,7 +34,6 @@
  *
  * @param IgnoreEmptyEvents
  * @desc If true, the game won't try to trigger events that have no commands
- * Default: true
  * @default true
  *
  * @param DisablePixelMovementForMouseRoutes
@@ -69,6 +68,70 @@
  * If you turn this to false, the player character may get stuck when
  * controlled with a mouse
  
+ * 
+ *=============================================================================*/
+ /*:fr
+ * @plugindesc Amélioration des déplacements : déplacement en diagonale, déplacement au pixel près et adaptation de la hitbox du personnage
+ *
+ * @param Tile_Sections
+ * @desc En combien de sous-divisions voulez-vous diviser un tile ?
+ * @default 4
+ *
+ * @param Diagonal_Movement
+ * @desc Autoriser le mouvement en diagonale ?
+ * @default true
+ *
+ * @param FollowersDistance
+ * @desc Quelle est la distance (en tiles) que doivent conserver chaque personnage du groupe entre eux ? (mode chenille)
+ * @default 0.5
+ *
+ * @param TriggerAllAvailableEvents
+ * @desc Si true, le jeu pourra déclencher plusieurs événements quand vous appuyez sur une touche s'il y a plus d'un événement en face de vous.
+ * @default false
+ *
+ * @param TriggerTouchEventsAfterTeleport
+ * @desc Voir la section Aide du plugin pour les explications détaillées.
+ * @default false
+ *
+ * @param BlockRepeatedTouchEvents
+ * @desc Si false, tout événement activé par l'appui d'une touche sera activé après chaque pas que le personnage fera sur le tile de l'événement.
+ * @default true
+ *
+ * @param IgnoreEmptyEvents
+ * @desc Si true, le jeu n'essaiera pas de déclencher les événements qui n'ont pas de commandes.
+ * @default true
+ *
+ * @param DisablePixelMovementForMouseRoutes
+ * @desc ATTENTION ! Lire attentivement la section Aide avant de désactiver cette option (désactiver = false).
+ * @default true
+ *
+ * @author Hudell
+ *
+ *
+ * @help
+ * ============================================================================
+ * Dernière version
+ * ============================================================================
+ * Récupérez la dernière version du plugin sur :
+ * http://link.hudell.com/super-orange-movement
+ * 
+ * ============================================================================
+ * Explications détaillées des paramètres
+ * ============================================================================
+ * 
+ * TriggerTouchEventsAfterTeleport : 
+ * Si vous utilisez le mouvement au pixel près et que vous téléportez le personnage
+ * sur un tile contenant un événement activé par appui sur une touche,
+ * cet événement sera déclenché au premier pas que le personnage fera.
+ * Si vous voulez que le plugin autorise cela, changez ceci pour true.
+ *
+ *
+ * DisablePixelMovementForMouseRoutes :
+ * Si true, le mouvement au pixel près sera désactivé quand
+ * vous assignerez une route prédéfinie au peersonnage.
+ * ATTENTION :
+ * En revanche, si vous changez ceci pour false, le personnage
+ * pourra resté bloqué quand il sera contrôlé à la souris.
  * 
  *=============================================================================*/
 
