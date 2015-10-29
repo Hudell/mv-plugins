@@ -2,7 +2,7 @@
  * Orange - Fixed Picture HUD
  * By HUDell - www.hudell.com
  * OrangeHudFixedPicture.js
- * Version: 1.3
+ * Version: 1.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -77,5 +77,5 @@ if (Imported["OrangeHudFixedPicture"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudFixedPicture', OrangeHudFixedPicture);
-  Imported["OrangeHudFixedPicture"] = true;
+  Imported["OrangeHudFixedPicture"] = 1.4;
 }

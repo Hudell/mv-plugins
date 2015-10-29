@@ -2,7 +2,7 @@
  * Orange - Variable Picture HUD
  * By HUDell - www.hudell.com
  * OrangeHudVariablePicture.js
- * Version: 1.3
+ * Version: 1.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -110,5 +110,5 @@ if (Imported["OrangeHudVariablePicture"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudVariablePicture', OrangeHudVariablePicture);
-  Imported["OrangeHudVariablePicture"] = true;
+  Imported["OrangeHudVariablePicture"] = 1.4;
 }

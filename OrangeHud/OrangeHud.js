@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.3.1
+ * Version: 1.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -61,14 +61,24 @@
  *=============================================================================*/
 var Imported = Imported || {};
 
-if (Imported['MVCommons'] === undefined) {
-  console.log('Download MVCommons: http://link.hudell.com/mvcommons');
-  throw new Error("This library needs MVCommons to work properly!");
-}
-
 var OrangeHud = OrangeHud || {};
 
-var Window_OrangeHud = MVC.extend(Window_Base);
+function Window_OrangeHud() {
+    this.initialize.apply(this, arguments);
+}
+
+Window_OrangeHud.prototype = Object.create(Window_Base.prototype);
+Window_OrangeHud.prototype.constructor = Window_OrangeHud;
+
+if (Imported["MVCommons"] === undefined) {
+  (function($){ 
+    $.getParamList = function(partialPluginName) { var list = []; for (var pluginName in PluginManager._parameters) { if (pluginName.search(partialPluginName.toLowerCase()) >= 0) { list.push(PluginManager._parameters[pluginName]); } } return list; };
+  })(PluginManager);
+
+  if (Utils.isOptionValid('test')) {
+    console.log('MVC not found, OrangeHud will be using essentials (copied from MVC 1.2.1).');
+  }
+}
 
 (function($) {
   "use strict";
@@ -226,8 +236,4 @@ var Window_OrangeHud = MVC.extend(Window_Base);
   };
 })(OrangeHud);
 
-PluginManager.register("OrangeHud", "1.3.1", "Displays a custom HUD on the map", {
-  email: "plugins@hudell.com",
-  name: "HUDell",
-  website: "http://www.hudell.com"
-}, "2015-10-24");
+Imported.OrangeHud = 1.4;

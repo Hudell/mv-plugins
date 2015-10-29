@@ -2,7 +2,7 @@
  * Orange - Clock HUD
  * By HUDell - www.hudell.com
  * OrangeHudClock.js
- * Version: 1.3
+ * Version: 1.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -69,96 +69,96 @@
 var Imported = Imported || {};
 
 if (Imported["OrangeHud"] === undefined) {
-	throw new Error("Please add OrangeHud before OrangeHudClock!");
+  throw new Error("Please add OrangeHud before OrangeHudClock!");
 }
 
 var OrangeHudClock = OrangeHudClock || {};
 
 if (Imported["OrangeHudClock"] === undefined) {
-	OrangeHudClock.validateParams = function(line) {
-		if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
-      line.ScriptPattern = undefined;
+  OrangeHudClock.validateParams = function(line) {
+    if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
+    line.ScriptPattern = undefined;
+  }
+
+  if (line.Pattern === undefined) {
+    line.Pattern = "%1:%2:%3";
+  } else if (line.Pattern.trim() === "") {
+    line.Pattern = "";
+  }
+
+  line.VariableHour = Number(line.VariableHour || 0);
+  line.VariableMinute = Number(line.VariableMinute || 0);
+  line.VariableSecond = Number(line.VariableSecond || 0);
+
+  if (line.FontFace === undefined || line.FontFace.trim() === "") {
+    line.FontFace = OrangeHud.Param.DefaultFontFace;
+  }
+
+  if (line.FontColor === undefined || line.FontColor.trim() === "") {
+    line.FontColor = OrangeHud.Param.DefaultFontColor;
+  }
+
+  line.FontSize = Number(line.FontSize || OrangeHud.Param.DefaultFontSize);
+  line.X = Number(line.X || 0);
+  line.Y = Number(line.Y || 0);
+
+  if (line.FontItalic === undefined || line.FontItalic.trim() === "") {
+    line.FontItalic = OrangeHud.Param.DefaultFontItalic;
+  } else {
+    line.FontItalic = line.FontItalic == "true";
+  }
+
+  line.SwitchId = Number(line.SwitchId || 0);
+  };
+
+  OrangeHudClock.drawLine = function(window, variableData) {
+    if (variableData.SwitchId > 0) {
+    if (!$gameSwitches.value(variableData.SwitchId)) {
+    return;
     }
+  }
 
-    if (line.Pattern === undefined) {
-      line.Pattern = "%1:%2:%3";
-    } else if (line.Pattern.trim() === "") {
-      line.Pattern = "";
-    }
+  var line = this.getValue(variableData);
 
-    line.VariableHour = Number(line.VariableHour || 0);
-    line.VariableMinute = Number(line.VariableMinute || 0);
-    line.VariableSecond = Number(line.VariableSecond || 0);
+  window.contents.fontFace = variableData.FontFace;
+  window.contents.fontSize = variableData.FontSize;
+  window.contents.fontItalic = variableData.FontItalic;
+  window.changeTextColor(variableData.FontColor);
 
-    if (line.FontFace === undefined || line.FontFace.trim() === "") {
-      line.FontFace = OrangeHud.Param.DefaultFontFace;
-    }
+  window.drawTextEx(line, variableData.X, variableData.Y);
 
-    if (line.FontColor === undefined || line.FontColor.trim() === "") {
-      line.FontColor = OrangeHud.Param.DefaultFontColor;
-    }
+  window.resetFontSettings();
+  };
 
-    line.FontSize = Number(line.FontSize || OrangeHud.Param.DefaultFontSize);
-    line.X = Number(line.X || 0);
-    line.Y = Number(line.Y || 0);
+  OrangeHudClock.getValue = function(variableData) {
+  var pattern = variableData.Pattern;
+  if (variableData.ScriptPattern !== undefined) {
+    pattern = Function("return " + variableData.ScriptPattern)();
+  }
 
-    if (line.FontItalic === undefined || line.FontItalic.trim() === "") {
-      line.FontItalic = OrangeHud.Param.DefaultFontItalic;
-    } else {
-      line.FontItalic = line.FontItalic == "true";
-    }
+  var hour = '';
+  var minute = '';
+  var second = '';
 
-    line.SwitchId = Number(line.SwitchId || 0);
-	};
+  if (variableData.VariableHour > 0) {
+    hour = Number($gameVariables.value(variableData.VariableHour)).padZero(2);
+  }
 
-	OrangeHudClock.drawLine = function(window, variableData) {
-		if (variableData.SwitchId > 0) {
-      if (!$gameSwitches.value(variableData.SwitchId)) {
-        return;
-      }
-    }
+  if (variableData.VariableMinute > 0) {
+    minute = Number($gameVariables.value(variableData.VariableMinute)).padZero(2);
+  }
 
-    var line = this.getValue(variableData);
+  if (variableData.VariableSecond > 0) {
+    second = Number($gameVariables.value(variableData.VariableSecond)).padZero(2);
+  }
 
-    window.contents.fontFace = variableData.FontFace;
-    window.contents.fontSize = variableData.FontSize;
-    window.contents.fontItalic = variableData.FontItalic;
-    window.changeTextColor(variableData.FontColor);
+  return pattern.format(hour, minute, second);
+  };
 
-    window.drawTextEx(line, variableData.X, variableData.Y);
+  OrangeHudClock.getKey = function(variableData) {
+    return variableData.VariableHour + ',' + variableData.VariableMinute + ',' + variableData.VariableSecond;
+  };
 
-    window.resetFontSettings();
-	};
-
-	OrangeHudClock.getValue = function(variableData) {
-    var pattern = variableData.Pattern;
-    if (variableData.ScriptPattern !== undefined) {
-      pattern = Function("return " + variableData.ScriptPattern)();
-    }
-
-    var hour = '';
-    var minute = '';
-    var second = '';
-
-    if (variableData.VariableHour > 0) {
-    	hour = Number($gameVariables.value(variableData.VariableHour)).padZero(2);
-    }
-
-    if (variableData.VariableMinute > 0) {
-    	minute = Number($gameVariables.value(variableData.VariableMinute)).padZero(2);
-    }
-
-    if (variableData.VariableSecond > 0) {
-    	second = Number($gameVariables.value(variableData.VariableSecond)).padZero(2);
-    }
-
-    return pattern.format(hour, minute, second);
-	};
-
-	OrangeHudClock.getKey = function(variableData) {
-		return variableData.VariableHour + ',' + variableData.VariableMinute + ',' + variableData.VariableSecond;
-	};
-
-	OrangeHud.registerLineType('OrangeHudClock', OrangeHudClock);
-	Imported["OrangeHudClock"] = true;
+  OrangeHud.registerLineType('OrangeHudClock', OrangeHudClock);
+  Imported["OrangeHudClock"] = true;
 }
