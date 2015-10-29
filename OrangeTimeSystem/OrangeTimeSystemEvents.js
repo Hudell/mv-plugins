@@ -2,10 +2,9 @@
  * Orange - Time System Events
  * By Hudell - www.hudell.com
  * OrangeTimeSystemEvents.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
- *=============================================================================*/
- /*:
+ *=============================================================================
  * @plugindesc Allow you to configure common events to be called when the time system changes
  *             
  * @author Hudell
@@ -44,21 +43,16 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on
- * http://link.hudell.com/time-system-events
+ * Get the latest version of this script on http://link.hudell.com/time-system-events
  * 
  *=============================================================================*/
 var Imported = Imported || {};
 
-if (Imported['MVCommons'] === undefined) {
-  console.log('Download MVCommons: http://link.hudell.com/mvcommons');
-  throw new Error("This library needs MVCommons to work properly!");
-}
-
-if (PluginManager.version('OrangeTimeSystem', '>=', '1.0') === false) {
-  console.log('Download MVCommons: http://link.hudell.com/time-system');
+if (Imported["OrangeTimeSystem"] === undefined) {
+  console.log('Download OrangeTimeSystem: http://link.hudell.com/time-system');
   throw new Error("This library requires the OrangeTimeSystem!");
 }
+
 var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEventManager);
 
 (function($) {
@@ -124,10 +118,7 @@ var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEv
   OrangeTimeSystem.on('changeMinute', $.onChangeMinute);
   OrangeTimeSystem.on('changeSecond', $.onChangeSecond);
   OrangeTimeSystem.on('changeDayPeriod', $.onChangeDayPeriod);
+
 })(OrangeTimeSystemEvents);
 
-PluginManager.register("OrangeTimeSystemEvents", "1.0.0", "Allow you to configure common events to be called when the time system changes", {
-  email: "plugins@hudell.com",
-  name: "Hudell",
-  website: "http://www.hudell.com"
-}, "2015-10-22");
+Imported["OrangeTimeSystemEvents"] = 1.1;

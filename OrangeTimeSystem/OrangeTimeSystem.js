@@ -596,12 +596,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-if (Imported['MVCommons'] === undefined) {
-  Imported.OrangeTimeSystem = true;
-} else {
-  PluginManager.register("OrangeTimeSystem", "1.3", "Adds a time system to your game", {
-    email: "plugins@hudell.com",
-    name: "Hudell",
-    website: "http://www.hudell.com"
-  }, "2015-10-21");  
-}
+Imported.OrangeTimeSystem = 1.3;
