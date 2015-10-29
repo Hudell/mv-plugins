@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.2.1
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -61,6 +61,10 @@
  * @desc The Number of the Switch used to activate the flow of time
  * @default 0
  *
+ * @param pauseClockDuringConversations
+ * @desc If true, it will stop the flow of time while messages are being displayed on screen.
+ * @default true
+ *
  * @help
  * ============================================================================
  * Introduction and Instructions
@@ -80,12 +84,29 @@
 var Imported = Imported || {};
 
 if (Imported['MVCommons'] === undefined) {
-  console.log('Download MVCommons: http://link.hudell.com/mvcommons');
-  throw new Error("This library needs MVCommons to work properly!");
+  var MVC = {};
+
+  (function($){ 
+    $.isArray = function(obj) { return Object.prototype.toString.apply(obj) === '[object Array]'; };
+    $.shallowClone = function(obj) { var result; if ($.isArray(obj)) { return obj.slice(0); } else if (obj && !obj.prototype && (typeof obj == 'object' || obj instanceof Object)) { result = {}; for (var p in obj) { result[p] = obj[p]; } return result; } return obj;  };
+    $.defaultGetter = function(name) { return function () { return this['_' + name]; }; };
+    $.defaultSetter = function(name) { return function (value) { var prop = '_' + name; if ((!this[prop]) || this[prop] !== value) { this[prop] = value; if (this._refresh) { this._refresh(); } } }; };
+    $.accessor = function(value, name /* , setter, getter */) { Object.defineProperty(value, name, { get: arguments.length > 3 ? arguments[3] : $.defaultGetter(name), set: arguments.length > 2 ? arguments[2] : $.defaultSetter(name), configurable: true });};
+  })(MVC);
+
+  if (Utils.isOptionValid('test')) {
+    console.log('MVC not found, OrangeTimeSystem will be using essentials (copied from MVC 1.2.1).');
+  }
 }
+
 if (Imported['OrangeEventManager'] === undefined) {
-  console.log('Download MVCommons: http://link.hudell.com/event-manager');
-  throw new Error("This library needs OrangeEventManager to work properly!");
+  var OrangeEventManager = {};
+  (function($) { "use strict"; $._events = [];  $.on = function(eventName, callback) {    if (this._events[eventName] === undefined) this._events[eventName] = [];    this._events[eventName].push(callback);  };  $.un = function(eventName, callback) {    if (this._events[eventName] === undefined) return;    for (var i = 0; i < this._events[eventName].length; i++) {      if (this._events[eventName][i] == callback) {        this._events[eventName][i] = undefined;        return;      }    }  };  $.executeCallback = function(callback) {    if (typeof(callback) == "function") {      return callback.call(this);    }    if (typeof(callback) == "number") {      $gameTemp.reserveCommonEvent(callback);      return true;    }    if (typeof(callback) == "string") {      if (parseInt(callback, 10) == callback.trim()) {        $gameTemp.reserveCommonEvent(parseInt(callback, 10));        return true;      }      return eval(callback);    }        console.error("Unknown callback type: ", callback);    return undefined;  };  $.runEvent = function(eventName) {    if (this._events[eventName] === undefined) return;    for (var i = 0; i < this._events[eventName].length; i++) {      var callback = this._events[eventName][i];      if (this.executeCallback(callback) === false) {        break;      }    }  };})(OrangeEventManager);
+  Imported["OrangeEventManager"] = 1;
+
+  if (Utils.isOptionValid('test')) {
+    console.log('No OrangeEventManager plugin not found, OrangeTimeSystem will be using it\'s internal copy of version 1.0.');
+  }
 }
 
 var OrangeTimeSystem = OrangeTimeSystem || MVC.shallowClone(OrangeEventManager);
@@ -121,6 +142,8 @@ var DayPeriods = {
   $.Param.dayPeriod2Hour = Number($.Parameters['dayPeriod2Hour'] || 9);
   $.Param.dayPeriod3Hour = Number($.Parameters['dayPeriod3Hour'] || 18);
   $.Param.dayPeriod4Hour = Number($.Parameters['dayPeriod4Hour'] || 20);
+
+  $.Param.pauseClockDuringConversations = $.Parameters["pauseClockDuringConversations"] !== "false";
 
   var switchId = parseInt($.Parameters['mainSwitchId'], 10);
 
@@ -407,8 +430,19 @@ var DayPeriods = {
     $.runTimeChangeEvents(oldData);
   };
 
+  $.isInternallyPaused = function() {
+    if ($.Param.pauseClockDuringConversations === true) {
+      if ($gameMessage.isBusy()) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   $.progressTime = function() {
     if (this.paused) return;
+    if (this.isInternallyPaused()) return;
 
     if ($.Param.useRealTime) {
       $.loadRealTime();
@@ -562,8 +596,12 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-PluginManager.register("OrangeTimeSystem", "1.2.1", "Adds a time system to your game", {
-  email: "plugins@hudell.com",
-  name: "Hudell",
-  website: "http://www.hudell.com"
-}, "2015-10-21");
+if (Imported['MVCommons'] === undefined) {
+  Imported.OrangeTimeSystem = true;
+} else {
+  PluginManager.register("OrangeTimeSystem", "1.3", "Adds a time system to your game", {
+    email: "plugins@hudell.com",
+    name: "Hudell",
+    website: "http://www.hudell.com"
+  }, "2015-10-21");  
+}
