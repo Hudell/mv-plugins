@@ -2,7 +2,7 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovement.js
- * Version: 1.1
+ * Version: 1.1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -1216,6 +1216,25 @@ var Direction = {
     }
   };
 
+  // alias the updateNonmoving method from the Game_Player class to check
+  // if there's any event to trigger
+  var oldGamePlayer_updateNonmoving = Game_Player.prototype.updateNonmoving;
+  Game_Player.prototype.updateNonmoving = function(wasMoving) {
+    oldGamePlayer_updateNonmoving.call(this, wasMoving);
+
+    // If the player was moving or it's pressing an arrow key
+    if (wasMoving || Input.dir4 !== 0) {
+      // Doesn't trigger anything if there's already something running
+      if (!$gameMap.isEventRunning()) {
+        this.checkEventTriggerThere([1, 2]);
+
+        // Setups the starting event if there's any.
+        if ($gameMap.setupStartingEvent()) {
+          return;
+        }
+      }
+    }
+  };
   // Replaces checkEventTriggerThere to work with pixel movement
   Game_Player.prototype.checkEventTriggerThere = function(triggers) {
     if (this.canStartLocalEvents()) {
@@ -1329,7 +1348,7 @@ var Direction = {
   }
 })(SuperOrangeMovement);
 
-PluginManager.register("SuperOrangeMovement", "1.1", "Movement Improvements (Diagonal Movement and Pixel Movement with several settings), ", {
+PluginManager.register("SuperOrangeMovement", "1.1.1", "Movement Improvements (Diagonal Movement and Pixel Movement with several settings), ", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
