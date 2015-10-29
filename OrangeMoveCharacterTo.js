@@ -28,6 +28,12 @@
  * ORANGEMOVETO 0 15 20 left
  * or
  * this.setDestination(15, 20, 4);
+ #
+ # Direction numbers are (RPG Maker default):
+ #  left = 4
+ #  right = 6
+ #  top = 8
+ #  down = 2
  * 
  * ============================================================================
  * Latest Version
