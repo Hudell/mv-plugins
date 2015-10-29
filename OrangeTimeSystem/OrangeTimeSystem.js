@@ -105,7 +105,7 @@ if (Imported['OrangeEventManager'] === undefined) {
   Imported["OrangeEventManager"] = 1;
 
   if (Utils.isOptionValid('test')) {
-    console.log('No OrangeEventManager plugin not found, OrangeTimeSystem will be using it\'s internal copy of version 1.0.');
+    console.log('No OrangeEventManager plugin found, OrangeTimeSystem will be using it\'s internal copy of version 1.0.');
   }
 }
 
