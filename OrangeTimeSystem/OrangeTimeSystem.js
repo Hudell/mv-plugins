@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.3
+ * Version: 1.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -94,6 +94,9 @@ if (Imported['MVCommons'] === undefined) {
     $.accessor = function(value, name /* , setter, getter */) { Object.defineProperty(value, name, { get: arguments.length > 3 ? arguments[3] : $.defaultGetter(name), set: arguments.length > 2 ? arguments[2] : $.defaultSetter(name), configurable: true });};
   })(MVC);
 
+  Number.prototype.fix = function() { return parseFloat(this.toPrecision(12)); };
+  Number.prototype.floor = function() { return Math.floor(this.fix()); };
+
   if (Utils.isOptionValid('test')) {
     console.log('MVC not found, OrangeTimeSystem will be using essentials (copied from MVC 1.2.1).');
   }
@@ -101,11 +104,11 @@ if (Imported['MVCommons'] === undefined) {
 
 if (Imported['OrangeEventManager'] === undefined) {
   var OrangeEventManager = {};
-  (function($) { "use strict"; $._events = [];  $.on = function(eventName, callback) {    if (this._events[eventName] === undefined) this._events[eventName] = [];    this._events[eventName].push(callback);  };  $.un = function(eventName, callback) {    if (this._events[eventName] === undefined) return;    for (var i = 0; i < this._events[eventName].length; i++) {      if (this._events[eventName][i] == callback) {        this._events[eventName][i] = undefined;        return;      }    }  };  $.executeCallback = function(callback) {    if (typeof(callback) == "function") {      return callback.call(this);    }    if (typeof(callback) == "number") {      $gameTemp.reserveCommonEvent(callback);      return true;    }    if (typeof(callback) == "string") {      if (parseInt(callback, 10) == callback.trim()) {        $gameTemp.reserveCommonEvent(parseInt(callback, 10));        return true;      }      return eval(callback);    }        console.error("Unknown callback type: ", callback);    return undefined;  };  $.runEvent = function(eventName) {    if (this._events[eventName] === undefined) return;    for (var i = 0; i < this._events[eventName].length; i++) {      var callback = this._events[eventName][i];      if (this.executeCallback(callback) === false) {        break;      }    }  };})(OrangeEventManager);
+  (function($) { "use strict"; $._events = [];  $.on = function(eventName, callback) { if (this._events[eventName] === undefined) this._events[eventName] = []; this._events[eventName].push(callback);  };  $.un = function(eventName, callback) { if (this._events[eventName] === undefined) return; for (var i = 0; i < this._events[eventName].length; i++) { if (this._events[eventName][i] == callback) { this._events[eventName][i] = undefined; return;  }  } };  $.executeCallback = function(callback) { if (typeof(callback) == "function") { return callback.call(this); } if (typeof(callback) == "number") { $gameTemp.reserveCommonEvent(callback); return true; } if (typeof(callback) == "string") { if (parseInt(callback, 10) == callback.trim()) { $gameTemp.reserveCommonEvent(parseInt(callback, 10)); return true; } return eval(callback); } console.error("Unknown callback type: ", callback); return undefined; }; $.runEvent = function(eventName) { if (this._events[eventName] === undefined) return; for (var i = 0; i < this._events[eventName].length; i++) { var callback = this._events[eventName][i]; if (this.executeCallback(callback) === false) { break; } } };})(OrangeEventManager);
   Imported["OrangeEventManager"] = 1;
 
   if (Utils.isOptionValid('test')) {
-    console.log('No OrangeEventManager plugin found, OrangeTimeSystem will be using it\'s internal copy of version 1.0.');
+    console.log('OrangeTimeSystem will be using it\'s internal copy of OrangeEventManager 1.0.');
   }
 }
 
@@ -183,6 +186,7 @@ var DayPeriods = {
   });
 
   $._timeEvents = [];
+  $._afterTimeEvents = [];
   $.seconds = 0;
   $.minute = 0;
   $.hour = 0;
@@ -222,35 +226,166 @@ var DayPeriods = {
     }
   };
 
+  $.convertConfigToTimestamp = function(config) {
+    var years = config.year;
+    var months = config.month;
+    var days = config.day;
+    var hours = config.hour;
+    var minutes = config.minute;
+    var seconds = config.seconds;
+
+    if ($.Param.useRealTime) {
+      var dateObj = new Date();
+      dateObj.setFullYear(years);
+      dateObj.setMonth(months - 1);
+      dateObj.setDate(days);
+      dateObj.setHours(hours);
+      dateObj.setMinutes(minutes);
+      dateObj.setSeconds(seconds);
+
+      return dateObj.getTime();
+    } else {
+      years -= 1;
+      if (years > 0) {
+        months += years * $.Param.yearLength;
+      }
+
+      months -= 1;
+      if (months > 0) {
+        days += months * $.Param.monthLength;
+      }
+
+      days -= 1;
+      if (days > 0) {
+        hours += days * $.Param.dayLength;
+      }
+
+      if (hours > 0) {
+        minutes += hours * $.Param.hourLength;
+      }
+
+      if (minutes > 0) {
+        seconds += minutes * $.Param.minuteLength;
+      }
+
+      return seconds;
+    }
+  };
+
+  $.convertTimestampToConfig = function(timestamp) {
+    if ($.Param.useRealTime) {
+      var dateObj = new Date(timestamp);
+
+      return {
+        seconds : dateObj.getSeconds(),
+        minute : dateObj.getMinutes(),
+        hour : dateObj.getHours(),
+        day : dateObj.getDate(),
+        month : dateObj.getMonth() + 1,
+        year : dateObj.getFullYear()
+      };
+    } else {
+      var seconds = timestamp;
+      var minutes = 0;
+      var hours = 0;
+      var days = 0;
+      var months = 0;
+      var years = 0;
+
+      minutes = (seconds / $.Param.minuteLength).floor();
+      seconds -= (minutes * $.Param.minuteLength);
+
+      hours = (minutes / $.Param.hourLength).floor();
+      minutes -= (hours * $.Param.hourLength);
+
+      days = (hours / $.Param.dayLength).floor();
+      hours -= (days * $.Param.dayLength);
+
+      months = (days / $.Param.monthLength).floor();
+      days -= (months * $.Param.monthLength);
+
+      years = (months / $.Param.yearLength).floor();
+      months -= (years * $.Param.yearLength);
+
+      return {
+        seconds : seconds,
+        minute : minutes,
+        hour : hours,
+        day : days + 1,
+        month : months + 1,
+        year : years + 1
+      };
+    }
+  };
+
+  // Returns the difference in number of seconds
+  $.compareTimestamps = function(timestamp1, timestamp2) {
+    if (typeof timestamp1 == "object") {
+      timestamp1 = $.convertConfigToTimestamp(timestamp1);
+    }
+
+    if (typeof timestamp2 == "object") {
+      timestamp2 = $.convertConfigToTimestamp(timestamp2);
+    }
+
+    var diff = timestamp2 - timestamp1;
+
+    if ($.Param.useRealTime) {
+      return (diff / 1000).floor();
+    } else {
+      return diff;
+    }
+  };
+
+  $.validateDateTimeValues = function(date) {
+    while (date.seconds >= $.Param.minuteLength) {
+      date.minute += 1;
+      date.seconds -= $.Param.minuteLength;
+    }
+
+    while (date.minute >= $.Param.hourLength) {
+      date.hour += 1;
+      date.minute -= $.Param.hourLength;
+    }
+
+    while (date.hour >= $.Param.dayLength) {
+      date.day += 1;
+      date.hour -= $.Param.dayLength;
+    }
+
+    while (date.day > $.Param.monthLength) {
+      date.month += 1;
+      date.day -= $.Param.monthLength;
+    }
+
+    while (date.month > $.Param.yearLength) {
+      date.year += 1;
+      date.month -= $.Param.yearLength;
+    }
+  };
+
   $.updateTime = function(runEvents) {
     if (runEvents === undefined) runEvents = true;
 
     var oldData = $.getDateTime();
 
-    while (this.seconds >= $.Param.minuteLength) {
-      this.minute += 1;
-      this.seconds -= $.Param.minuteLength;
-    }
+    var date = {
+      seconds : this.seconds,
+      minute : this.minute,
+      hour : this.hour,
+      day : this.day,
+      month : this.month,
+      year : this.year
+    };
 
-    while (this.minute >= $.Param.hourLength) {
-      this.hour += 1;
-      this.minute -= $.Param.hourLength;
-    }
+    this.validateDateTimeValues(date);
 
-    while (this.hour >= $.Param.dayLength) {
-      this.day += 1;
-      this.hour -= $.Param.dayLength;
-    }
-
-    while (this.day > $.Param.monthLength) {
-      this.month += 1;
-      this.day -= $.Param.monthLength;
-    }
-
-    while (this.month > $.Param.yearLength) {
-      this.year += 1;
-      this.month -= $.Param.yearLength;
-    }
+    this.seconds = date.seconds;
+    this.minute = date.minute;
+    this.hour = date.hour;
+    this.day = date.day;
+    this.month = date.month;
+    this.year = date.year;
 
     this.updateDayPeriod();
 
@@ -268,19 +403,23 @@ var DayPeriods = {
     this._onUpdateTime();
   };
 
-  $.updateDayPeriod = function() {
+  $.updateDayPeriodForDate = function(date) {
     // Calculate day period
-    if (this.hour < $.Param.dayPeriod1Hour) {
-      this.dayPeriod = 4;
-    } else if (this.hour < $.Param.dayPeriod2Hour) {
-      this.dayPeriod = 1;
-    } else if (this.hour < $.Param.dayPeriod3Hour) {
-      this.dayPeriod = 2;
-    } else if (this.hour < $.Param.dayPeriod4Hour) {
-      this.dayPeriod = 3;
+    if (date.hour < $.Param.dayPeriod1Hour) {
+      date.dayPeriod = 4;
+    } else if (date.hour < $.Param.dayPeriod2Hour) {
+      date.dayPeriod = 1;
+    } else if (date.hour < $.Param.dayPeriod3Hour) {
+      date.dayPeriod = 2;
+    } else if (date.hour < $.Param.dayPeriod4Hour) {
+      date.dayPeriod = 3;
     } else {
-      this.dayPeriod = 4;
+      date.dayPeriod = 4;
     }
+  };
+
+  $.updateDayPeriod = function() {
+    this.updateDayPeriodForDate(this);
   };
 
   $.isEarlyMorning = function() {
@@ -483,33 +622,34 @@ var DayPeriods = {
   };
 
   $.onTime = function(callback, hour, minute, second) {
-    return this.registerTimeEvent({
-      hour: hour,
-      minute: minute,
-      second: second,
-      callback: callback
-    });
+    return this.onDateTime(callback, 0, 0, 0, hour, minute, second, after);
   };
 
   $.onDate = function(callback, day, month, year) {
-    return this.registerTimeEvent({
-      day: day,
-      month: month,
-      year: year,
-      callback: callback
-    });
+    return this.onDateTime(callback, day, month, year, 0, 0, 0, after);
   };
 
-  $.onDateTime = function(callback, day, month, year, hour, minute, second) {
-    return this.registerTimeEvent({
+  $.onDateTime = function(callback, day, month, year, hour, minute, second, after, autoRemove) {
+    var config = {
       day: day,
       month: month,
       year: year,
       hour: hour,
       minute: minute,
       second: second,
-      callback: callback
-    });
+      callback: callback,
+      autoRemove : autoRemove
+    };
+
+    if (autoRemove === undefined) {
+      autoRemove = false;
+    }
+
+    if (after === true) {
+      return $.registerAfterTimeEvent(config);
+    } else {
+      return $.registerTimeEvent(config);
+    }
   };
 
   $.onWeekDay = function(callback, weekDay) {
@@ -524,14 +664,82 @@ var DayPeriods = {
   $.atDateTime = $.onDateTime;
   $.atWeekDay = $.onWeekDay;
 
+  $.registerAfterTimeEvent = function(config) {
+    this._afterTimeEvents.push(config);
+    return this._afterTimeEvents.indexOf(config);
+  };
+
+  $.runInDateTime = function(callback, years, months, days, hours, minutes, seconds, after, autoRemove) {
+    var newDate = $.getDateTime();
+
+    newDate.year += Number(years || 0);
+    newDate.month += Number(months || 0);
+    newDate.day += Number(days || 0);
+    newDate.hour += Number(hours || 0);
+    newDate.minute += Number(minutes ||0);
+    newDate.seconds += Number(seconds || 0);
+
+    this.validateDateTimeValues(newDate);
+
+    if (autoRemove === undefined) {
+      autoRemove = true;
+    }
+
+    var config = {
+      callback : callback,
+      year : newDate.year,
+      month : newDate.month,
+      day : newDate.day,
+      hour : newDate.hour,
+      minute : newDate.minute,
+      seconds : newDate.seconds,
+      autoRemove : autoRemove
+    };
+
+    if (after === false) {
+      $.registerTimeEvent(config);
+    } else {
+      $.registerAfterTimeEvent(config);
+    }
+  };
+
+  $.runInHours = function(callback, hours, minutes, seconds) {
+    return $.runInDateTime(callback, 0, 0, 0, hours, minutes, seconds);
+  };
+
+  $.runInDays = function(callback, days) {
+    return $.runInDateTime(callback, 0, 0, days);
+  };
+
+  $.runInMonths = function(callback, months) {
+    return $.runInDateTime(callback, 0, months);
+  };
+
+  $.runInYears = function(callback, years) {
+    return $.runInDateTime(callback, years);
+  };
+
+  $.runInMinutes = function(callback, minutes) {
+    return $.runInHours(callback, 0, minutes);
+  };
+
+  $.runInSeconds = function(callback, seconds) {
+    return $.runInHours(callback, 0, 0, seconds);
+  };
+
   $.registerTimeEvent = function(config) {
     this._timeEvents.push(config);
     return this._timeEvents.indexOf(config);
   };
 
-  $._onUpdateTime = function() {
-    for (var i = 0; i < this._timeEvents.length; i++) {
-      var config = this._timeEvents[i];
+  $.checkEventsToRun = function(eventList, after) {
+    var config = undefined;
+    var i;
+
+    for (i = 0; i < eventList.length; i++) {
+      config = eventList[i];
+
+      if (config.callback === undefined) continue;
 
       if (config.day !== undefined && config.day != this.day) continue;
       if (config.month !== undefined && config.month != this.month) continue;
@@ -542,7 +750,42 @@ var DayPeriods = {
       if (config.weekDay !== undefined && config.weekDay != this.weekDay) continue;
 
       this.executeCallback(config.callback);
+      if (config.autoRemove === true) {
+        config.callback = undefined;
+      }
     }
+
+    if (!after) return;
+
+    for (i = 0; i < eventList.length; i++) {
+      config = eventList[i];
+
+      if (config.callback === undefined) continue;
+
+      if (config.year !== undefined && config.year > this.year) continue;
+      if (config.month !== undefined && config.month > this.month) continue;
+      if (config.day !== undefined && config.day > this.day) continue;
+      if (config.hour !== undefined && config.hour > this.hour) continue;
+      if (config.minute !== undefined && config.minute > this.minute) continue;
+      if (config.second !== undefined && config.second > this.second) continue;
+
+      this.executeCallback(config.callback);
+      if (config.autoRemove === true) {
+        config.callback = undefined;
+      }
+    }
+  };
+
+  $.checkIfConfigHasCallback = function(config) {
+    return config.callback !== undefined;
+  };
+
+  $._onUpdateTime = function() {
+    $.checkEventsToRun(this._timeEvents, false);
+    $.checkEventsToRun(this._afterTimeEvents, true);
+
+    this._timeEvents = this._timeEvents.filter($.checkIfConfigHasCallback);
+    this._afterTimeEvents = this._afterTimeEvents.filter($.checkIfConfigHasCallback);
   };
 
   $.getDateTime = function() {
@@ -576,11 +819,24 @@ var DayPeriods = {
     }
   };
 
+  $.getCallbacks = function() {
+    var callbackList = [];
+
+
+    return callbackList;
+  };
+
+  $.setCallbacks = function() {
+
+  };
+
   var oldDataManager_makeSaveContents = DataManager.makeSaveContents;
   DataManager.makeSaveContents = function() {
     var contents = oldDataManager_makeSaveContents.call(this);
 
     contents.orangeDateTime = $.getDateTime();
+    contents.orangeTimeSystemCallbacks = $.getCallbacks();
+
     return contents;
   };
 
@@ -591,9 +847,13 @@ var DayPeriods = {
     if (contents.orangeDateTime !== undefined) {
       $.setDateTime(contents.orangeDateTime);
     }
+
+    if (contents.orangeTimeSystemCallbacks !== undefined) {
+      $.setCallbacks(contents.orangeTimeSystemCallbacks);
+    }
   };
 
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 1.3;
+Imported.OrangeTimeSystem = 1.4;
