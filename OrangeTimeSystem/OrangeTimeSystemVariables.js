@@ -4,11 +4,11 @@
  * OrangeTimeSystemVariables.js
  * Version: 1.1
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+/*:
  * @plugindesc Exports Orange Time System data to variables
  *             
  * @author Hudell
- *=============================================================================
  *
  * @param secondVariable
  * @desc The number of the variable where you want to store the seconds
@@ -42,12 +42,14 @@
  * @desc The number of the variable where you want to store the day period
  * @default 0
  *
+ *
  * @help
  * ============================================================================
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/time-system-variables
+ * Get the latest version of this script on
+ * http://link.hudell.com/time-system-variables
  * 
  *=============================================================================*/
 
