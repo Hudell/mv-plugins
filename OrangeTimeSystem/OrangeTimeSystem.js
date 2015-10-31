@@ -432,8 +432,10 @@ var DayPeriods = {
 
   $.isInternallyPaused = function() {
     if ($.Param.pauseClockDuringConversations === true) {
-      if ($gameMessage.isBusy()) {
-        return true;
+      if (SceneManager._scene instanceof Scene_Map) {
+        if ($gameMessage.isBusy()) {
+          return true;
+        }
       }
     }
 

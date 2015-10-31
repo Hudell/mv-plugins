@@ -77,6 +77,8 @@ if (Imported["OrangeTimeSystem"] === undefined) {
   $.Param.dayPeriodVariable = Number($.Parameters['dayPeriodVariable'] || 0);
 
   $.configureVariables = function() {
+    if ($gameVariables === undefined || $gameVariables === null) return;
+    
     if ($.Param.secondVariable !== undefined && $.Param.secondVariable > 0) {
       $gameVariables.setValue($.Param.secondVariable, OrangeTimeSystem.seconds);
     }
