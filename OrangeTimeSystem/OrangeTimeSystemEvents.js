@@ -2,9 +2,10 @@
  * Orange - Time System Events
  * By Hudell - www.hudell.com
  * OrangeTimeSystemEvents.js
- * Version: 1.1
+ * Version: 1.0
  * Free for commercial and non commercial use.
- *=============================================================================
+ *=============================================================================*/
+/*:
  * @plugindesc Allow you to configure common events to be called when the time system changes
  *             
  * @author Hudell
@@ -43,7 +44,8 @@
  * Latest Version
  * ============================================================================
  * 
- * Get the latest version of this script on http://link.hudell.com/time-system-events
+ * Get the latest version of this script on
+ * http://link.hudell.com/time-system-events
  * 
  *=============================================================================*/
 var Imported = Imported || {};

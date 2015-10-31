@@ -2,7 +2,7 @@
  * Orange - Auto Avoid Obstacles Diagonally
  * By Hudell - www.hudell.com
  * OrangeAutoAvoidObstaclesDiagonally.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -106,14 +106,14 @@ var OrangeAutoAvoidObstaclesDiagonally = OrangeAutoAvoidObstaclesDiagonally || {
       }
     }
 
-    if (this.tryToAvoid(direction)) {
+    if (this.tryToAvoidDigonally(direction)) {
       return true;
     }
 
     return false;
   };
 
-  Game_Player.prototype.tryToAvoid = function(direction) {
+  Game_Player.prototype.tryToAvoidDiagonally = function(direction) {
     if (avoidObstaclesDelay > 0) {
       return false;
     }
@@ -145,7 +145,7 @@ var OrangeAutoAvoidObstaclesDiagonally = OrangeAutoAvoidObstaclesDiagonally || {
 
 })(OrangeAutoAvoidObstaclesDiagonally);
 
-PluginManager.register("OrangeAutoAvoidObstaclesDiagonally", "1.0.0", "Will make the player avoid small obstacles automatically by walking diagonally around them", {
+PluginManager.register("OrangeAutoAvoidObstaclesDiagonally", "1.0.1", "Will make the player avoid small obstacles automatically by walking diagonally around them", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
