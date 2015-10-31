@@ -2,7 +2,7 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovement.js
- * Version: 1.1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -67,6 +67,71 @@
  * ATTENTION:
  * If you turn this to false, the player character may get stuck when
  * controlled with a mouse
+ 
+ * 
+ *=============================================================================*/
+ /*:pt
+ * @plugindesc Melhorias no movimento: Movimentação Diagonal, Movimentação por Pixel, Mudança na caixa de colisão dos personagens.
+ *
+ * @param Tile_Sections
+ * @desc Em quantos pedaços os tiles deverão ser quebrados?
+ * @default 4
+ *
+ * @param Diagonal_Movement
+ * @desc Habilitar movimentação diagonal?
+ * @default true
+ *
+ * @param FollowersDistance
+ * @desc Qual a distância (em tiles) que cada membro do grupo deve manter um do outro?
+ * @default 0.5
+ *
+ * @param TriggerAllAvailableEvents
+ * @desc Se false, o jogo impedirá que mais de um evento seja disparado quando você pressionar Enter na frente de dois eventos
+ * @default false
+ *
+ * @param TriggerTouchEventsAfterTeleport
+ * @desc Clique no botão ajuda do plugin para uma explicação detalhada
+ * @default false
+ *
+ * @param BlockRepeatedTouchEvents
+ * @desc Se false, qualquer evento touch será executado depois de cada passo do jogador. Se true, apenas ao entrar no tile.
+ * @default true
+ *
+ * @param IgnoreEmptyEvents
+ * @desc Se true, o jogo não tentará disparar eventos que não possuem comandos, pulando para o próximo evento disponível
+ * @default true
+ *
+ * @param DisablePixelMovementForMouseRoutes
+ * @desc CUIDADO: Clique no botão ajuda para mais informações sobre este parametro
+ * @default true
+ *
+ * @author Hudell
+ *
+ *
+ * @help
+ * ============================================================================
+ * Última Versão
+ * ============================================================================
+ * Baixe a última versão do script em 
+ * http://link.hudell.com/super-orange-movement
+ * 
+ * ============================================================================
+ * Parametros
+ * ============================================================================
+ * 
+ * TriggerTouchEventsAfterTeleport: 
+ * Se você estiver usando movimentação por pixel e teletransportar o jogador
+ * para um tile onde há um evento touch, o evento será
+ * disparado no primeiro passo que o jogador der.
+ * Se você quer que isso aconteça, mude isto para true.
+ *
+ *
+ * DisablePixelMovementForMouseRoutes:
+ * Se true, a movimentação por pixel será desativada quando você usa uma
+ * rota de movimento ou clica em algum ponto do mapa com o mouse.
+ * ATENÇÃO:
+ * Se você mudar isto para false, o personagem do jogador poderá ficar preso
+ * quando controlado com o mouse.
  
  * 
  *=============================================================================*/
@@ -136,9 +201,26 @@
  *=============================================================================*/
 
 var Imported = Imported || {};
+
 if (Imported['MVCommons'] === undefined) {
-  console.log('Download MVCommons: http://link.hudell.com/mvcommons');
-  throw new Error("This library needs MVCommons to work properly!");
+  var MVC = {};
+
+  (function($){ 
+    $.defaultGetter = function(name) { return function () { return this['_' + name]; }; };
+    $.defaultSetter = function(name) { return function (value) { var prop = '_' + name; if ((!this[prop]) || this[prop] !== value) { this[prop] = value; if (this._refresh) { this._refresh(); } } }; };
+    $.accessor = function(value, name /* , setter, getter */) { Object.defineProperty(value, name, { get: arguments.length > 3 ? arguments[3] : $.defaultGetter(name), set: arguments.length > 2 ? arguments[2] : $.defaultSetter(name), configurable: true });};
+    $.reader = function(obj, name /*, getter */) {Object.defineProperty(obj, name, {get: arguments.length > 2 ? arguments[2] : defaultGetter(name), configurable: true});};
+    $.getProp = function(meta, propName){if (meta === undefined) return undefined;if (meta[propName] !== undefined) return meta[propName];for (var key in meta) {if (key.toLowerCase() == propName.toLowerCase()) {return meta[key];}}return undefined;};
+  })(MVC);
+
+  Number.prototype.fix = function() { return (parseFloat(this.toPrecision(12))); };
+  Number.prototype.floor = function() { return Math.floor(this.fix()); };
+  Number.prototype.ceil = function() { return Math.ceil(this.fix()); };
+  Number.prototype.abs = function() { return Math.abs(this); };
+
+  if (Utils.isOptionValid('test')) {
+    console.log('MVC not found, SuperOrangeMovement will be using essentials (copied from MVC 1.2.1).');
+  }
 }
 
 var SuperOrangeMovement = SuperOrangeMovement || {};
@@ -937,11 +1019,11 @@ var Direction = {
       var destX = $gameTemp.destinationX();
       var destY = $gameTemp.destinationY();
 
-      if ((destX.floor() === x1 || destX.ceil() === x1) && (destY.floor() === y1 || destY.ceil() === y1)) {
+      if ((x1.floor() === destX || x1.ceil() === destX) && (y1.floor() === destY || y1.ceil() === destY)) {
         return this.triggerTouchActionD1(x1, y1);
-      } else if ((destX.floor() === x2 || destX.ceil() === x2) && (destY.floor() === y2 || destY.ceil() === y2)) {
+      } else if ((x2.floor() === destX || x2.ceil() === destX) && (y2.floor() === destY || y2.ceil() === destY)) {
         return this.triggerTouchActionD2(x2, y2);
-      } else if ((destX.floor() === x3 || destX.ceil() === x3) && (destY.floor() === y3 || destY.ceil() === y3)) {
+      } else if ((x3.floor() === destX || x3.ceil() === destX) && (y3.floor() === destY || y3.ceil() === destY)) {
         return this.triggerTouchActionD3(x2, y2);
       }
     }
@@ -1391,7 +1473,6 @@ var Direction = {
     }
   };
 
-
   if ($.Param.BlockRepeatedTouchEvents === true) {
     // Overrides command201 to pick the tile where the player was teleported to and add it to the list of tiles that shouldn't trigger events until the player leaves it.
     var oldGameInterpreter_command201 = Game_Interpreter.prototype.command201;
@@ -1411,8 +1492,4 @@ var Direction = {
   }
 })(SuperOrangeMovement);
 
-PluginManager.register("SuperOrangeMovement", "1.1.1", "Movement Improvements (Diagonal Movement and Pixel Movement with several settings), ", {
-  email: "plugins@hudell.com",
-  name: "Hudell",
-  website: "http://www.hudell.com"
-}, "2015-10-21");
+Imported.SuperOrangeMovement = 1.2;
