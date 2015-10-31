@@ -1,8 +1,8 @@
 /*=============================================================================
  * Orange - Super Movement
  * By Hudell - www.hudell.com
- * SuperOrangeMovement.js
- * Version: 1.2
+ * SuperOrangeMovementEx.js
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -40,6 +40,55 @@
  * @desc CAUTION: Check the plugin help for info on disabling this
  * @default true
  *
+ * @param EnableAutoAvoid
+ * @desc Set this to false to disable the AutoAvoid feature
+ * @default true
+ *
+ * @param AutoAvoid_AvoidEvents
+ * @desc Set this to true if you want the player to avoid events.
+ * @default false
+ *
+ * @param AutoAvoid_OnlyWhenDashing
+ * @desc Set this to true to only avoid obstacles when the player is dashing.
+ * @default false
+ *
+ * @param AutoAvoid_DashingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when dashing. Set this to a number of frames.
+ * @default 0
+ *
+ * @param AutoAvoid_WalkingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when walking. Set this to a number of frames.
+ * @default 0
+ *
+ * @param AutoAvoid_MaxOffset
+ * @desc The max distance (in tiles) that the character is allowed to walk in a different direction to avoid an obstacle. 
+ * @default 0.75
+ *
+ * @param AutoAvoid_RetainDirection
+ * @desc If true, the character won't face the other direction when walking around an object.
+ * @default true
+ *
+ * @param EnableAutoAvoidDiagonal
+ * @desc Set this to false to disable the AutoAvoid diagonally feature
+ * @default true
+ *
+ * @param AvDiagonal_AvoidEvents
+ * @desc Set this to false if you don't want the player to avoid events.
+ * @default true
+ *
+ * @param AvDiagonal_OnlyWhenDashing
+ * @desc Set this to true to only avoid obstacles when the player is dashing.
+ * @default false
+ *
+ * @param AvDiagonal_DashingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when dashing. Set this to a number of frames.
+ * @default 0
+ *
+ * @param AvDiagonal_WalkingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when walking. Set this to a number of frames.
+ * @default 0
+ *
+ *
  * @author Hudell
  *
  *
@@ -70,7 +119,7 @@
  
  * 
  *=============================================================================*/
- /*:pt
+/*:pt
  * @plugindesc Melhorias no movimento: Movimentação Diagonal, Movimentação por Pixel, Mudança na caixa de colisão dos personagens.
  *
  * @param Tile_Sections
@@ -105,6 +154,53 @@
  * @desc CUIDADO: Clique no botão ajuda para mais informações sobre este parametro
  * @default true
  *
+ * @param EnableAutoAvoid
+ * @desc Set this to false to disable the AutoAvoid feature
+ * @default true
+ *
+ * @param AutoAvoid_AvoidEvents
+ * @desc Set this to true if you want the player to avoid events.
+ * @default false
+ *
+ * @param AutoAvoid_OnlyWhenDashing
+ * @desc Set this to true to only avoid obstacles when the player is dashing.
+ * @default false
+ *
+ * @param AutoAvoid_DashingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when dashing. Set this to a number of frames.
+ * @default 0
+ *
+ * @param AutoAvoid_WalkingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when walking. Set this to a number of frames.
+ * @default 0
+ *
+ * @param AutoAvoid_MaxOffset
+ * @desc The max distance (in tiles) that the character is allowed to walk in a different direction to avoid an obstacle. 
+ * @default 0.75
+ *
+ * @param AutoAvoid_RetainDirection
+ * @desc If true, the character won't face the other direction when walking around an object.
+ * @default true
+ *
+ * @param EnableAutoAvoidDiagonal
+ * @desc Set this to false to disable the AutoAvoid diagonally feature
+ * @default true
+ *
+ * @param AvDiagonal_AvoidEvents
+ * @desc Set this to false if you don't want the player to avoid events.
+ * @default true
+ *
+ * @param AvDiagonal_OnlyWhenDashing
+ * @desc Set this to true to only avoid obstacles when the player is dashing.
+ * @default false
+ *
+ * @param AvDiagonal_DashingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when dashing. Set this to a number of frames.
+ * @default 0
+ *
+ * @param AvDiagonal_WalkingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when walking. Set this to a number of frames.
+ * @default 0
  * @author Hudell
  *
  *
@@ -135,7 +231,7 @@
  
  * 
  *=============================================================================*/
- /*:fr
+/*:fr
  * @plugindesc Amélioration des déplacements : déplacement en diagonale, déplacement au pixel près et adaptation de la hitbox du personnage
  *
  * @param Tile_Sections
@@ -170,6 +266,54 @@
  * @desc ATTENTION ! Lire attentivement la section Aide avant de désactiver cette option (désactiver = false).
  * @default true
  *
+ * @param EnableAutoAvoid
+ * @desc Set this to false to disable the AutoAvoid feature
+ * @default true
+ *
+ * @param AutoAvoid_AvoidEvents
+ * @desc Set this to true if you want the player to avoid events.
+ * @default false
+ *
+ * @param AutoAvoid_OnlyWhenDashing
+ * @desc Set this to true to only avoid obstacles when the player is dashing.
+ * @default false
+ *
+ * @param AutoAvoid_DashingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when dashing. Set this to a number of frames.
+ * @default 0
+ *
+ * @param AutoAvoid_WalkingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when walking. Set this to a number of frames.
+ * @default 0
+ *
+ * @param AutoAvoid_MaxOffset
+ * @desc The max distance (in tiles) that the character is allowed to walk in a different direction to avoid an obstacle. 
+ * @default 0.75
+ *
+ * @param AutoAvoid_RetainDirection
+ * @desc If true, the character won't face the other direction when walking around an object.
+ * @default true
+ *
+ * @param EnableAutoAvoidDiagonal
+ * @desc Set this to false to disable the AutoAvoid Diagonally feature
+ * @default true
+ *
+ * @param AvDiagonal_AvoidEvents
+ * @desc Set this to false if you don't want the player to avoid events.
+ * @default true
+ *
+ * @param AvDiagonal_OnlyWhenDashing
+ * @desc Set this to true to only avoid obstacles when the player is dashing.
+ * @default false
+ *
+ * @param AvDiagonal_DashingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when dashing. Set this to a number of frames.
+ * @default 0
+ *
+ * @param AvDiagonal_WalkingDelay
+ * @desc Makes the character wait a little before trying to avoid an obstacle when walking. Set this to a number of frames.
+ * @default 0
+ *
  * @author Hudell
  *
  *
@@ -202,37 +346,37 @@
 
 var Imported = Imported || {};
 
-if (Imported["SuperOrangeMovementEx"]) {
+if (Imported["SuperOrangeMovement"]) {
   if (Utils.isOptionValid('test')) {
-    alert("You've got both SuperOrangeMovement and SuperOrangeMovementEx on the same project. SuperOrangeMovement will be ignored.");
+    alert("You've got both SuperOrangeMovement and SuperOrangeMovementEx on the same project. SuperOrangeMovementEx will be ignored.");
   }
-
-  throw new Error("You've got both SuperOrangeMovement and SuperOrangeMovementEx on the same project. SuperOrangeMovement will be ignored.");
+  
+  throw new Error("You've got both SuperOrangeMovement and SuperOrangeMovementEx on the same project. SuperOrangeMovementEx will be ignored.");
 }
 
 if (Imported['MVCommons'] === undefined) {
   var MVC = {};
 
-  (function($){ 
-    $.defaultGetter = function(name) { return function () { return this['_' + name]; }; };
-    $.defaultSetter = function(name) { return function (value) { var prop = '_' + name; if ((!this[prop]) || this[prop] !== value) { this[prop] = value; if (this._refresh) { this._refresh(); } } }; };
-    $.accessor = function(value, name /* , setter, getter */) { Object.defineProperty(value, name, { get: arguments.length > 3 ? arguments[3] : $.defaultGetter(name), set: arguments.length > 2 ? arguments[2] : $.defaultSetter(name), configurable: true });};
-    $.reader = function(obj, name /*, getter */) {Object.defineProperty(obj, name, {get: arguments.length > 2 ? arguments[2] : defaultGetter(name), configurable: true});};
-    $.getProp = function(meta, propName){if (meta === undefined) return undefined;if (meta[propName] !== undefined) return meta[propName];for (var key in meta) {if (key.toLowerCase() == propName.toLowerCase()) {return meta[key];}}return undefined;};
+  (function($) {
+    $.defaultGetter = function(name) {return function() {return this['_' + name];};};
+    $.defaultSetter = function(name) {return function(value) {var prop = '_' + name;if ((!this[prop]) || this[prop] !== value) {this[prop] = value;if (this._refresh) {this._refresh();}}};};
+    $.accessor = function(value, name /* , setter, getter */ ) {Object.defineProperty(value, name, {get: arguments.length > 3 ? arguments[3] : $.defaultGetter(name),set: arguments.length > 2 ? arguments[2] : $.defaultSetter(name),configurable: true});};
+    $.reader = function(obj, name /*, getter */ ) {Object.defineProperty(obj, name, {get: arguments.length > 2 ? arguments[2] : defaultGetter(name),configurable: true});};
+    $.getProp = function(meta, propName) {if (meta === undefined) return undefined;if (meta[propName] !== undefined) return meta[propName];for (var key in meta) {if (key.toLowerCase() == propName.toLowerCase()) {return meta[key];}}return undefined;};
   })(MVC);
 
-  Number.prototype.fix = function() { return (parseFloat(this.toPrecision(12))); };
-  Number.prototype.floor = function() { return Math.floor(this.fix()); };
-  Number.prototype.ceil = function() { return Math.ceil(this.fix()); };
-  Number.prototype.abs = function() { return Math.abs(this); };
+  Number.prototype.fix = function() {return (parseFloat(this.toPrecision(12)));};
+  Number.prototype.floor = function() {return Math.floor(this.fix());};
+  Number.prototype.ceil = function() {return Math.ceil(this.fix());};
+  Number.prototype.abs = function() {return Math.abs(this);};
 
   if (Utils.isOptionValid('test')) {
-    console.log('MVC not found, SuperOrangeMovement will be using essentials (copied from MVC 1.2.1).');
+    console.log('MVC not found, SuperOrangeMovementEx will be using essentials (copied from MVC 1.2.1).');
   }
 }
 
-var SuperOrangeMovement = SuperOrangeMovement || {};
-SuperOrangeMovement.VERSION = 0.1;
+var SuperOrangeMovementEx = SuperOrangeMovementEx || {};
+SuperOrangeMovementEx.VERSION = 0.1;
 
 // Useful Direction Constants
 var Direction = {
@@ -309,7 +453,7 @@ var Direction = {
 (function($) {
   "use strict";
 
-  $.Parameters = PluginManager.parameters('SuperOrangeMovement');
+  $.Parameters = PluginManager.parameters('SuperOrangeMovementEx');
   $.Param = $.Param || {};
 
   $.Param.Tile_Sections = Number($.Parameters["Tile_Sections"] || 4);
@@ -321,8 +465,23 @@ var Direction = {
   $.Param.TriggerAllAvailableEvents = $.Parameters["TriggerAllAvailableEvents"] === "true";
   $.Param.TriggerTouchEventsAfterTeleport = $.Parameters["TriggerTouchEventsAfterTeleport"] === "true";
 
+  $.Param.EnableAutoAvoidDiagonal = $.Parameters["EnableAutoAvoidDiagonal"] !== "false";
+  $.Param.AvDiagonal_AvoidEvents = $.Parameters["AvDiagonal_AvoidEvents"] !== "false";
+  $.Param.AvDiagonal_OnlyWhenDashing = $.Parameters["AvDiagonal_OnlyWhenDashing"] === "true";
+  $.Param.AvDiagonal_DashingDelay = Number($.Parameters["AvDiagonal_DashingDelay"] || 0);
+  $.Param.AvDiagonal_WalkingDelay = Number($.Parameters["AvDiagonal_WalkingDelay"] || 0);
+
+  $.Param.EnableAutoAvoid = $.Parameters["EnableAutoAvoid"] !== "false";
+  $.Param.AutoAvoid_AvoidEvents = $.Parameters["AutoAvoid_AvoidEvents"] === "true";
+  $.Param.AutoAvoid_OnlyWhenDashing = $.Parameters["AutoAvoid_OnlyWhenDashing"] === "true";
+  $.Param.AutoAvoid_DashingDelay = Number($.Parameters["AutoAvoid_DashingDelay"] || 0);
+  $.Param.AutoAvoid_WalkingDelay = Number($.Parameters["AutoAvoid_WalkingDelay"] || 0);
+  $.Param.AutoAvoid_MaxOffset = Number($.Parameters["AutoAvoid_MaxOffset"] || 0.75);
+  $.Param.AutoAvoid_RetainDirection = $.Parameters["AutoAvoid_RetainDirection"] !== "false";
+
+
   if ($.Param.Tile_Sections === undefined || parseInt($.Param.Tile_Sections, 10) <= 0) {
-    throw new Error("SuperOrangeMovement: The Tile_Sections param is invalid.");
+    throw new Error("SuperOrangeMovementEx: The Tile_Sections param is invalid.");
   }
 
   $.Param.Step_Size = (1 / $.Param.Tile_Sections).fix();
@@ -372,7 +531,7 @@ var Direction = {
     } else {
       var x2 = $gameMap.roundXWithDirection(x.floor(), d);
       var y2 = $gameMap.roundYWithDirection(y.floor(), d);
-      
+
       if (!$gameMap.isValid(x2, y2)) {
         return false;
       }
@@ -380,7 +539,7 @@ var Direction = {
       if (!$gameMap.isPassable(x2, y2, this.reverseDir(d))) {
         return false;
       }
-      
+
       if (this.isCollidedWithCharacters(x2, y2)) {
         return false;
       }
@@ -586,14 +745,6 @@ var Direction = {
         return this._x.ceil();
       }
     });
-
-    // MVC.reader(character.prototype, 'x', function() {
-    //   return this.tile_x;
-    // });
-
-    // MVC.reader(character.prototype, 'y', function() {
-    //   return this.tile_y;
-    // });
 
     character.prototype.deltaXFrom = function(x) {
       return $gameMap.deltaX(this._x, x);
@@ -1498,6 +1649,234 @@ var Direction = {
       }
     };
   }
-})(SuperOrangeMovement);
+  
+  if ($.Param.EnableAutoAvoidDiagonal) {
+    var avoidObstacleDiagonallysDelay = 0;
 
-Imported.SuperOrangeMovement = 1.2;
+    // Every time the player succesfully moves, reset the delay
+    var oldGamePlayer_onBeforeMove = Game_Player.prototype.onBeforeMove;
+    Game_Player.prototype.onBeforeMove = function() {
+      if (this.isDashing()) {
+        avoidObstacleDiagonallysDelay = $.Param.AvDiagonal_DashingDelay;
+      }
+      else {
+        avoidObstacleDiagonallysDelay = $.Param.AvDiagonal_WalkingDelay;
+      }
+
+      if (oldGamePlayer_onBeforeMove !== undefined) {
+        oldGamePlayer_onBeforeMove.call(this);
+      }
+    };
+
+    var oldGamePlayer_trySavingFailedMovement = Game_Player.prototype.trySavingFailedMovement;
+    Game_Player.prototype.trySavingFailedMovement = function(direction) {
+      if (oldGamePlayer_trySavingFailedMovement !== undefined) {
+        if (oldGamePlayer_trySavingFailedMovement.call(this, direction)) {
+          return true;
+        }
+      }
+
+      if (avoidObstacleDiagonallysDelay > 0) {
+        avoidObstacleDiagonallysDelay--;
+      }
+
+      if ($.Param.AvDiagonal_OnlyWhenDashing === true) {
+        if (!this.isDashing()) {
+          return false;
+        }
+      }
+
+      if ($.Param.AvDiagonal_AvoidEvents !== true) {
+        if (this.isTilesetPassable(this._x, this._y, direction)) {
+          var x2 = $gameMap.roundFractionXWithDirection(this._x, direction, this.myStepSize());
+          var y2 = $gameMap.roundFractionYWithDirection(this._y, direction, this.myStepSize());
+
+          if (this.isCollidedWithCharacters(x2, y2)) {
+            return false;
+          }
+        }
+      }
+
+      if (this.tryToAvoidDiagonally(direction)) {
+        return true;
+      }
+
+      return false;
+    };
+
+    Game_Player.prototype.tryToAvoidDiagonally = function(direction) {
+      if (avoidObstacleDiagonallysDelay > 0) {
+        return false;
+      }
+
+      if (direction == Direction.LEFT || direction == Direction.RIGHT) {
+        if (this.canPassDiagonally(this._x, this._y, direction, Direction.DOWN)) {
+          this.executeMove(direction - 3);
+          return true;
+        }
+        else if (this.canPassDiagonally(this._x, this._y, direction, Direction.UP)) {
+          this.executeMove(direction + 3);
+          return true;
+        }
+      }
+      else if (direction == Direction.UP || direction == Direction.DOWN) {
+        if (this.canPassDiagonally(this._x, this._y, Direction.LEFT, direction)) {
+          this.executeMove(direction - 1);
+          return true;
+        }
+        else if (this.canPassDiagonally(this._x, this._y, Direction.RIGHT, direction)) {
+          this.executeMove(direction + 1);
+          return true;
+        }
+      }
+
+      return false;
+    };
+  }
+
+  if ($.Param.EnableAutoAvoid) {
+      var avoidObstaclesDelay = 0;
+
+    // Every time the player succesfully moves, reset the delay
+    var oldGamePlayer_onBeforeMove2 = Game_Player.prototype.onBeforeMove;
+    Game_Player.prototype.onBeforeMove = function() {
+      if (this.isDashing()) {
+        avoidObstaclesDelay = $.Param.AutoAvoid_DashingDelay;
+      }
+      else {
+        avoidObstaclesDelay = $.Param.AutoAvoid_WalkingDelay;
+      }
+
+      if (oldGamePlayer_onBeforeMove2 !== undefined) {
+        oldGamePlayer_onBeforeMove2.call(this);
+      }
+    };
+
+    var oldGamePlayer_trySavingFailedMovement2 = Game_Player.prototype.trySavingFailedMovement;
+    Game_Player.prototype.trySavingFailedMovement = function(direction) {
+      if (oldGamePlayer_trySavingFailedMovement2 !== undefined) {
+        if (oldGamePlayer_trySavingFailedMovement2.call(this, direction)) {
+          return true;
+        }
+      }
+
+      if (avoidObstaclesDelay > 0) {
+        avoidObstaclesDelay--;
+      }
+
+      if ($.Param.AutoAvoid_OnlyWhenDashing === true) {
+        if (!this.isDashing()) {
+          return false;
+        }
+      }
+
+      if ($.Param.AutoAvoid_AvoidEvents !== true) {
+        if (this.isTilesetPassable(this._x, this._y, direction)) {
+          var x2 = $gameMap.roundFractionXWithDirection(this._x, direction, this.myStepSize());
+          var y2 = $gameMap.roundFractionYWithDirection(this._y, direction, this.myStepSize());
+
+          if (this.isCollidedWithCharacters(x2, y2)) {
+            return false;
+          }
+        }
+      }
+
+      if (this.tryToAvoid(direction, $.Param.AutoAvoid_MaxOffset)) {
+        return true;
+      }
+
+      return false;
+    };
+
+    Game_Player.prototype.tryToAvoid = function(direction, maxOffset) {
+      if (avoidObstaclesDelay > 0) {
+        return false;
+      }
+
+      var previousOffset = 0;
+      var offset = this.myStepSize();
+
+      var tryDirection = function(xOffset, yOffset, movementDirection, faceDirection) {
+        // Test if the player would be able to move on the faceDirection if they were at the offset position. If they could, then move towards that position for now.
+        if (this.canPass((this._x + xOffset).fix(), (this._y + yOffset).fix(), faceDirection)) {
+          this.executeMove(movementDirection);
+
+          if ($.Param.AutoAvoid_RetainDirection) {
+            this.setDirection(faceDirection);
+          }
+          
+          return true;
+        }
+        
+        return false;
+      };
+
+      if (direction == Direction.LEFT || direction == Direction.RIGHT) {
+        // If the player can't walk horizontally on the current position, but would be able to walk if he were a little higher or lower then move vertically instead
+        // on the next iterations it will keep trying to move horizontaly again and it will eventually work before the offset is reached
+
+        var downEnabled = true;
+        var upEnabled = true;
+        while (offset <= maxOffset) {
+          if (downEnabled) {
+            if (!this.canPass(this._x, (this._y + previousOffset).fix(), Direction.DOWN)) {
+              downEnabled = false;
+            }
+          }
+
+          if (upEnabled) {
+            if (!this.canPass(this._x, (this._y - previousOffset).fix(), Direction.UP)) {
+              upEnabled = false;
+            }          
+          }
+
+          if (downEnabled === true && tryDirection.call(this, 0, offset, Direction.DOWN, direction)) {
+            return true;
+          }
+
+          if (upEnabled === true && tryDirection.call(this, 0, -offset, Direction.UP, direction)) {
+            return true;
+          }
+
+          previousOffset = offset;
+          offset += this.myStepSize();
+        }
+      }
+      else if (direction == Direction.UP || direction == Direction.DOWN) {
+        // If the player can't walk vertically on the current position, but would be able to walk if he were a little left or right then move horizontally instead
+        // on the next iterations it will keep trying to move vertically again and it will eventually work before the offset is reached
+
+        var leftEnabled = true;
+        var rightEnabled = true;
+
+        while (offset <= maxOffset) {
+          if (leftEnabled) {
+            if (!this.canPass((this._x - previousOffset).fix(), this._y, Direction.LEFT)) {
+              leftEnabled = false;
+            }
+          }
+          if (rightEnabled) {
+            if (!this.canPass((this._x + previousOffset).fix(), this._y, Direction.RIGHT)) {
+              rightEnabled = false;
+            }
+          }
+
+          if (rightEnabled === true && tryDirection.call(this, offset, 0,  Direction.RIGHT, direction)) {
+            return true;
+          }
+
+          if (leftEnabled === true && tryDirection.call(this, -offset, 0, Direction.LEFT, direction)) {
+            return true;
+          }
+
+          previousOffset = offset;
+          offset += this.myStepSize();
+        }
+      }
+
+      return false;
+    };
+  }
+})(SuperOrangeMovementEx);
+
+Imported.SuperOrangeMovementEx = 1.3;
