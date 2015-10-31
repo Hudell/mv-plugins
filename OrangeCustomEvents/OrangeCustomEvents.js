@@ -97,8 +97,13 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
   };
 
   Game_System.prototype.initCustomEvents = function(mapId) {
-    if (this._customEvents === undefined) this._customEvents = {};
-    if (this._customEvents[mapId] === undefined) this._customEvents[mapId] = {};
+    if (this._customEvents === undefined) {
+      this._customEvents = {};
+    }
+
+    if (this._customEvents[mapId] === undefined) {
+      this._customEvents[mapId] = {};
+    }
   };
 
   Game_System.prototype.addCustomEvent = function(mapId, event) {
@@ -110,7 +115,8 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
   Game_System.prototype.removeCustomEvent = function(mapId, eventId) {
     this.initCustomEvents(mapId);
     this.clearSelfSwitches(mapId, eventId);
-    if (this._customEvents[mapId][eventId] !== undefined) this._customEvents[mapId][eventId] = undefined;
+
+    delete this._customEvents[mapId][eventId];
   };
 
   Game_System.prototype.clearCustomEvents = function(mapId) {
@@ -168,6 +174,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
 
     var customEvents = $gameSystem.getCustomEvents(this._mapId);
     for (var eventId in customEvents) {
+      if (customEvents[eventId] === undefined) continue;
       this._events[eventId] = new Game_Custom_Event(this._mapId, eventId, customEvents[eventId]);
     }
   };
@@ -280,10 +287,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     }
   };
 
-  var oldGameInterpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-  Game_Interpreter.prototype.pluginCommand = function(command, args) {
-    oldGameInterpreter_pluginCommand.call(this, command, args);
-
+  Game_Interpreter.prototype.checkCopyCommands = function(command, args) {
     if (args.length < 2) return;
 
     if (command.toUpperCase() !== 'COPY' && command.toUpperCase() !== 'SPAWN') return;
@@ -396,6 +400,25 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
         }
       }
     }
+  };
+
+  Game_Interpreter.prototype.checkDeleteCommand = function(command, args) {
+    if (args.length != 2) return;
+
+    if (command.toUpperCase() !== 'DELETE') return;
+    if (args[0].toUpperCase() !== "THIS") return;
+    if (args[1].toUpperCase() !== "EVENT") return;
+
+    $gameSystem.removeCustomEvent(this._mapId, this._eventId);
+    this.command214();
+  };
+
+  var oldGameInterpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+  Game_Interpreter.prototype.pluginCommand = function(command, args) {
+    oldGameInterpreter_pluginCommand.call(this, command, args);
+
+    this.checkCopyCommands(command, args);
+    this.checkDeleteCommand(command, args);
   };
 
   // Compatibility patch:
