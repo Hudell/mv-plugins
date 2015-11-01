@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.6
+ * Version: 1.7
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -16,6 +16,10 @@
  * @param secondLength
  * @desc How many real time milliseconds should an ingame second last
  * @default 1000
+ *
+ * @param secondLengthVariable
+ * @desc Load the length of the second from a variable instead of a fixed value
+ * @default 0
  *
  * @param minuteLength
  * @desc How many ingame seconds should an ingame minute last
@@ -134,6 +138,7 @@ var DayPeriods = {
     $.Param.secondLength = Number($.Parameters['secondLength'] || 1000);
   }
   
+  $.Param.secondLengthVariable = Number($.Parameters['secondLengthVariable'] || 0);
   $.Param.minuteLength = Number($.Parameters['minuteLength'] || 6);
   $.Param.hourLength = Number($.Parameters['hourLength'] || 6);
   $.Param.dayLength = Number($.Parameters['dayLength'] || 24);
@@ -447,9 +452,25 @@ var DayPeriods = {
   $.enableTime = function() {
     if (this._intervalHandler !== undefined) return;
 
+    var length = $.Param.secondLength;
+    if ($.Param.useRealTime) {
+      length = 1000;
+    } else if ($.Param.secondLengthVariable > 0) {
+      if ($gameVariables !== null) {
+        if ($gameVariables.value($.Param.secondLengthVariable) > 0) {
+          length = $gameVariables.value($.Param.secondLengthVariable);
+        }
+      }
+    }
+
     this._intervalHandler = setInterval(function() {
       $.progressTime();
-    }, $.Param.secondLength);
+    }, length);
+  };
+
+  $.refreshTimeSystem = function() {
+    $.disableTime();
+    $.enableTime();
   };
 
   $.disableTime = function() {
@@ -965,6 +986,14 @@ var DayPeriods = {
     }
   };
 
+  $.checkSystemCommands = function(command, args) {
+    if (command.toUpperCase() == 'RESTART' || command.toUpperCase() == 'REFRESH') {
+      if (args.length > 0 && args[0].toUpperCase() == 'TIME') {
+        $.refreshTimeSystem();
+      }
+    }
+  };
+
   var oldDataManager_makeSaveContents = DataManager.makeSaveContents;
   DataManager.makeSaveContents = function() {
     var contents = oldDataManager_makeSaveContents.call(this);
@@ -991,7 +1020,8 @@ var DayPeriods = {
   var oldDataManager_setupNewGame = DataManager.setupNewGame;
   DataManager.setupNewGame = function() {
     oldDataManager_setupNewGame.call(this);
-    OrangeTimeSystem.setDateTime({});
+    $.setDateTime({});
+    $.refreshTimeSystem();
   };
 
   var oldGameInterpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
@@ -999,9 +1029,10 @@ var DayPeriods = {
     oldGameInterpreter_pluginCommand.call(this, command, args);
 
     $.checkRunCommands(command, args);
+    $.checkSystemCommands(command, args);
   };
 
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 1.6;
+Imported.OrangeTimeSystem = 1.7;
