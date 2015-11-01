@@ -2,7 +2,7 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovement.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -1500,4 +1500,4 @@ var Direction = {
   }
 })(SuperOrangeMovement);
 
-Imported.SuperOrangeMovement = 1.2;
+Imported.SuperOrangeMovement = 1.3;
