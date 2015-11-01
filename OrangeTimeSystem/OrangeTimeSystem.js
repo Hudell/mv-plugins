@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.5
+ * Version: 1.6
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -882,6 +882,89 @@ var DayPeriods = {
     }
   };
 
+  $.checkRunInCommands = function(eventId, args) {
+    if (args.length < 6) return;
+    
+    var value = parseInt(args[4], 10);
+
+    switch (args[5].toUpperCase()) {
+      case 'MINUTES' :
+        $.runInMinutes(eventId, value);
+        break;
+      case 'SECONDS' :
+        $.runInSeconds(eventId, value);
+        break;
+      case 'HOURS' :
+        $.runInHours(eventId, value);
+        break;
+      case 'DAYS' :
+        $.runInDays(eventId, value);
+        break;
+      case 'MONTHS' :
+        $.runInMonths(eventId, value);
+        break;
+      case 'YEARS' :
+        $.runInYears(eventId, value);
+        break;
+      default:
+        return;
+    }
+  };
+
+  $.checkRunOnCommands = function(eventId, args) {
+    // #ToDo: Plugin Commands for ON events (onDateTime)
+
+  };
+
+  $.checkRunEveryCommands = function(eventId, args) {
+    if (args.length < 5) return;
+
+    switch (args[4].toUpperCase()) {
+      case 'HOUR' :
+        $.on('changeHour', eventId);
+        break;
+      case 'MINUTE' :
+        $.on('changeMinute', eventId);
+        break;
+      case 'SECOND' :
+        $.on('changeSecond', eventId);
+        break;
+      case 'DAY' :
+        $.on('changeDay', eventId);
+        break;
+      case 'MONTH' :
+        $.on('changeMonth', eventId);
+        break;
+      case 'YEAR' :
+        $.on('changeYear', eventId);
+        break;
+      case 'PERIOD' :
+        $.on('changeDayPeriod', eventId);
+        break;
+      default :
+        break;
+    }
+  };
+
+  $.checkRunCommands = function(command, args) {
+    if (args.length < 4) return;
+
+    if (command.toUpperCase() != 'RUN') return;
+    if (args[0].toUpperCase() != 'COMMON') return;
+    if (args[1].toUpperCase() != 'EVENT') return;
+
+    var eventId = parseInt(args[2], 10);
+    if (eventId <= 0) return;
+
+    if (args[3].toUpperCase() == 'ON') {
+      this.checkRunOnCommands(eventId, args);
+    } else if (args[3].toUpperCase() == 'IN') {
+      this.checkRunInCommands(eventId, args);
+    } else if (args[3].toUpperCase() == 'EVERY') {
+      this.checkRunEveryCommands(eventId, args);
+    }
+  };
+
   var oldDataManager_makeSaveContents = DataManager.makeSaveContents;
   DataManager.makeSaveContents = function() {
     var contents = oldDataManager_makeSaveContents.call(this);
@@ -911,7 +994,14 @@ var DayPeriods = {
     OrangeTimeSystem.setDateTime({});
   };
 
+  var oldGameInterpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+  Game_Interpreter.prototype.pluginCommand = function(command, args) {
+    oldGameInterpreter_pluginCommand.call(this, command, args);
+
+    $.checkRunCommands(command, args);
+  };
+
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 1.5;
+Imported.OrangeTimeSystem = 1.6;
