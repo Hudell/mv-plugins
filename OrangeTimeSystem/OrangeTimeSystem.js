@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.4
+ * Version: 1.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -914,4 +914,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 1.4;
+Imported.OrangeTimeSystem = 1.5;
