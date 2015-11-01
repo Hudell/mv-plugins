@@ -338,6 +338,8 @@ var DayPeriods = {
   };
 
   $.validateDateTimeValues = function(date) {
+    if ($.Param.useRealTime) return;
+
     while (date.seconds >= $.Param.minuteLength) {
       date.minute += 1;
       date.seconds -= $.Param.minuteLength;
@@ -623,15 +625,15 @@ var DayPeriods = {
     this.runEvent('changeYear');
   };
 
-  $.onTime = function(callback, hour, minute, second) {
-    return this.onDateTime(callback, 0, 0, 0, hour, minute, second, after);
+  $.onTime = function(callback, hour, minute, second, autoRemove) {
+    return this.onDateTime(callback, 0, 0, 0, hour, minute, second, autoRemove);
   };
 
-  $.onDate = function(callback, day, month, year) {
-    return this.onDateTime(callback, day, month, year, 0, 0, 0, after);
+  $.onDate = function(callback, day, month, year, autoRemove) {
+    return this.onDateTime(callback, day, month, year, 0, 0, 0, autoRemove);
   };
 
-  $.onDateTime = function(callback, day, month, year, hour, minute, second, after, autoRemove) {
+  $.onDateTime = function(callback, day, month, year, hour, minute, second, autoRemove) {
     var config = {
       day: day,
       month: month,
@@ -640,18 +642,15 @@ var DayPeriods = {
       minute: minute,
       second: second,
       callback: callback,
-      autoRemove : autoRemove
+      autoRemove : autoRemove,
+      after : false
     };
 
     if (autoRemove === undefined) {
       autoRemove = false;
     }
 
-    if (after === true) {
-      return $.registerAfterTimeEvent(config);
-    } else {
-      return $.registerTimeEvent(config);
-    }
+    return $.registerTimeEvent(config);
   };
 
   $.onWeekDay = function(callback, weekDay) {
@@ -671,7 +670,7 @@ var DayPeriods = {
     return this._afterTimeEvents.indexOf(config);
   };
 
-  $.runInDateTime = function(callback, years, months, days, hours, minutes, seconds, after, autoRemove) {
+  $.runInDateTime = function(callback, years, months, days, hours, minutes, seconds, autoRemove) {
     var newDate = $.getDateTime();
 
     newDate.year += Number(years || 0);
@@ -695,14 +694,15 @@ var DayPeriods = {
       hour : newDate.hour,
       minute : newDate.minute,
       seconds : newDate.seconds,
-      autoRemove : autoRemove
+      autoRemove : autoRemove,
+      after : true
     };
 
-    if (after === false) {
-      $.registerTimeEvent(config);
-    } else {
-      $.registerAfterTimeEvent(config);
-    }
+    var key = undefined;
+
+    key = $.registerAfterTimeEvent(config);
+    config.key = key;
+    return key;
   };
 
   $.runInHours = function(callback, hours, minutes, seconds) {
@@ -734,47 +734,61 @@ var DayPeriods = {
     return this._timeEvents.indexOf(config);
   };
 
+  $.checkIfEventShouldRun = function(config) {
+    if (config.day !== undefined && config.day != this.day) return false;
+    if (config.month !== undefined && config.month != this.month) return false;
+    if (config.year !== undefined && config.year != this.year) return false;
+    if (config.hour !== undefined && config.hour != this.hour) return false;
+    if (config.minute !== undefined && config.minute != this.minute) return false;
+    if (config.second !== undefined && config.second != this.seconds) return false;
+    if (config.weekDay !== undefined && config.weekDay != this.weekDay) return false;
+
+    return true;
+  };
+
   $.checkEventsToRun = function(eventList, after) {
     var config = undefined;
     var i;
+    var keysToRemove = [];
+
+    var currentTimestamp = this.convertConfigToTimestamp(this.getDateTime());
+    if ($.Param.useRealTime) {
+      currentTimestamp = (currentTimestamp / 1000).floor();
+    }
 
     for (i = 0; i < eventList.length; i++) {
       config = eventList[i];
 
       if (config.callback === undefined) continue;
+      
+      if (after) {
+        if (config.seconds === undefined) {
+          config.seconds = config.second;
+        }
 
-      if (config.day !== undefined && config.day != this.day) continue;
-      if (config.month !== undefined && config.month != this.month) continue;
-      if (config.year !== undefined && config.year != this.year) continue;
-      if (config.hour !== undefined && config.hour != this.hour) continue;
-      if (config.minute !== undefined && config.minute != this.minute) continue;
-      if (config.second !== undefined && config.second != this.seconds) continue;
-      if (config.weekDay !== undefined && config.weekDay != this.weekDay) continue;
+        var timestamp = this.convertConfigToTimestamp(config);
+        if ($.Param.useRealTime) {
+          timestamp = (timestamp / 1000).floor();
+        }
+        
+        if (timestamp > currentTimestamp) {
+          continue;
+        }
+      } else {
+        if (!this.checkIfEventShouldRun(config)) {
+          continue;
+        }
+      }
 
       this.executeCallback(config.callback);
       if (config.autoRemove === true) {
         config.callback = undefined;
+        keysToRemove.push(config.key);
       }
     }
 
-    if (!after) return;
-
-    for (i = 0; i < eventList.length; i++) {
-      config = eventList[i];
-
-      if (config.callback === undefined) continue;
-
-      if (config.year !== undefined && config.year > this.year) continue;
-      if (config.month !== undefined && config.month > this.month) continue;
-      if (config.day !== undefined && config.day > this.day) continue;
-      if (config.hour !== undefined && config.hour > this.hour) continue;
-      if (config.minute !== undefined && config.minute > this.minute) continue;
-      if (config.second !== undefined && config.second > this.second) continue;
-
-      this.executeCallback(config.callback);
-      if (config.autoRemove === true) {
-        config.callback = undefined;
-      }
+    for (var key in keysToRemove) {
+      delete eventList[key];
     }
   };
 
@@ -821,15 +835,51 @@ var DayPeriods = {
     }
   };
 
-  $.getCallbacks = function() {
+  $.getCallbacksFromList = function(eventList) {
     var callbackList = [];
 
+    for (var key in eventList) {
+      if (eventList[key].callback === undefined) continue;
+
+      //can't save functions
+      if (typeof(eventList[key].callback) == "function") continue;
+
+      callbackList.push(MVC.shallowClone(eventList[key]));
+    }
 
     return callbackList;
   };
 
-  $.setCallbacks = function() {
+  $.getCallbacks = function() {
+    var callbackList = {};
 
+    callbackList.after = this.getCallbacksFromList(this._afterTimeEvents);
+    callbackList.normal = this.getCallbacksFromList(this._timeEvents);
+
+    return callbackList;
+  };
+
+  $.setCallbacksToList = function(callbackList) {
+    var eventList = [];
+
+    for (var i = 0; i < callbackList.length; i++) {
+      var config = MVC.shallowClone(callbackList[i]);
+
+      eventList.push(config);
+      config.key = eventList.indexOf(config);
+    }
+
+    return eventList;
+  };
+
+  $.setCallbacks = function(callbackList) {
+    if (callbackList.after !== undefined) {
+      this._afterTimeEvents = this.setCallbacksToList(callbackList.after);
+    }
+
+    if (callbackList.normal !== undefined) {
+      this._timeEvents = this.setCallbacksToList(callbackList.normal);
+    }
   };
 
   var oldDataManager_makeSaveContents = DataManager.makeSaveContents;
@@ -853,6 +903,12 @@ var DayPeriods = {
     if (contents.orangeTimeSystemCallbacks !== undefined) {
       $.setCallbacks(contents.orangeTimeSystemCallbacks);
     }
+  };
+
+  var oldDataManager_setupNewGame = DataManager.setupNewGame;
+  DataManager.setupNewGame = function() {
+    oldDataManager_setupNewGame.call(this);
+    OrangeTimeSystem.setDateTime({});
   };
 
   $.enableTime();
