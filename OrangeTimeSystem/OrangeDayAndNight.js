@@ -2,7 +2,7 @@
  * Orange - Day and Night
  * By Hudell - www.hudell.com
  * OrangeDayAndNight.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -73,30 +73,30 @@ var OrangeDayAndNight = OrangeDayAndNight || MVC.shallowClone(OrangeEventManager
   };
 
   $.updateTint = function(speed) {
-    if (!$.canTintScreen()) {
-      return;
-    }
-
     var dataStr = "";
+    var data = [0, 0, 0, 0];
 
-    switch(OrangeTimeSystem.dayPeriod) {
-      case 1 :
-        dataStr = $.Param.morningTint;
-        break;
-      case 2 :
-        dataStr = $.Param.middayTint;
-        break;
-      case 3 :
-        dataStr = $.Param.eveningTint;
-        break;
-      case 4 :
-        dataStr = $.Param.nightTint;
-        break;
-      default :
-        return;
+    if ($.canTintScreen()) {
+      switch(OrangeTimeSystem.dayPeriod) {
+        case 1 :
+          dataStr = $.Param.morningTint;
+          break;
+        case 2 :
+          dataStr = $.Param.middayTint;
+          break;
+        case 3 :
+          dataStr = $.Param.eveningTint;
+          break;
+        case 4 :
+          dataStr = $.Param.nightTint;
+          break;
+        default :
+          return;
+      }
+
+      data = dataStr.split(',');
     }
 
-    var data = dataStr.split(',');
     if (data.length > 0) {
       data[0] = parseInt(data[0], 10);
     } else {
