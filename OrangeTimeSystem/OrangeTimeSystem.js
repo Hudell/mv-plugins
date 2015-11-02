@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.9
+ * Version: 1.9.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -285,11 +285,11 @@ var DayPeriods = {
   });
 
   MVC.reader($, 'dayName', function(){
-    return $.Param.dayNames[(this.weekDay - 1) % $.Param.dayNames.length];
+    return $.Param.dayNames[(this.weekDay - 1 + $.Param.dayNames.length) % $.Param.dayNames.length];
   });
 
   MVC.reader($, 'dayShortName', function(){
-    return $.Param.dayShortNames[(this.weekDay - 1) % $.Param.dayShortNames.length];
+    return $.Param.dayShortNames[(this.weekDay - 1 + $.Param.dayShortNames.length) % $.Param.dayShortNames.length];
   });
 
   MVC.reader($, 'inside', function(){
@@ -986,6 +986,15 @@ var DayPeriods = {
       weekDay: $.weekDay,
       paused: $.paused
     };
+  };
+
+  $.getTomorrow = function(){
+    var dateObj = $.getDateTime();
+
+    dateObj.day += 1;
+    $.validateDateTimeValues(dateObj);
+
+    return dateObj;
   };
 
   $.setDateTime = function(dateTime) {
