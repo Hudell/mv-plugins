@@ -144,6 +144,7 @@ if (Imported['MVCommons'] === undefined) {
     $.defaultGetter = function(name) { return function () { return this['_' + name]; }; };
     $.defaultSetter = function(name) { return function (value) { var prop = '_' + name; if ((!this[prop]) || this[prop] !== value) { this[prop] = value; if (this._refresh) { this._refresh(); } } }; };
     $.accessor = function(value, name /* , setter, getter */) { Object.defineProperty(value, name, { get: arguments.length > 3 ? arguments[3] : $.defaultGetter(name), set: arguments.length > 2 ? arguments[2] : $.defaultSetter(name), configurable: true });};
+    $.reader = function(obj, name /*, getter */) { Object.defineProperty(obj, name, { get: arguments.length > 2 ? arguments[2] : defaultGetter(name), configurable: true }); };
   })(MVC);
 
   Number.prototype.fix = function() { return parseFloat(this.toPrecision(12)); };
