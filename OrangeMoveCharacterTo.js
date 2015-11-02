@@ -2,7 +2,7 @@
  * Orange - Move Character To
  * By Hudell - www.hudell.com
  * OrangeMoveCharacterTo.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -57,8 +57,8 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
       var character = this.character(parseInt(args[0], 10));
 
       if (args.length > 2) {
-        var x = parseInt(args[1], 10);
-        var y = parseInt(args[2], 10);
+        var x = parseFloat(args[1]);
+        var y = parseFloat(args[2]);
         var d = 0;
         if (args.length > 3) {
           switch(args[3].toUpperCase()) {
@@ -156,8 +156,8 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
     } else if (args[nextIndex].toUpperCase() === 'POSITION') {
       if (args.length <= nextIndex + 2) return;
 
-      newX = parseInt(args[nextIndex + 1], 10);
-      newY = parseInt(args[nextIndex + 2], 10);
+      newX = parseFloat(args[nextIndex + 1]);
+      newY = parseFloat(args[nextIndex + 2]);
 
       nextIndex += 3;
     }
@@ -214,6 +214,7 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
   var oldGameCharacterBase_updateStop = Game_CharacterBase.prototype.updateStop;
   Game_CharacterBase.prototype.updateStop = function() {
     var direction = undefined;
+    var distance = undefined;
 
     if (this._orangeMovementDelay !== undefined && this._orangeMovementDelay > 0) {
       this._orangeMovementDelay--;
@@ -235,13 +236,59 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
 
       if (this._xDestination !== undefined) {
         if (!this.isMoving()) {
-          direction = this.findDirectionTo(this._xDestination, this._yDestination);
+          var xDistance = this._x - this._xDestination;
+          var yDistance = this._y - this._yDestination;
+          
+          // Check if there's any additional partial tile to walk
+          if (Math.abs(xDistance) < 1 && Math.abs(yDistance) < 1) {
+            if (xDistance < 0) {
+              this._direction = 6;
+              this._x = this._xDestination;
+              return;
+            } else if (yDistance < 0) {
+              this._direction = 2;
+              this._y = this._yDestination;
+              return;
+            } else if (xDistance > 0) {
+              this._direction = 4;
+              this._x = this._xDestination;
+              return;
+            } else if (yDistance > 0) {
+              this._y = this._yDestination;
+              this._direction = 8;
+              return;
+            }
+          } else {
+            //Check if there's any partial position to fix before start walking
+            if (this._x - Math.floor(this._x) || this._y - Math.floor(this._y)) {
+              if (this._xDestination > this._x) {
+                this._direction = 6;
+                this._x = Math.ceil(this._x);
+              } else {
+                this._direction = 4;
+                this._x = Math.floor(this._x);
+              }
+
+              if (this._yDestination > this._y) {
+                this._direction = 2;
+                this._y = Math.ceil(this._y);
+              } else {
+                this._direction = 8;
+                this._y = Math.floor(this._y);
+              }
+
+              return;
+            }
+          }
+
+          direction = this.findDirectionTo(Math.floor(this._xDestination), Math.floor(this._yDestination));
 
           if (direction > 0) {
             this.moveStraight(direction);
             if (!this.isMovementSucceeded()) {
               this._orangeMovementDelay = failedMovementDelay;
             }
+
             return;
           }
         }
@@ -268,7 +315,7 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
 
               //If failed to move, and it's not set to follow the character and distance is less than 1 tile, stop moving.
               if (this._followCharacter !== true) {
-                var distance = Math.abs(this._x - this._destinationCharacter._x) + Math.abs(this._y - this._destinationCharacter._y);
+                distance = Math.abs(this._x - this._destinationCharacter._x) + Math.abs(this._y - this._destinationCharacter._y);
                 if (distance <= 1) {
                   this.clearDestination();
                   return;
@@ -352,4 +399,4 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
   };
 })(OrangeMoveCharacterTo);
 
-Imported['OrangeMoveCharacterTo'] = 1.2;
+Imported['OrangeMoveCharacterTo'] = 1.3;
