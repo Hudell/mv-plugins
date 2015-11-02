@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.7
+ * Version: 1.8
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -68,6 +68,10 @@
  * @param pauseClockDuringConversations
  * @desc If true, it will stop the flow of time while messages are being displayed on screen.
  * @default true
+ *
+ * @param initialHour
+ * @desc At what hour will the game start?
+ * @default 6
  *
  * @help
  * ============================================================================
@@ -145,6 +149,8 @@ var DayPeriods = {
   $.Param.weekLength = Number($.Parameters['weekLength'] || 7);
   $.Param.monthLength = Number($.Parameters['monthLength'] || 31);
   $.Param.yearLength = Number($.Parameters['yearLength'] || 4);    
+  
+  $.Param.initialHour = Number($.Parameters['initialHour'] || 6);
 
   $.Param.dayPeriod1Hour = Number($.Parameters['dayPeriod1Hour'] || 6);
   $.Param.dayPeriod2Hour = Number($.Parameters['dayPeriod2Hour'] || 9);
@@ -169,6 +175,8 @@ var DayPeriods = {
   MVC.accessor($, 'year');
   MVC.accessor($, 'dayPeriod');
   MVC.accessor($, 'weekDay');
+
+  $.hour = $.Param.initialHour;
 
   MVC.accessor($, 'paused', function(value) {
     if ($.Param.mainSwitchId !== undefined) {
@@ -1020,7 +1028,7 @@ var DayPeriods = {
   var oldDataManager_setupNewGame = DataManager.setupNewGame;
   DataManager.setupNewGame = function() {
     oldDataManager_setupNewGame.call(this);
-    $.setDateTime({});
+    $.setDateTime({hour : $.Param.initialHour});
     $.refreshTimeSystem();
   };
 
@@ -1035,4 +1043,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 1.7;
+Imported.OrangeTimeSystem = 1.8;
