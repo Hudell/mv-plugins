@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.8
+ * Version: 1.9
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -15,7 +15,7 @@
  *
  * @param secondLength
  * @desc How many real time milliseconds should an ingame second last
- * @default 1000
+ * @default 100
  *
  * @param secondLengthVariable
  * @desc Load the length of the second from a variable instead of a fixed value
@@ -23,11 +23,11 @@
  *
  * @param minuteLength
  * @desc How many ingame seconds should an ingame minute last
- * @default 6
+ * @default 60
  *
  * @param hourLength
  * @desc How many ingame minutes should an ingame hour last
- * @default 6
+ * @default 60
  *
  * @param dayLength
  * @desc How many ingame hours should an ingame day last
@@ -43,7 +43,7 @@
  *
  * @param yearLength
  * @desc How many ingame months should an ingame year last
- * @default 4
+ * @default 12
  *
  * @param dayPeriod1Hour
  * @desc At what hour does night turn into early morning
@@ -69,9 +69,53 @@
  * @desc If true, it will stop the flow of time while messages are being displayed on screen.
  * @default true
  *
+ * @param initialSecond
+ * @desc At what second will the game start?
+ * @default 0
+ *
+ * @param initialMinute
+ * @desc At what minute will the game start?
+ * @default 0
+ *
  * @param initialHour
  * @desc At what hour will the game start?
  * @default 6
+ *
+ * @param initialDay
+ * @desc At what day will the game start?
+ * @default 1
+ *
+ * @param initialMonth
+ * @desc At what month will the game start?
+ * @default 1
+ *
+ * @param initialYear
+ * @desc At what year will the game start?
+ * @default 1
+ *
+ * @param dayNames
+ * @desc A list of all the day names, separated by comma. If empty, the day number will be used
+ * @default Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+ *
+ * @param dayShortNames
+ * @desc A list of all the day short names, separated by comma. If empty, the day number will be used
+ * @default Mon, Tue, Wed, Thur, Fri, Sat, Sun
+ *
+ * @param monthNames
+ * @desc A list of all the month names, separated by comma. If empty, the month number will be used
+ * @default January, February, March, April, May, June, July, August, September, October, November, December
+ *
+ * @param monthShortNames
+ * @desc A list of all the month short names, separated by comma. If empty, the month number will be used
+ * @default Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
+ *
+ * @param insideSwitch
+ * @desc A switch to indicate if a map is inside a building or closed space
+ * @default 0
+ *
+ * @param tilesetList
+ * @desc You can set a list of comma separated tilesets that will always be treated as "inside", regardless of the switch value.
+ * @default 
  *
  * @help
  * ============================================================================
@@ -138,28 +182,83 @@ var DayPeriods = {
   $.Param.useRealTime = $.Parameters["useRealTime"] == "true";
   if ($.Param.useRealTime) {
     $.Param.secondLength = 1000;
+    $.Param.yearLength = 12;
   } else {
-    $.Param.secondLength = Number($.Parameters['secondLength'] || 1000);
+    $.Param.secondLength = Number($.Parameters['secondLength'] || 100);
+    $.Param.yearLength = Number($.Parameters['yearLength'] || 12);
   }
   
   $.Param.secondLengthVariable = Number($.Parameters['secondLengthVariable'] || 0);
-  $.Param.minuteLength = Number($.Parameters['minuteLength'] || 6);
-  $.Param.hourLength = Number($.Parameters['hourLength'] || 6);
+  $.Param.minuteLength = Number($.Parameters['minuteLength'] || 60);
+  $.Param.hourLength = Number($.Parameters['hourLength'] || 60);
   $.Param.dayLength = Number($.Parameters['dayLength'] || 24);
   $.Param.weekLength = Number($.Parameters['weekLength'] || 7);
   $.Param.monthLength = Number($.Parameters['monthLength'] || 31);
-  $.Param.yearLength = Number($.Parameters['yearLength'] || 4);    
   
+  $.Param.initialSecond = Number($.Parameters['initialSecond'] || 0);
+  $.Param.initialMinute = Number($.Parameters['initialMinute'] || 0);
   $.Param.initialHour = Number($.Parameters['initialHour'] || 6);
+  $.Param.initialDay = Number($.Parameters['initialDay'] || 1);
+  $.Param.initialMonth = Number($.Parameters['initialMonth'] || 1);
+  $.Param.initialYear = Number($.Parameters['initialYear'] || 1);
 
   $.Param.dayPeriod1Hour = Number($.Parameters['dayPeriod1Hour'] || 6);
   $.Param.dayPeriod2Hour = Number($.Parameters['dayPeriod2Hour'] || 9);
   $.Param.dayPeriod3Hour = Number($.Parameters['dayPeriod3Hour'] || 18);
   $.Param.dayPeriod4Hour = Number($.Parameters['dayPeriod4Hour'] || 20);
 
-  $.Param.pauseClockDuringConversations = $.Parameters["pauseClockDuringConversations"] !== "false";
+  $.Param.insideSwitch = Number($.Parameters['insideSwitch'] || 0);
+  $.Param.tilesetList = ($.Parameters["tilesetList"] || '').split(',');
+
+  for (var i = 0; i < $.Param.tilesetList.length; i++) {
+    $.Param.tilesetList[i] = parseInt($.Param.tilesetList[i], 10);
+  }  
+
+  $.Param.pauseClockDuringConversations = $.Parameters["pauseClockDuringConversations"] !== "false";  
 
   var switchId = parseInt($.Parameters['mainSwitchId'], 10);
+
+  var monthNames = ($.Parameters.monthNames || "").trim();
+  var monthShortNames = ($.Parameters.monthShortNames || "").trim();
+  var dayNames = ($.Parameters.dayNames || "").trim();
+  var dayShortNames = ($.Parameters.dayShortNames || "").trim();
+
+  if (monthNames.length > 0) {
+    $.Param.monthNames = monthNames.split(',');
+  } else {
+    $.Param.monthNames = [];
+  }
+
+  if (monthShortNames.length > 0) {
+    $.Param.monthShortNames = monthShortNames.split(',');
+  } else {
+    $.Param.monthShortNames = [];
+  }
+
+  if (dayNames.length > 0) {
+    $.Param.dayNames = dayNames.split(',');
+  } else {
+    $.Param.dayNames = [];
+  }
+
+  if (dayShortNames.length > 0) {
+    $.Param.dayShortNames = dayShortNames.split(',');
+  } else {
+    $.Param.dayShortNames = [];
+  }
+
+  while ($.Param.monthNames.length < $.Param.yearLength) {
+    $.Param.monthNames.push(($.Param.monthNames.length + 1).toString());
+  }
+  while ($.Param.monthShortNames.length < $.Param.yearLength) {
+    $.Param.monthShortNames.push(($.Param.monthShortNames.length + 1).toString());
+  }
+  while ($.Param.dayNames.length < $.Param.weekLength) {
+    $.Param.dayNames.push(($.Param.dayNames.length + 1).toString());
+  }
+  while ($.Param.dayShortNames.length < $.Param.weekLength) {
+    $.Param.dayShortNames.push(($.Param.dayShortNames.length + 1).toString());
+  }
 
   if (switchId !== NaN && switchId > 0) {
     $.Param.mainSwitchId = switchId;
@@ -176,7 +275,48 @@ var DayPeriods = {
   MVC.accessor($, 'dayPeriod');
   MVC.accessor($, 'weekDay');
 
+  MVC.reader($, 'monthName', function(){
+    return $.Param.monthNames[(this.month - 1) % $.Param.monthNames.length];
+  });
+
+  MVC.reader($, 'monthShortName', function(){
+    return $.Param.monthShortNames[(this.month - 1) % $.Param.monthShortNames.length];
+  });
+
+  MVC.reader($, 'dayName', function(){
+    return $.Param.dayNames[(this.weekDay - 1) % $.Param.dayNames.length];
+  });
+
+  MVC.reader($, 'dayShortName', function(){
+    return $.Param.dayShortNames[(this.weekDay - 1) % $.Param.dayShortNames.length];
+  });
+
+  MVC.reader($, 'inside', function(){
+    if (SceneManager._scene instanceof Scene_Map) {
+      if ($.Param.tilesetList.length > 0) {
+        if ($dataMap !== null) {
+          if ($.Param.tilesetList.indexOf($dataMap.tilesetId) >= 0) {
+            return true;
+          }
+        }
+      }
+
+      if ($.Param.insideSwitch > 0) {
+        if ($gameSwitches.value($.Param.insideSwitch)) {
+          return true;
+        }
+      }
+    }
+
+    return false;    
+  });
+
+  $.seconds = $.Param.initialSecond;
+  $.minute = $.Param.initialMinute;
   $.hour = $.Param.initialHour;
+  $.day = $.Param.initialDay;
+  $.month = $.Param.initialMonth;
+  $.year = $.Param.initialYear;
 
   MVC.accessor($, 'paused', function(value) {
     if ($.Param.mainSwitchId !== undefined) {
@@ -1028,7 +1168,14 @@ var DayPeriods = {
   var oldDataManager_setupNewGame = DataManager.setupNewGame;
   DataManager.setupNewGame = function() {
     oldDataManager_setupNewGame.call(this);
-    $.setDateTime({hour : $.Param.initialHour});
+    $.setDateTime({
+      seconds : $.Param.initialSecond,
+      minute : $.Param.initialMinute,
+      hour : $.Param.initialHour,
+      day : $.Param.initialDay,
+      month : $.Param.initialMonth,
+      year : $.Param.initialYear
+    });
     $.refreshTimeSystem();
   };
 
@@ -1043,4 +1190,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 1.8;
+Imported.OrangeTimeSystem = 1.9;

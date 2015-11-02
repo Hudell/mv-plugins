@@ -2,7 +2,7 @@
  * Orange - Time System Variables
  * By Hudell - www.hudell.com
  * OrangeTimeSystemVariables.js
- * Version: 1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -42,6 +42,21 @@
  * @desc The number of the variable where you want to store the day period
  * @default 0
  *
+ * @param monthNameVariable
+ * @desc The number of the variable where you want to store the name of the month
+ * @default 0
+ *
+ * @param monthShortNameVariable
+ * @desc The number of the variable where you want to store the short name of the month
+ * @default 0
+ *
+ * @param dayNameVariable
+ * @desc The number of the variable where you want to store the name of the day
+ * @default 0
+ *
+ * @param dayShortNameVariable
+ * @desc The number of the variable where you want to store the short name of the day
+ * @default 0
  *
  * @help
  * ============================================================================
@@ -75,6 +90,10 @@ if (Imported["OrangeTimeSystem"] === undefined) {
   $.Param.yearVariable = Number($.Parameters['yearVariable'] || 0);
   $.Param.weekDayVariable = Number($.Parameters['weekDayVariable'] || 0);
   $.Param.dayPeriodVariable = Number($.Parameters['dayPeriodVariable'] || 0);
+  $.Param.monthNameVariable = Number($.Parameters['monthNameVariable'] || 0);
+  $.Param.monthShortNameVariable = Number($.Parameters['monthShortNameVariable'] || 0);
+  $.Param.dayNameVariable = Number($.Parameters['dayNameVariable'] || 0);
+  $.Param.dayShortNameVariable = Number($.Parameters['dayShortNameVariable'] || 0);
 
   $.configureVariables = function() {
     if ($gameVariables === undefined || $gameVariables === null) return;
@@ -103,10 +122,22 @@ if (Imported["OrangeTimeSystem"] === undefined) {
     if ($.Param.dayPeriodVariable !== undefined && $.Param.secondVariable > 0) {
       $gameVariables.setValue($.Param.dayPeriodVariable, OrangeTimeSystem.dayPeriod);
     }
+    if ($.Param.monthNameVariable !== undefined && $.Param.monthNameVariable > 0) {
+      $gameVariables.setValue($.Param.monthNameVariable, OrangeTimeSystem.monthName);
+    }
+    if ($.Param.monthShortNameVariable !== undefined && $.Param.monthShortNameVariable > 0) {
+      $gameVariables.setValue($.Param.monthShortNameVariable, OrangeTimeSystem.monthShortName);
+    }
+    if ($.Param.dayNameVariable !== undefined && $.Param.dayNameVariable > 0) {
+      $gameVariables.setValue($.Param.dayNameVariable, OrangeTimeSystem.dayName);
+    }
+    if ($.Param.dayShortNameVariable !== undefined && $.Param.dayShortNameVariable > 0) {
+      $gameVariables.setValue($.Param.dayShortNameVariable, OrangeTimeSystem.dayShortName);
+    }
   };
 
   // Updates the variables every in-game second
   OrangeTimeSystem.on('changeSecond', $.configureVariables);
 })(OrangeTimeSystemVariables);
 
-Imported.OrangeTimeSystemVariables = 1.1;
+Imported.OrangeTimeSystemVariables = 1.2;

@@ -2,7 +2,7 @@
  * Orange - Day and Night
  * By Hudell - www.hudell.com
  * OrangeDayAndNight.js
- * Version: 1.2.1
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -30,14 +30,6 @@
  * @param tintSpeed
  * @desc how many frames should the tint effect take to complete?
  * @default 300
- *
- * @param insideSwitch
- * @desc when this switch is on, the screen will not be tinted
- * @default 0
- *
- * @param tilesetList
- * @desc You can set a list of comma separated tilesets that will always be treated as "inside", regardless of the switch value.
- * @default 
  */
 var Imported = Imported || {};
 
@@ -60,29 +52,9 @@ var OrangeDayAndNight = OrangeDayAndNight || MVC.shallowClone(OrangeEventManager
   $.Param.nightTint = $.Parameters['nightTint'] || "-102, -85, 0, 170";
 
   $.Param.tintSpeed = Number($.Parameters['tintSpeed'] || 0);
-  $.Param.insideSwitch = Number($.Parameters['insideSwitch'] || 0);
-  $.Param.tilesetList = ($.Parameters["tilesetList"] || '').split(',');
-
-  for (var i = 0; i < $.Param.tilesetList.length; i++) {
-    $.Param.tilesetList[i] = parseInt($.Param.tilesetList[i], 10);
-  }
 
   $.canTintScreen = function() {
-    if ($.Param.tilesetList.length > 0) {
-      if ($dataMap !== null) {
-        if ($.Param.tilesetList.indexOf($dataMap.tilesetId) >= 0) {
-          return false;
-        }
-      }
-    }
-
-    if ($.Param.insideSwitch > 0) {
-      if ($gameSwitches.value($.Param.insideSwitch)) {
-        return false;
-      }
-    }
-
-    return true;
+    return !OrangeTimeSystem.inside;
   };
 
   $.onDayPeriodChange = function(){
@@ -145,6 +117,22 @@ var OrangeDayAndNight = OrangeDayAndNight || MVC.shallowClone(OrangeEventManager
     oldGamePlayer_performTransfer.call(this);
     $.updateTint(1);
   };
+
+  var oldGameInterpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+  Game_Interpreter.prototype.pluginCommand = function(command, args) {
+    oldGameInterpreter_pluginCommand.call(this, command, args);
+
+    if (command.toUpperCase() == 'UPDATE') {
+      if (args.length >= 2 && args[0].toUpperCase() == 'SCREEN' && args[1].toUpperCase() == 'TINT') {
+        var speed = 0;
+        if (args.length >= 4 && args[2].toUpperCase() == 'IN') {
+          speed = parseInt(args[3], 10);
+        }
+
+        $.updateTint(speed);
+      }
+    }
+  };  
 })(OrangeDayAndNight);
 
-Imported["OrangeDayAndNight"] = 1.2;
+Imported["OrangeDayAndNight"] = 1.3;
