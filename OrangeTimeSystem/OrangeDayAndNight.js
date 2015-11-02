@@ -2,7 +2,7 @@
  * Orange - Day and Night
  * By Hudell - www.hudell.com
  * OrangeDayAndNight.js
- * Version: 1.2
+ * Version: 1.2.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -69,8 +69,10 @@ var OrangeDayAndNight = OrangeDayAndNight || MVC.shallowClone(OrangeEventManager
 
   $.canTintScreen = function() {
     if ($.Param.tilesetList.length > 0) {
-      if ($.Param.tilesetList.indexOf($dataMap.tilesetId) >= 0) {
-        return false;
+      if ($dataMap !== null) {
+        if ($.Param.tilesetList.indexOf($dataMap.tilesetId) >= 0) {
+          return false;
+        }
       }
     }
 
