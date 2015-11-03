@@ -32,7 +32,7 @@
  * @default 9
  *
  * @param minRainStrength
- * @desc A number between 1 and 9 identifying the max strength of rain. 
+ * @desc A number between 1 and 9 identifying the min strength of rain. 
  * @default 1
  *
  * @param rainStrengthByMonth
@@ -52,7 +52,7 @@
  * @default 9
  *
  * @param minSnowStrength
- * @desc A number between 1 and 9 identifying the max strength of snow. 
+ * @desc A number between 1 and 9 identifying the min strength of snow. 
  * @default 1
  *
  * @param snowStrengthByMonth
@@ -72,7 +72,7 @@
  * @default 9
  *
  * @param minStormStrength
- * @desc A number between 1 and 9 identifying the max strength of storm. 
+ * @desc A number between 1 and 9 identifying the min strength of storm. 
  * @default 1
  *
  * @param stormStrengthByMonth
