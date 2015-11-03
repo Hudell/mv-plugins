@@ -8,7 +8,6 @@
  /*:
  * @plugindesc Allows the configuration of custom hitboxes for events
  * @author Hudell
- *=============================================================================
  * @help
  * ============================================================================
  * Instructions

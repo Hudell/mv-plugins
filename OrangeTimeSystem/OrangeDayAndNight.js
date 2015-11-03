@@ -9,7 +9,6 @@
  * @plugindesc Tints the screen to show the time passing
  *             
  * @author Hudell
- *=============================================================================
  *
  * @param morningTint
  * @desc Red, Green, Blue and Gray values to use in the morning, comma separated
@@ -30,6 +29,17 @@
  * @param tintSpeed
  * @desc how many frames should the tint effect take to complete?
  * @default 300
+ *
+ * @help
+ * Use the following plugin command to update the screen tint immediatelly:
+ *
+ *   update screen tint
+ * 
+ * You can specify the duration of the tint effect this way:
+ * 
+ *   update screen tint in 20 frames
+ *
+ * 
  */
 var Imported = Imported || {};
 
