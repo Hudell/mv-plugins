@@ -2,7 +2,7 @@
  * Orange - Custom Event
  * By Hudell - www.hudell.com
  * OrangeCustomEvents.js
- * Version: 1.3
+ * Version: 1.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -132,10 +132,9 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
   // Game_Map
   //----------------------------------------------
   Game_Map.prototype.getIndexForNewEvent = function() {
-    var index = this._events.length;
-
-    if (index < 1000) {
-      index += 1000;
+    var index = 1;
+    while (index < this._events.length && !!this._events[index]) {
+      index++;
     }
 
     return index;
@@ -174,7 +173,10 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     var customEvents = $gameSystem.getCustomEvents(this._mapId);
     for (var eventId in customEvents) {
       if (customEvents[eventId] === undefined) continue;
-      this._events[eventId] = new Game_Custom_Event(this._mapId, eventId, customEvents[eventId]);
+      var newEventId = this.getIndexForNewEvent();
+
+      customEvents[eventId].eventId = newEventId;
+      this._events[newEventId] = new Game_Custom_Event(this._mapId, newEventId, customEvents[eventId]);
     }
   };
 
@@ -426,7 +428,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
   }
 })(OrangeCustomEvents);
 
-PluginManager.register("OrangeCustomEvents", "1.3", "This plugin Will let you add or copy events to the current map", {
+PluginManager.register("OrangeCustomEvents", "1.4", "This plugin Will let you add or copy events to the current map", {
   email: "plugins@hudell.com",
   name: "Hudell",
   website: "http://www.hudell.com"
