@@ -6,7 +6,7 @@
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Tints the screen to show the time passing
+ * @plugindesc Adds weather effects to your game
  *             
  * @author Hudell
  *=============================================================================
