@@ -2,7 +2,7 @@
  * Orange - Weather
  * By Hudell - www.hudell.com
  * OrangeWeather.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -395,6 +395,8 @@ var OrangeWeather = OrangeWeather || MVC.shallowClone(OrangeEventManager);
   };
 
   $.startRaining = function(strength, speed) {
+    if ($gameScreen === undefined || $gameScreen === null) return;
+
     $.runEvent('startRaining');
     if ($.Param.rainCommonEvent > 0) {
       $gameTemp.reserveCommonEvent($.Param.rainCommonEvent);
@@ -406,6 +408,8 @@ var OrangeWeather = OrangeWeather || MVC.shallowClone(OrangeEventManager);
   };
 
   $.startSnowing = function(strength, speed) {
+    if ($gameScreen === undefined || $gameScreen === null) return;
+    
     $.runEvent('startSnowing');
     if ($.Param.snowCommonEvent > 0) {
       $gameTemp.reserveCommonEvent($.Param.snowCommonEvent);
@@ -417,6 +421,8 @@ var OrangeWeather = OrangeWeather || MVC.shallowClone(OrangeEventManager);
   };
 
   $.startStorm = function(strength, speed) {
+    if ($gameScreen === undefined || $gameScreen === null) return;
+    
     $.runEvent('startStorm');
     if ($.Param.stormCommonEvent > 0) {
       $gameTemp.reserveCommonEvent($.Param.stormCommonEvent);
@@ -428,6 +434,8 @@ var OrangeWeather = OrangeWeather || MVC.shallowClone(OrangeEventManager);
   };
 
   $.resetWeather = function(speed) {
+    if ($gameScreen === undefined || $gameScreen === null) return;
+
     $.runEvent('normalWeather');
     if ($.Param.normalWeatherCommonEvent > 0) {
       $gameTemp.reserveCommonEvent($.Param.normalWeatherCommonEvent);
