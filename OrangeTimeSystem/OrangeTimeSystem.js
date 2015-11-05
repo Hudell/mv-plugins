@@ -2,15 +2,19 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 1.9.1
+ * Version: 2.0
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
  * @plugindesc Adds a time system to your game
  * @author Hudell
  *
+ * @param useRealTimeStructure
+ * @desc If true, the time "Length" (except secondLength) variables will be ignored and the plugin will use the real time structure
+ * @default false
+ *
  * @param useRealTime
- * @desc If true, the time "Length" variables will be ignored and the plugin will use the real time
+ * @desc If true, the time will be synced with the player's computer
  * @default false
  *
  * @param secondLength
@@ -181,7 +185,9 @@ var DayPeriods = {
   $.Param = $.Param || {};
 
   $.Param.useRealTime = $.Parameters["useRealTime"] == "true";
-  if ($.Param.useRealTime) {
+  $.Param.useRealTimeStructure = $.Parameters["useRealTimeStructure"] == "true";
+
+  if ($.Param.useRealTime || $.Param.useRealTimeStructure) {
     $.Param.secondLength = 1000;
     $.Param.yearLength = 12;
   } else {
@@ -388,7 +394,7 @@ var DayPeriods = {
     var minutes = config.minute;
     var seconds = config.seconds;
 
-    if ($.Param.useRealTime) {
+    if ($.Param.useRealTime || $.Param.useRealTimeStructure) {
       var dateObj = new Date();
       dateObj.setFullYear(years);
       dateObj.setMonth(months - 1);
@@ -427,7 +433,7 @@ var DayPeriods = {
   };
 
   $.convertTimestampToConfig = function(timestamp) {
-    if ($.Param.useRealTime) {
+    if ($.Param.useRealTime || $.Param.useRealTimeStructure) {
       var dateObj = new Date(timestamp);
 
       return {
@@ -484,7 +490,7 @@ var DayPeriods = {
 
     var diff = timestamp2 - timestamp1;
 
-    if ($.Param.useRealTime) {
+    if ($.Param.useRealTime || $.Param.useRealTimeStructure) {
       return (diff / 1000).floor();
     } else {
       return diff;
@@ -492,7 +498,7 @@ var DayPeriods = {
   };
 
   $.validateDateTimeValues = function(date) {
-    if ($.Param.useRealTime) return;
+    if ($.Param.useRealTime || $.Param.useRealTimeStructure) return;
 
     while (date.seconds >= $.Param.minuteLength) {
       date.minute += 1;
@@ -922,7 +928,7 @@ var DayPeriods = {
     var keysToRemove = [];
 
     var currentTimestamp = this.convertConfigToTimestamp(this.getDateTime());
-    if ($.Param.useRealTime) {
+    if ($.Param.useRealTime || $.Param.useRealTimeStructure) {
       currentTimestamp = (currentTimestamp / 1000).floor();
     }
 
@@ -937,7 +943,7 @@ var DayPeriods = {
         }
 
         var timestamp = this.convertConfigToTimestamp(config);
-        if ($.Param.useRealTime) {
+        if ($.Param.useRealTime || $.Param.useRealTimeStructure) {
           timestamp = (timestamp / 1000).floor();
         }
         
@@ -1200,4 +1206,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 1.9;
+Imported.OrangeTimeSystem = 2.0;
