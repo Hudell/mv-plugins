@@ -95,10 +95,15 @@ var OrangeMouseData = OrangeMouseData || {};
   $._onMouseMove = function(event) {
     if ($gameVariables === null || $gameSwitches === undefined) return;
 
-    var x = event.pageX;
-    var y = event.pageY;
-    var tileX = Graphics.pageToCanvasX(x);
-    var tileY = Graphics.pageToCanvasY(y);
+    var x = Graphics.pageToCanvasX(event.pageX);
+    var y = Graphics.pageToCanvasY(event.pageY);
+    var tileX = x; 
+    var tileY = y;
+
+    if ($gameMap !== undefined && $gameMap !== null && $dataMap !== undefined && $dataMap !== null) {
+      tileX = $gameMap.canvasToMapX(x);
+      tileY = $gameMap.canvasToMapY(y);
+    }
 
     if ($.Param.variableMouseX > 0) $gameVariables.setValue($.Param.variableMouseX, x);
     if ($.Param.variableMouseY > 0) $gameVariables.setValue($.Param.variableMouseY, y);
