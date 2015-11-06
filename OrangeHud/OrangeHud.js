@@ -50,6 +50,14 @@
  * @desc Number of a switch to hide / show the hud
  * @default 0
  *
+ * @param WindowMargin
+ * @desc The number of pixels to use on the margin of the hud window
+ * @default 4
+ *
+ * @param WindowPadding
+ * @desc The number of pixels to use on the padding of the hud window
+ * @default 18
+ *
  * @help
  * ============================================================================
  * Latest Version
@@ -103,6 +111,8 @@ if (Imported["MVCommons"] === undefined) {
   $.Param.HudOpacity = Number($.Parameters.HudOpacity || 0);
 
   $.Param.SwitchId = Number($.Parameters.SwitchId || 0);
+  $.Param.WindowMargin = Number($.Parameters.WindowMargin || 4);
+  $.Param.WindowPadding = Number($.Parameters.WindowPadding || 18);
 
   $._addons = {};
 
@@ -220,6 +230,8 @@ if (Imported["MVCommons"] === undefined) {
     this._varHudWindow.x = $.Param.HudX;
     this._varHudWindow.y = $.Param.HudY;
     this._varHudWindow.opacity = $.Param.HudOpacity;
+    this._varHudWindow.padding = $.Param.WindowPadding;
+    this._varHudWindow.margin = $.Param.WindowMargin;
 
     this.addChild(this._varHudWindow);
   };

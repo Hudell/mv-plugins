@@ -33,6 +33,18 @@
  * @desc A script call to be used to decide the filename of the picture instead of the pattern
  * @default 
  *
+ * @param VariableX
+ * @desc The number of the variable that holds the X position of the picture inside the HUD
+ * @default 0
+ *
+ * @param VariableY
+ * @desc The number of the variable that holds the Y position of the picture inside the HUD
+ * @default 0
+ *
+ * @param CommonEventId
+ * @desc Number of a common event to call if the player clicks on this picture
+ * @default 
+ *
  * @help
  * ============================================================================
  * Latest Version
@@ -51,26 +63,83 @@ if (Imported["OrangeHud"] === undefined) {
 var OrangeHudVariablePicture = OrangeHudVariablePicture || {};
 
 if (Imported["OrangeHudVariablePicture"] === undefined) {
-  OrangeHudVariablePicture.validateParams = function(line) {
-    if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
-      line.ScriptPattern = undefined;
+  OrangeHudVariablePicture.validateParams = function(paramsLine) {
+    if (paramsLine.ScriptPattern !== undefined && paramsLine.ScriptPattern.trim() === "") {
+      paramsLine.ScriptPattern = undefined;
     }
 
-    if (line.Pattern === undefined) {
-      line.Pattern = "%1";
-    } else if (line.Pattern.trim() === "") {
-      line.Pattern = "";
+    if (paramsLine.Pattern === undefined) {
+      paramsLine.Pattern = "%1";
+    } else if (paramsLine.Pattern.trim() === "") {
+      paramsLine.Pattern = "";
     }
 
-    line.VariableId = Number(line.VariableId || 0);
+    paramsLine.VariableId = Number(paramsLine.VariableId || 0);
 
-    line.X = Number(line.X || 0);
-    line.Y = Number(line.Y || 0);
+    paramsLine.X = Number(paramsLine.X || 0);
+    paramsLine.Y = Number(paramsLine.Y || 0);
 
-    line.SwitchId = Number(line.SwitchId || 0);
+    paramsLine.VariableX = Number(paramsLine.VariableX || 0);
+    paramsLine.VariableY = Number(paramsLine.VariableY || 0);
+    paramsLine.CommonEventId = Number(paramsLine.CommonEventId || 0);
+
+    paramsLine.SwitchId = Number(paramsLine.SwitchId || 0);
+
+    if (paramsLine.CommonEventId > 0) {
+      var key = OrangeHudVariablePicture.getKey(paramsLine);
+
+      this.images = this.images || {};
+      this.images[key] = this.images[key] || {};
+
+      var alias = TouchInput._onMouseDown;
+      var me = this;
+
+      TouchInput._onMouseDown = function(event) {
+        var x = Graphics.pageToCanvasX(event.pageX);
+        var y = Graphics.pageToCanvasY(event.pageY);
+
+        var width = me.images[key].width;
+        var height = me.images[key].height;
+
+        if (width !== undefined && height !== undefined) {
+          var imageX = me.realX(paramsLine) + OrangeHud.Param.HudX + OrangeHud.Param.WindowMargin + OrangeHud.Param.WindowPadding;
+          var imageY = me.realY(paramsLine) + OrangeHud.Param.HudY + OrangeHud.Param.WindowMargin + OrangeHud.Param.WindowPadding;
+
+          if (x >= imageX && y >= imageY) {
+            if (x <= imageX + width && y <= imageY + height) {
+              $gameTemp.reserveCommonEvent(paramsLine.CommonEventId);
+              return;
+            }
+          }
+        }
+
+        // If the click wasn't triggered, call the alias to keep the mouseDown event happening
+        alias.call(this, event);
+      };
+    }
   };
 
-  OrangeHudVariablePicture.drawLine = function(window, variableData) {
+  OrangeHudVariablePicture.realX = function(variableData) {
+    var x = variableData.X;
+
+    if (variableData.VariableX > 0) {
+      x = $gameVariables.value(variableData.VariableX);
+    }
+
+    return x;
+  };
+
+  OrangeHudVariablePicture.realY = function(variableData) {
+    var y = variableData.Y;
+
+    if (variableData.VariableY > 0) {
+      y = $gameVariables.value(variableData.VariableY);
+    }
+
+    return y;
+  };
+
+  OrangeHudVariablePicture.drawLine = function(hudWindow, variableData) {
     if (variableData.SwitchId > 0) {
       if (!$gameSwitches.value(variableData.SwitchId)) {
         return;
@@ -79,7 +148,22 @@ if (Imported["OrangeHudVariablePicture"] === undefined) {
 
     var filename = this.getFileName(variableData);
 
-    window.drawPicture(filename, variableData.X, variableData.Y);
+    x = this.realX(variableData);
+    y = this.realY(variableData);
+
+    var bitmap = ImageManager.loadPicture(filename);
+    var key = OrangeHudVariablePicture.getKey(variableData);
+    
+    this.images = this.images || {};
+    this.images[key] = this.images[key] || {};
+    this.images[key].width = bitmap._canvas.width;
+    this.images[key].height = bitmap._canvas.height;
+
+    this.drawPicture(hudWindow, filename, x, y, variableData);
+  };
+
+  OrangeHudVariablePicture.drawPicture = function(hudWindow, filename, x, y, variableData) {
+    hudWindow.drawPicture(filename, x, y);
   };
 
   OrangeHudVariablePicture.getValue = function(variableData) {
