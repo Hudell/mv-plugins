@@ -97,6 +97,10 @@
  * @desc At what year will the game start?
  * @default 1
  *
+ * @param weekDayOffset
+ * @desc Change the value here to a number betwen 0 and 6 to change the week day of the first day of the firstyear
+ * @default 0
+ *
  * @param dayNames
  * @desc A list of all the day names, separated by comma. If empty, the day number will be used
  * @default Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
@@ -221,6 +225,7 @@ var DayPeriods = {
     $.Param.tilesetList[i] = parseInt($.Param.tilesetList[i], 10);
   }  
 
+  $.Param.weekDayOffset = Number($.Parameters['weekDayOffset'] || 1);
   $.Param.pauseClockDuringConversations = $.Parameters["pauseClockDuringConversations"] !== "false";  
 
   var switchId = parseInt($.Parameters['mainSwitchId'], 10);
@@ -560,7 +565,7 @@ var DayPeriods = {
     var previousMonths = previousYears * $.Param.yearLength;
     var numMonths = previousMonths + this.month - 1;
     var numDays = numMonths * $.Param.monthLength + this.day;
-    this.weekDay = numDays % $.Param.weekLength;
+    this.weekDay = numDays % $.Param.weekLength + $.Param.weekDayOffset;
 
     this._onUpdateTime();
   };
