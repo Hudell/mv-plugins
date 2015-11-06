@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 2.0
+ * Version: 2.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -190,21 +190,30 @@ var DayPeriods = {
 
   $.Param.useRealTime = $.Parameters["useRealTime"] == "true";
   $.Param.useRealTimeStructure = $.Parameters["useRealTimeStructure"] == "true";
-
-  if ($.Param.useRealTime || $.Param.useRealTimeStructure) {
+  
+  if ($.Param.useRealTime) {
     $.Param.secondLength = 1000;
-    $.Param.yearLength = 12;
   } else {
     $.Param.secondLength = Number($.Parameters['secondLength'] || 100);
+  }
+
+  if ($.Param.useRealTime || $.Param.useRealTimeStructure) {
+    $.Param.yearLength = 12;
+    $.Param.minuteLength = 60;
+    $.Param.hourLength = 60;
+    $.Param.dayLength = 24;
+    $.Param.weekLength = 7;
+    $.Param.monthLength = 31;
+  } else {
     $.Param.yearLength = Number($.Parameters['yearLength'] || 12);
+    $.Param.minuteLength = Number($.Parameters['minuteLength'] || 60);
+    $.Param.hourLength = Number($.Parameters['hourLength'] || 60);
+    $.Param.dayLength = Number($.Parameters['dayLength'] || 24);
+    $.Param.weekLength = Number($.Parameters['weekLength'] || 7);
+    $.Param.monthLength = Number($.Parameters['monthLength'] || 31);
   }
   
   $.Param.secondLengthVariable = Number($.Parameters['secondLengthVariable'] || 0);
-  $.Param.minuteLength = Number($.Parameters['minuteLength'] || 60);
-  $.Param.hourLength = Number($.Parameters['hourLength'] || 60);
-  $.Param.dayLength = Number($.Parameters['dayLength'] || 24);
-  $.Param.weekLength = Number($.Parameters['weekLength'] || 7);
-  $.Param.monthLength = Number($.Parameters['monthLength'] || 31);
   
   $.Param.initialSecond = Number($.Parameters['initialSecond'] || 0);
   $.Param.initialMinute = Number($.Parameters['initialMinute'] || 0);
@@ -536,6 +545,10 @@ var DayPeriods = {
 
     var oldData = $.getDateTime();
 
+    if ($.Param.useRealTimeStructure) {
+      $.applyRealTimeLogic();
+    }
+
     var date = {
       seconds : this.seconds,
       minute : this.minute,
@@ -561,11 +574,13 @@ var DayPeriods = {
     }
 
     // Calculate week day
-    var previousYears = this.year - 1;
-    var previousMonths = previousYears * $.Param.yearLength;
-    var numMonths = previousMonths + this.month - 1;
-    var numDays = numMonths * $.Param.monthLength + this.day;
-    this.weekDay = numDays % $.Param.weekLength + $.Param.weekDayOffset;
+    if (!$.Param.useRealTime && !$.Param.useRealTimeStructure) {
+      var previousYears = this.year - 1;
+      var previousMonths = previousYears * $.Param.yearLength;
+      var numMonths = previousMonths + this.month - 1;
+      var numDays = numMonths * $.Param.monthLength + this.day;
+      this.weekDay = numDays % $.Param.weekLength + $.Param.weekDayOffset;
+    }
 
     this._onUpdateTime();
   };
@@ -638,6 +653,25 @@ var DayPeriods = {
 
     clearInterval(this._intervalHandler);
     this._intervalHandler = undefined;
+  };
+
+  $.applyRealTimeLogic = function(){
+    var date = new Date();
+
+    date.setFullYear(this.year);
+    date.setMonth(this.month - 1);
+    date.setDate(this.day);
+    date.setHours(this.hour);
+    date.setMinutes(this.minute);
+    date.setSeconds(this.seconds);
+
+    this.seconds = date.getSeconds();
+    this.minute = date.getMinutes();
+    this.hour = date.getHours();
+    this.day = date.getDate();
+    this.month = date.getMonth() + 1;
+    this.year = date.getFullYear();
+    this.weekDay = date.getDay();
   };
 
   $.loadRealTime = function() {
@@ -773,6 +807,7 @@ var DayPeriods = {
       $._onUpdateTime();
     } else if (SceneManager._scene instanceof Scene_Map) {
       $.seconds += 1;
+
       $.updateTime();
       $._onChangeSecond();
     }
