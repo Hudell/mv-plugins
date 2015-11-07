@@ -1,7 +1,7 @@
 /*=============================================================================
  * Orange - PluginName
  * By Hudell - www.hudell.com
- * PluginName.js
+ * OrangePluginName.js
  * Version: 1.0
  * Free for commercial and non commercial use.
  *=============================================================================*/
