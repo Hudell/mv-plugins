@@ -2,7 +2,7 @@
  * Orange - Mapshot
  * By Hudell - www.hudell.com
  * OrangeMapshot.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -12,6 +12,10 @@
  * @param useMapName
  * @desc if true, the filename will be the name of the map. If false it will be the number.
  * @default true
+ *
+ * @param separateLayers
+ * @desc if true, the plugin will create two separate images with the lower and upper layer
+ * @default false
  *
  * @param keyCode
  * @desc code of the key that will be used (44 = printscreen). http://link.hudell.com/js-keys
@@ -36,6 +40,8 @@ var OrangeMapshot = OrangeMapshot || {};
   $.Parameters = parameters[0].parameters;
   $.Param = {};
   $.Param.useMapName = $.Parameters.useMapName !== "false";
+  $.Param.separateLayers = $.Parameters.separateLayers === "true";
+
   $.Param.keyCode = Number($.Parameters.keyCode || 44);
 
   $.baseFileName = function() {
@@ -50,27 +56,32 @@ var OrangeMapshot = OrangeMapshot || {};
   };
 
   $.getMapshot = function() {
-    var lowerBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
-    var upperBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
-    var fullBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+    var lowerBitmap, upperBitmap;
 
-    SceneManager._scene._spriteset._tilemap._paintEverything(lowerBitmap, upperBitmap, fullBitmap);
+    lowerBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+    if ($.Param.separateLayers) {
+      upperBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+    } else {
+      upperBitmap = lowerBitmap;
+    }
 
-    return [fullBitmap, lowerBitmap, upperBitmap];
+    SceneManager._scene._spriteset._tilemap._paintEverything(lowerBitmap, upperBitmap);
+
+    return [lowerBitmap, upperBitmap];
   };
 
-  Tilemap.prototype._paintEverything = function(lowerBitmap, upperBitmap, fullBitmap) {
+  Tilemap.prototype._paintEverything = function(lowerBitmap, upperBitmap) {
     var tileCols = $dataMap.width;
     var tileRows = $dataMap.height;
 
     for (var y = 0; y < tileRows; y++) {
       for (var x = 0; x < tileCols; x++) {
-        this._paintTilesOnBitmap(lowerBitmap, upperBitmap, fullBitmap, x, y);
+        this._paintTilesOnBitmap(lowerBitmap, upperBitmap, x, y);
       }
     }
   };
 
-  Tilemap.prototype._paintTilesOnBitmap = function(lowerBitmap, upperBitmap, fullBitmap, x, y) {
+  Tilemap.prototype._paintTilesOnBitmap = function(lowerBitmap, upperBitmap, x, y) {
     var tableEdgeVirtualId = 10000;
     var mx = x;
     var my = y;
@@ -122,7 +133,6 @@ var OrangeMapshot = OrangeMapshot || {};
       }
     }
 
-    fullBitmap.clearRect(dx, dy, this._tileWidth, this._tileHeight);
     lowerBitmap.clearRect(dx, dy, this._tileWidth, this._tileHeight);
     upperBitmap.clearRect(dx, dy, this._tileWidth, this._tileHeight);
 
@@ -130,19 +140,15 @@ var OrangeMapshot = OrangeMapshot || {};
       var lowerTileId = lowerTiles[i];
       if (lowerTileId < 0) {
         this._drawShadow(lowerBitmap, shadowBits, dx, dy);
-        this._drawShadow(fullBitmap, shadowBits, dx, dy);
       } else if (lowerTileId >= tableEdgeVirtualId) {
         this._drawTableEdge(lowerBitmap, upperTileId1, dx, dy);
-        this._drawTableEdge(fullBitmap, upperTileId1, dx, dy);
       } else {
         this._drawTile(lowerBitmap, lowerTileId, dx, dy);
-        this._drawTile(fullBitmap, lowerTileId, dx, dy);
       }
     }
 
     for (var j = 0; j < upperTiles.length; j++) {
       this._drawTile(upperBitmap, upperTiles[j], dx, dy);
-      this._drawTile(fullBitmap, upperTiles[j], dx, dy);
     }
   };
 
@@ -155,15 +161,20 @@ var OrangeMapshot = OrangeMapshot || {};
     try {
       fs.mkdir(path, function() {
         var fileName = path + '/' + $.baseFileName();
-        var names = [
-          fileName + '.png',
-          fileName + '_lower.png',
-          fileName + '_upper.png'
-        ];
+        var names = [fileName + '.png'];
+        var maxFiles = 1;
+
+        if ($.Param.separateLayers) {
+          maxFiles = 2;
+          names = [
+            fileName + '_lower.png',
+            fileName + '_upper.png'
+          ];
+        } 
 
         var snaps = $.getMapshot();
 
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < maxFiles; i++) {
           var urlData = snaps[i].canvas.toDataURL();
           var base64Data = urlData.replace(/^data:image\/png;base64,/, "");
 
