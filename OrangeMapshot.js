@@ -50,9 +50,9 @@ var OrangeMapshot = OrangeMapshot || {};
   };
 
   $.getMapshot = function() {
-    var lowerBitmap = new Bitmap($dataMap.width * 48, $dataMap.height * 38);
-    var upperBitmap = new Bitmap($dataMap.width * 48, $dataMap.height * 38);
-    var fullBitmap = new Bitmap($dataMap.width * 48, $dataMap.height * 38);
+    var lowerBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+    var upperBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+    var fullBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
 
     SceneManager._scene._spriteset._tilemap._paintEverything(lowerBitmap, upperBitmap, fullBitmap);
 
@@ -69,7 +69,6 @@ var OrangeMapshot = OrangeMapshot || {};
       }
     }
   };
-
 
   Tilemap.prototype._paintTilesOnBitmap = function(lowerBitmap, upperBitmap, fullBitmap, x, y) {
     var tableEdgeVirtualId = 10000;
