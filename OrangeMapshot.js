@@ -2,7 +2,7 @@
  * Orange - Mapshot
  * By Hudell - www.hudell.com
  * OrangeMapshot.js
- * Version: 1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -20,6 +20,14 @@
  * @param keyCode
  * @desc code of the key that will be used (44 = printscreen). http://link.hudell.com/js-keys
  * @default 44
+ *
+ * @param imageType
+ * @desc What type of image should be generated. Can be png, jpeg or webp
+ * @default png
+ *
+ * @param imageQuality
+ * @desc If the imageType is jpeg or webp, you can set this to a number between 0 and 100 indicating the quality of the image
+ * @default 70
  *
  * @help
  * Check keycodes at  http://link.hudell.com/js-keys
@@ -41,8 +49,37 @@ var OrangeMapshot = OrangeMapshot || {};
   $.Param = {};
   $.Param.useMapName = $.Parameters.useMapName !== "false";
   $.Param.separateLayers = $.Parameters.separateLayers === "true";
+  $.Param.imageType = $.Parameters.imageType || 'png';
+  $.Param.imageQuality = Number($.Parameters.imageQuality || 70);
 
   $.Param.keyCode = Number($.Parameters.keyCode || 44);
+
+  $.imageType = function() {
+    if ($.Param.imageType == 'webp') return 'image/webp';
+    if ($.Param.imageType == 'jpeg' || $.Param.imageType == 'jpg') return 'image/jpeg';
+    return 'image/png';
+  };
+
+  $.imageRegex = function() {
+    if ($.Param.imageType == 'webp') return (/^data:image\/webp;base64,/);
+    if ($.Param.imageType == 'jpeg' || $.Param.imageType == 'jpg') return (/^data:image\/jpeg;base64,/);
+    
+    return (/^data:image\/png;base64,/);
+  };
+
+  $.fileExtension = function() {
+    if ($.Param.imageType == 'webp') return '.webp';
+    if ($.Param.imageType == 'jpeg' || $.Param.imageType == 'jpg') return '.jpg';
+    return '.png';
+  };
+
+  $.imageQuality = function() {
+    if ($.fileExtension() == '.jpg' || $.fileExtension() == '.webp') {
+      return Math.min($.Param.imageQuality, 100) / 100;
+    }
+
+    return 1;
+  };
 
   $.baseFileName = function() {
     var mapName = ($gameMap._mapId).padZero(3);
@@ -161,22 +198,25 @@ var OrangeMapshot = OrangeMapshot || {};
     try {
       fs.mkdir(path, function() {
         var fileName = path + '/' + $.baseFileName();
-        var names = [fileName + '.png'];
+        var ext = $.fileExtension();
+        var names = [fileName + ext];
         var maxFiles = 1;
+        var regex = $.imageRegex();
 
         if ($.Param.separateLayers) {
           maxFiles = 2;
           names = [
-            fileName + '_lower.png',
-            fileName + '_upper.png'
+            fileName + '_lower' + ext,
+            fileName + '_upper' + ext
           ];
         } 
 
         var snaps = $.getMapshot();
 
         for (var i = 0; i < maxFiles; i++) {
-          var urlData = snaps[i].canvas.toDataURL();
-          var base64Data = urlData.replace(/^data:image\/png;base64,/, "");
+          var urlData = snaps[i].canvas.toDataURL($.imageType(), $.imageQuality());
+
+          var base64Data = urlData.replace(regex, "");
 
           fs.writeFile(names[i], base64Data, 'base64', function(error) {
             if (error !== undefined && error !== null) {
