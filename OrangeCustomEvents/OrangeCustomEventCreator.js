@@ -65,16 +65,8 @@ var EventPriorities = {
   OVER_PLAYER: 2
 };
 
-// var CustomEventData = MVC.extend();
-// var CustomEventData_Page = MVC.extend();
-// var CustomEventData_Page_Image = MVC.extend();
-// var CustomEventData_Page_Condition = MVC.extend();
-// var CustomEventData_Page_MoveRoute = MVC.extend();
-
 (function($) {
   "use strict";
-
-  // #ToDo: Require OrangeCustomEvents
 
   //----------------------------------------------.
   //----------------------------------------------|
