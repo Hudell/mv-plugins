@@ -2,7 +2,7 @@
  * Orange - Mapshot
  * By Hudell - www.hudell.com
  * OrangeMapshot.js
- * Version: 1.0.1
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -204,4 +204,4 @@ var OrangeMapshot = OrangeMapshot || {};
   };
 })(OrangeMapshot);
 
-Imported["OrangeMapshot"] = true;
+Imported["OrangeMapshot"] = 1.1;
