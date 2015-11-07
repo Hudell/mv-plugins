@@ -197,32 +197,38 @@ var OrangeMapshot = OrangeMapshot || {};
 
     try {
       fs.mkdir(path, function() {
-        var fileName = path + '/' + $.baseFileName();
-        var ext = $.fileExtension();
-        var names = [fileName + ext];
-        var maxFiles = 1;
-        var regex = $.imageRegex();
+        try{
+          var fileName = path + '/' + $.baseFileName();
+          var ext = $.fileExtension();
+          var names = [fileName + ext];
+          var maxFiles = 1;
+          var regex = $.imageRegex();
 
-        if ($.Param.separateLayers) {
-          maxFiles = 2;
-          names = [
-            fileName + '_lower' + ext,
-            fileName + '_upper' + ext
-          ];
-        } 
+          if ($.Param.separateLayers) {
+            maxFiles = 2;
+            names = [
+              fileName + '_lower' + ext,
+              fileName + '_upper' + ext
+            ];
+          } 
 
-        var snaps = $.getMapshot();
+          var snaps = $.getMapshot();
 
-        for (var i = 0; i < maxFiles; i++) {
-          var urlData = snaps[i].canvas.toDataURL($.imageType(), $.imageQuality());
+          for (var i = 0; i < maxFiles; i++) {
+            var urlData = snaps[i].canvas.toDataURL($.imageType(), $.imageQuality());
 
-          var base64Data = urlData.replace(regex, "");
+            var base64Data = urlData.replace(regex, "");
 
-          fs.writeFile(names[i], base64Data, 'base64', function(error) {
-            if (error !== undefined && error !== null) {
-              console.error('An error occured while saving the mapshot', error);
-            }
-          });
+            fs.writeFile(names[i], base64Data, 'base64', function(error) {
+              if (error !== undefined && error !== null) {
+                console.error('An error occured while saving the mapshot', error);
+              }
+            });
+          }
+        } catch (error) {
+          if (error !== undefined && error !== null) {
+            console.error('An error occured while saving the map shot:', error);
+          }
         }
       });
     } catch (error) {
