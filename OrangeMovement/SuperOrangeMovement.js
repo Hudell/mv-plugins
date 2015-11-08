@@ -2,7 +2,7 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovement.js
- * Version: 1.3
+ * Version: 1.3.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -245,23 +245,23 @@ var Direction = {
   DOWN_LEFT: 1,
   DOWN_RIGHT: 3,
 
-  goes_up: function(d) {
+  goesUp: function(d) {
     return [7, 8, 9].indexOf(d) >= 0;
   },
 
-  goes_down: function(d) {
+  goesDown: function(d) {
     return [1, 2, 3].indexOf(d) >= 0;
   },
 
-  goes_left: function(d) {
+  goesLeft: function(d) {
     return [1, 4, 7].indexOf(d) >= 0;
   },
 
-  goes_right: function(d) {
+  goesRight: function(d) {
     return [3, 6, 9].indexOf(d) >= 0;
   },
 
-  join_directions: function(dir1, dir2) {
+  joinDirections: function(dir1, dir2) {
     if (dir1 == Direction.UP || dir2 == Direction.UP) {
       if (dir1 == Direction.LEFT || dir2 == Direction.LEFT) {
         return Direction.UP_LEFT;
@@ -283,7 +283,7 @@ var Direction = {
     }
   },
 
-  get_button_name: function(direction, defaultValue) {
+  getButtonName: function(direction, defaultValue) {
     switch (direction) {
       case Direction.UP:
         return 'up';
@@ -558,17 +558,17 @@ var Direction = {
     });
 
     // Gets the real _x position of the character
-    MVC.reader(character.prototype, 'float_x', function() {
+    MVC.reader(character.prototype, 'floatX', function() {
       return this._x;
     });
 
     // Gets the real _y position of the character
-    MVC.reader(character.prototype, 'float_y', function() {
+    MVC.reader(character.prototype, 'floatY', function() {
       return this._y;
     });
 
     // Gets the Y position of the character as an approximated integer
-    MVC.reader(character.prototype, 'tile_y', function() {
+    MVC.reader(character.prototype, 'tileY', function() {
       var diff = this._y - this._y.floor();
       if (diff < 0.5) {
         return this._y.floor();
@@ -578,7 +578,7 @@ var Direction = {
     });
 
     // Gets the X position of the character as an approximated integer
-    MVC.reader(character.prototype, 'tile_x', function() {
+    MVC.reader(character.prototype, 'tileX', function() {
       var diff = this._x - this._x.floor();
       if (diff < 0.5) {
         return this._x.floor();
@@ -588,11 +588,11 @@ var Direction = {
     });
 
     // MVC.reader(character.prototype, 'x', function() {
-    //   return this.tile_x;
+    //   return this.tileX;
     // });
 
     // MVC.reader(character.prototype, 'y', function() {
-    //   return this.tile_y;
+    //   return this.tileY;
     // });
 
     character.prototype.deltaXFrom = function(x) {
@@ -604,22 +604,22 @@ var Direction = {
     };
 
     // Method that checks if the character can move in a specified direction
-    character.prototype.can_go_to = function(x, y, d) {
+    character.prototype.canGoTo = function(x, y, d) {
       switch (d) {
         case Direction.UP:
-          return this.can_go_up(x, y);
+          return this.canGoUp(x, y);
         case Direction.DOWN:
-          return this.can_go_down(x, y);
+          return this.canGoDown(x, y);
         case Direction.LEFT:
-          return this.can_go_left(x, y);
+          return this.canGoLeft(x, y);
         case Direction.RIGHT:
-          return this.can_go_right(x, y);
+          return this.canGoRight(x, y);
         default:
           return false;
       }
     };
 
-    character.prototype.check_up_passage = function(new_x, the_y, destination_y) {
+    character.prototype.checkUpPassage = function(new_x, the_y, destination_y) {
       if (this instanceof Game_Player) {
         var vehicle = this.vehicle();
         if (vehicle !== undefined && vehicle !== null) {
@@ -627,7 +627,7 @@ var Direction = {
         }
       }
 
-      if (!$gameMap.isPassable(new_x, the_y.floor(), Direction.UP)) {
+      if (!$gameMap.isPassable(new_x, the_y.ceil(), Direction.UP)) {
         return false;
       }
 
@@ -639,7 +639,7 @@ var Direction = {
     };
 
     // Method that checks if the character can move up
-    character.prototype.can_go_up = function(x, y) {
+    character.prototype.canGoUp = function(x, y) {
       // Variables the_x and the_y hold the true position, considering the hitbox configuration
       var the_x = (x + this.hitboxXSize).fix();
       var the_y = (y + this.hitboxYSize).fix();
@@ -653,7 +653,7 @@ var Direction = {
 
       // Run the collission check for every X tile the character is touching
       for (var new_x = the_x.floor(); new_x <= end_x.floor(); new_x++) {
-        if (this.check_up_passage(new_x, the_y, destination_y) === false) {
+        if (this.checkUpPassage(new_x, the_y, destination_y) === false) {
           return false;
         }
       }
@@ -661,7 +661,7 @@ var Direction = {
       return true;
     };
 
-    character.prototype.check_down_passage = function(new_x, end_y, destination_end_y) {
+    character.prototype.checkDownPassage = function(new_x, end_y, destination_end_y) {
       if (this instanceof Game_Player) {
         var vehicle = this.vehicle();
         if (vehicle !== undefined && vehicle !== null) {
@@ -669,8 +669,10 @@ var Direction = {
         }
       }
 
-      if (!$gameMap.isPassable(new_x, end_y.floor(), Direction.DOWN)) {
-        return false;
+      if (destination_end_y.floor() > end_y.floor()) {
+        if (!$gameMap.isPassable(new_x, end_y.floor(), Direction.DOWN)) {
+          return false;
+        }
       }
 
       if (!$gameMap.isPassable(new_x, destination_end_y.floor(), Direction.UP)) {
@@ -681,7 +683,7 @@ var Direction = {
     };
 
     // Method that checks if the character can move down
-    character.prototype.can_go_down = function(x, y) {
+    character.prototype.canGoDown = function(x, y) {
       // Variables the_x and the_y hold the true position, considering the hitbox configuration
       var the_x = (x + this.hitboxXSize).fix();
       var the_y = (y + this.hitboxYSize).fix();
@@ -698,7 +700,7 @@ var Direction = {
 
       // Run the collission check for every X tile the character is touching
       for (var new_x = the_x.floor(); new_x <= end_x.floor(); new_x++) {
-        if (this.check_down_passage(new_x, end_y, destination_end_y) === false) {
+        if (this.checkDownPassage(new_x, end_y, destination_end_y) === false) {
           return false;
         }
       }
@@ -706,7 +708,7 @@ var Direction = {
       return true;
     };
 
-    character.prototype.check_left_passage = function(the_x, new_y, destination_x) {
+    character.prototype.checkLeftPassage = function(the_x, new_y, destination_x) {
       if (this instanceof Game_Player) {
         var vehicle = this.vehicle();
         if (vehicle !== undefined && vehicle !== null) {
@@ -714,7 +716,7 @@ var Direction = {
         }
       }
 
-      if (!$gameMap.isPassable(the_x.floor(), new_y, Direction.LEFT)) {
+      if (!$gameMap.isPassable(the_x.ceil(), new_y, Direction.LEFT)) {
         return false;
       }
 
@@ -726,7 +728,7 @@ var Direction = {
     };
 
     // Method that checks if the character can move left
-    character.prototype.can_go_left = function(x, y) {
+    character.prototype.canGoLeft = function(x, y) {
       // Variables the_x and the_y hold the true position, considering the hitbox configuration
       var the_x = x + this.hitboxXSize;
       var the_y = y + this.hitboxYSize;
@@ -740,7 +742,7 @@ var Direction = {
 
       // Run the collission check for every Y tile the character is touching
       for (var new_y = the_y.floor(); new_y <= end_y.floor(); new_y++) {
-        if (this.check_left_passage(the_x, new_y, destination_x) === false) {
+        if (this.checkLeftPassage(the_x, new_y, destination_x) === false) {
           return false;
         }
       }
@@ -748,7 +750,7 @@ var Direction = {
       return true;
     };
 
-    character.prototype.check_right_passage = function(end_x, new_y, destination_end_x) {
+    character.prototype.checkRightPassage = function(end_x, new_y, destination_end_x) {
       if (this instanceof Game_Player) {
         var vehicle = this.vehicle();
         if (vehicle !== undefined && vehicle !== null) {
@@ -756,8 +758,10 @@ var Direction = {
         }
       }
 
-      if (!$gameMap.isPassable(end_x.floor(), new_y, Direction.RIGHT)) {
-        return false;
+      if (destination_end_x.floor() > end_x.floor()) {
+        if (!$gameMap.isPassable(end_x.floor(), new_y, Direction.RIGHT)) {
+          return false;
+        }
       }
 
       if (!$gameMap.isPassable(destination_end_x.floor(), new_y, Direction.LEFT)) {
@@ -769,7 +773,7 @@ var Direction = {
 
 
     // Method that checks if the character can move right
-    character.prototype.can_go_right = function(x, y) {
+    character.prototype.canGoRight = function(x, y) {
       // Variables the_x and the_y hold the true position, considering the hitbox configuration
       var the_x = (x + this.hitboxXSize).fix();
       var the_y = (y + this.hitboxYSize).fix();
@@ -786,7 +790,7 @@ var Direction = {
 
       // Run the collission check for every Y tile the character is touching
       for (var new_y = the_y.floor(); new_y <= end_y.floor(); new_y++) {
-        if (this.check_right_passage(end_x, new_y, destination_end_x) === false) {
+        if (this.checkRightPassage(end_x, new_y, destination_end_x) === false) {
           return false;
         }
       }
@@ -865,22 +869,22 @@ var Direction = {
 
     // Replaces the original isMapPassable method, changing the way the collision is checked to consider fractional position
     character.prototype.isMapPassable = function(x, y, d) {
-      if (Direction.goes_up(d)) {
-        if (!this.can_go_up(x, y)) {
+      if (Direction.goesUp(d)) {
+        if (!this.canGoUp(x, y)) {
           return false;
         }
-      } else if (Direction.goes_down(d)) {
-        if (!this.can_go_down(x, y)) {
+      } else if (Direction.goesDown(d)) {
+        if (!this.canGoDown(x, y)) {
           return false;
         }
       }
 
-      if (Direction.goes_left(d)) {
-        if (!this.can_go_left(x, y)) {
+      if (Direction.goesLeft(d)) {
+        if (!this.canGoLeft(x, y)) {
           return false;
         }
-      } else if (Direction.goes_right(d)) {
-        if (!this.can_go_right(x, y)) {
+      } else if (Direction.goesRight(d)) {
+        if (!this.canGoRight(x, y)) {
           return false;
         }
       }
@@ -1065,9 +1069,9 @@ var Direction = {
 
   // This method adds or subtracts the step_size to an X position, based on the direction
   Game_Map.prototype.fractionXWithDirection = function(x, d) {
-    if (Direction.goes_left(d)) {
+    if (Direction.goesLeft(d)) {
       return x - $.Param.Step_Size;
-    } else if (Direction.goes_right(d)) {
+    } else if (Direction.goesRight(d)) {
       return x + $.Param.Step_Size;
     } else {
       return x;
@@ -1076,9 +1080,9 @@ var Direction = {
 
   // This method adds or subtracts the step_size to a Y position, based on the direction
   Game_Map.prototype.fractionYWithDirection = function(y, d) {
-    if (Direction.goes_down(d)) {
+    if (Direction.goesDown(d)) {
       return y + $.Param.Step_Size;
-    } else if (Direction.goes_up(d)) {
+    } else if (Direction.goesUp(d)) {
       return y - $.Param.Step_Size;
     } else {
       return y;
@@ -1246,7 +1250,7 @@ var Direction = {
       }
 
       if (horzDirection !== undefined && vertDirection !== undefined) {
-        return Direction.join_directions(horzDirection, vertDirection);
+        return Direction.joinDirections(horzDirection, vertDirection);
       }
 
       if (horzDirection !== undefined) {
@@ -1305,7 +1309,7 @@ var Direction = {
 
     // If the player is pressing two direction buttons and the direction picked by dir4 is unavailable, try the other non-diagonal direction
     alternative_d = this.getAlternativeDirection(direction, diagonal_d);
-    button = Direction.get_button_name(direction, button);
+    button = Direction.getButtonName(direction, button);
 
     $.clearCheckedTiles();
 
@@ -1412,8 +1416,8 @@ var Direction = {
 
   // Changes the logic used to turn towards the player, because the old one didn't work well with pixel movement
   Game_Character.prototype.turnTowardPlayer = function() {
-    var sx = this.deltaXFrom($gamePlayer.float_x);
-    var sy = this.deltaYFrom($gamePlayer.float_y);
+    var sx = this.deltaXFrom($gamePlayer.floatX);
+    var sy = this.deltaYFrom($gamePlayer.floatY);
 
     if (sx.abs() < 1 && sy.abs() < 1) {
       this.setDirection(10 - $gamePlayer.direction);
@@ -1428,8 +1432,8 @@ var Direction = {
 
   // Changes the logic used to turn away from the player, because the old one didn't work well with pixel movement
   Game_Character.prototype.turnAwayFromPlayer = function() {
-    var sx = this.deltaXFrom($gamePlayer.float_x);
-    var sy = this.deltaYFrom($gamePlayer.float_y);
+    var sx = this.deltaXFrom($gamePlayer.floatX);
+    var sy = this.deltaYFrom($gamePlayer.floatY);
 
     if (sx.abs() < 1 && sy.abs() < 1) {
       this.setDirection($gamePlayer.direction);
@@ -1446,8 +1450,8 @@ var Direction = {
   // Also adds the FollowersDistance param.
   Game_Follower.prototype.chaseCharacter = function(character) {
     if (!this.isMoving()) {
-      var ideal_x = character.float_x;
-      var ideal_y = character.float_y;
+      var ideal_x = character.floatX;
+      var ideal_y = character.floatY;
 
       switch (character.direction()) {
         case Direction.DOWN:
