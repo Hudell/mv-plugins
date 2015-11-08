@@ -2,7 +2,7 @@
  * Orange - Custom Event
  * By Hudell - www.hudell.com
  * OrangeCustomEvents.js
- * Version: 1.4
+ * Version: 1.4.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -110,6 +110,8 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     this.initCustomEvents(mapId);
     this.clearSelfSwitches(mapId, event.id);
     this._customEvents[mapId][event.id] = event;
+
+    return event;
   };
 
   Game_System.prototype.removeCustomEvent = function(mapId, eventId) {
@@ -183,7 +185,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
   Game_Map.prototype.addEventAt = function(eventData, x, y, temporary) {
     eventData.x = x;
     eventData.y = y;
-    this.addEvent(eventData, temporary);
+    return this.addEvent(eventData, temporary);
   };
 
   Game_Map.prototype.spawnEvent = function(eventData, tileList, temporary) {
