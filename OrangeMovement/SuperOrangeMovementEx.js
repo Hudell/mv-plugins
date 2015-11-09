@@ -2,7 +2,7 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovementEx.js
- * Version: 1.4
+ * Version: 1.4.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -1687,7 +1687,7 @@ var Direction = {
       }
 
       if (direction > 0) {
-        if (!this.canGoTo(this._x, this._y, direction)) {
+        if (!this.canPass(this._x, this._y, direction)) {
           this.clearCachedNode();
           direction = 0;
         }
