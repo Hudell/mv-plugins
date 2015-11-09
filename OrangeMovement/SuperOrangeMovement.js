@@ -2,7 +2,7 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovement.js
- * Version: 1.3.1
+ * Version: 1.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -38,6 +38,10 @@
  *
  * @param DisablePixelMovementForMouseRoutes
  * @desc CAUTION: Check the plugin help for info on disabling this
+ * @default true
+ *
+ * @param CustomPathfinding
+ * @desc Change this to false if you don't want to use OrangePathfinding
  * @default true
  *
  * @author Hudell
@@ -105,6 +109,10 @@
  * @desc CUIDADO: Clique no botão ajuda para mais informações sobre este parametro
  * @default true
  *
+ * @param CustomPathfinding
+ * @desc Troque este parametro para false para desativar meu pathfinding personalizado
+ * @default true
+ *
  * @author Hudell
  *
  *
@@ -168,6 +176,10 @@
  *
  * @param DisablePixelMovementForMouseRoutes
  * @desc ATTENTION ! Lire attentivement la section Aide avant de désactiver cette option (désactiver = false).
+ * @default true
+ *
+ * @param CustomPathfinding
+ * @desc Set this to false to disable my custom pathfinding
  * @default true
  *
  * @author Hudell
@@ -320,6 +332,8 @@ var Direction = {
   $.Param.FollowersDistance = Number($.Parameters["FollowersDistance"] || 0.5);
   $.Param.TriggerAllAvailableEvents = $.Parameters["TriggerAllAvailableEvents"] === "true";
   $.Param.TriggerTouchEventsAfterTeleport = $.Parameters["TriggerTouchEventsAfterTeleport"] === "true";
+  $.Param.CustomPathfinding = $.Parameters["CustomPathfinding"] !== "false";
+  $.Param.DiagonalPathfinding = false;
 
   if ($.Param.Tile_Sections === undefined || parseInt($.Param.Tile_Sections, 10) <= 0) {
     throw new Error("SuperOrangeMovement: The Tile_Sections param is invalid.");
@@ -387,6 +401,14 @@ var Direction = {
     }
     return true;
   };
+
+  Game_Character.prototype.roundXWithDirection = function(x, direction) {
+    return $gameMap.roundXWithDirection(x, direction);
+  };
+
+  Game_Character.prototype.roundYWithDirection = function(y, direction) {
+    return $gameMap.roundYWithDirection(y, direction);
+  };  
 
   var addPropertiesToCharacter = function(character) {
 
@@ -601,6 +623,14 @@ var Direction = {
 
     character.prototype.deltaYFrom = function(y) {
       return $gameMap.deltaY(this._y, y);
+    };
+
+    character.prototype.roundXWithDirection = function(x, direction) {
+      return $gameMap.roundFractionXWithDirection(x, direction, this.myStepSize());
+    };
+
+    character.prototype.roundYWithDirection = function(y, direction) {
+      return $gameMap.roundFractionYWithDirection(y, direction, this.myStepSize());
     };
 
     // Method that checks if the character can move in a specified direction
@@ -1067,6 +1097,26 @@ var Direction = {
     return true;
   };
 
+  Game_Map.prototype.xWithDirection = function(x, d) {
+    if (Direction.goesLeft(d)) {
+      return x - $.Param.Step_Size;
+    } else if (Direction.goesRight(d)) {
+      return x + $.Param.Step_Size;
+    } else {
+      return x;
+    }
+  };
+
+  Game_Map.prototype.yWithDirection = function(y, d) {
+    if (Direction.goesDown(d)) {
+      return y + $.Param.Step_Size;
+    } else if (Direction.goesUp(d)) {
+      return y - $.Param.Step_Size;
+    } else {
+      return y;
+    }
+  };
+
   // This method adds or subtracts the step_size to an X position, based on the direction
   Game_Map.prototype.fractionXWithDirection = function(x, d) {
     if (Direction.goesLeft(d)) {
@@ -1264,6 +1314,224 @@ var Direction = {
 
     return this.findDirectionTo(x, y);
   };
+
+  if ($.Param.CustomPathfinding !== false) {
+    Game_Character.prototype.getDirectionNode = function(start, goalX, goalY) {
+      var searchLimit = this.searchLimit();
+      var mapWidth = $gameMap.width();
+      var nodeList = [];
+      var openList = [];
+      var closedList = [];
+      var best = start;
+
+      if (this.x === goalX && this.y === goalY) {
+        return undefined;
+      }
+
+      nodeList.push(start);
+      openList.push(start.y * mapWidth + start.x);
+
+      while (nodeList.length > 0) {
+        var bestIndex = 0;
+        for (var i = 0; i < nodeList.length; i++) {
+          if (nodeList[i].f < nodeList[bestIndex].f) {
+            bestIndex = i;
+          }
+        }
+
+        var current = nodeList[bestIndex];
+        var x1 = current.x;
+        var y1 = current.y;
+        var pos1 = y1 * mapWidth + x1;
+        var g1 = current.g;
+
+        nodeList.splice(bestIndex, 1);
+        openList.splice(openList.indexOf(pos1), 1);
+        closedList.push(pos1);
+
+        if (current.x === goalX && current.y === goalY) {
+          best = current;
+          // goaled = true;
+          break;
+        }
+
+        if (g1 >= searchLimit) {
+          continue;
+        }
+
+        // var allDirections = [];
+        // if ($.Param.DiagonalPathfinding !== false) {
+        //   allDirections.push(Direction.DOWN_LEFT);
+        //   allDirections.push(Direction.DOWN_RIGHT);
+        //   allDirections.push(Direction.UP_LEFT);
+        //   allDirections.push(Direction.UP_RIGHT);
+        // }
+
+        // allDirections.push(Direction.LEFT);
+        // allDirections.push(Direction.RIGHT);
+        // allDirections.push(Direction.DOWN);
+        // allDirections.push(Direction.UP);
+
+        // allDirections.forEach(function(direction){
+
+        for (var j = 0; j < 4; j++) {
+          var direction = 2 + j * 2;
+
+          var x2, y2;
+
+          if ($.Param.DisablePixelMovementForMouseRoutes !== false) {
+            x2 = $gameMap.roundXWithDirection(x1, direction);
+            y2 = $gameMap.roundYWithDirection(y1, direction);
+          } else {
+            x2 = this.roundXWithDirection(x1, direction);
+            y2 = this.roundYWithDirection(y1, direction);
+          }
+
+          var pos2 = y2 * mapWidth + x2;
+
+          if (closedList.contains(pos2)) {
+            // return;
+            continue;
+          }
+          if (!this.canPass(x1, y1, direction)) {
+            // return;
+            continue;
+          }
+
+          var g2 = g1;
+          if ($.Param.DisablePixelMovementForMouseRoutes !== false) {
+            g2 += 1;
+          } else {
+            g2 += 1 / $.Param.Tile_Sections;
+          }
+
+          var index2 = openList.indexOf(pos2);
+
+          if (index2 < 0 || g2 < nodeList[index2].g) {
+            var neighbor;
+            if (index2 >= 0) {
+              neighbor = nodeList[index2];
+            } else {
+              neighbor = {};
+              nodeList.push(neighbor);
+              openList.push(pos2);
+            }
+            neighbor.parent = current;
+            neighbor.x = x2;
+            neighbor.y = y2;
+            neighbor.g = g2;
+            neighbor.f = g2 + $gameMap.distance(x2, y2, goalX, goalY);
+            if (!best || neighbor.f - neighbor.g < best.f - best.g) {
+              best = neighbor;
+            }
+          }
+        }//.bind(this));
+      }
+
+      return best;
+    };
+
+    Game_Character.prototype.clearCachedNode = function() {
+      this.setCachedNode();
+    };
+
+    Game_Character.prototype.setCachedNode = function(node, goalX, goalY) {
+      this._cachedNode = node;
+      this._cachedGoalX = goalX;
+      this._cachedGoalY = goalY;
+    };
+
+    Game_Character.prototype.findDirectionTo = function(goalX, goalY) {
+      if (this.x === goalX && this.y === goalY) {
+        return 0;
+      }
+
+      if (this._cachedGoalX !== goalX || this._cachedGoalY !== goalY) {
+        this.clearCachedNode();
+      }
+
+      var node = this._cachedNode;
+
+      var start = {};
+      start.parent = null;
+      start.x = this.x;
+      start.y = this.y;
+      start.g = 0;
+      start.f = $gameMap.distance(start.x, start.y, goalX, goalY);
+
+      var canRetry = true;
+      if (node === undefined) {
+        node = this.getDirectionNode(start, goalX, goalY);
+        this.setCachedNode(node, goalX, goalY);
+        if (node === undefined) {
+          return 0;
+        }
+        canRetry = false;
+      }
+
+      if (node.x !== start.x || node.y !== start.y) {
+        while (node.parent && (node.parent.x !== start.x || node.parent.y !== start.y)) {
+          node = node.parent;
+        }
+
+        if (!node.parent) {
+          // console.log('missing parent. Retrying');
+          this.clearCachedNode();
+          if (canRetry) {
+            node = this.getDirectionNode(start, goalX, goalY);
+            this.setCachedNode(node, goalX, goalY);
+            if (node === undefined) {
+              return 0;
+            }            
+          }
+        }
+      }
+
+      var deltaX1 = $gameMap.deltaX(node.x, start.x);
+      var deltaY1 = $gameMap.deltaY(node.y, start.y);
+
+      if ($.Param.DiagonalPathfinding !== false) {
+        if (deltaY1 > 0 && deltaX1 > 0) {
+          return Direction.DOWN_RIGHT;
+        } else if (deltaY1 > 0 && deltaX1 < 0) {
+          return Direction.DOWN_LEFT;
+        } else if (deltaY1 < 0 && deltaX1 < 0) {
+          return Direction.UP_LEFT;
+        } else if (deltaY1 < 0 && deltaX1 > 0) {
+          return Direction.UP_RIGHT;
+        }
+      }
+
+      if (deltaY1 > 0) {
+          return 2;
+      } else if (deltaX1 < 0) {
+          return 4;
+      } else if (deltaX1 > 0) {
+          return 6;
+      } else if (deltaY1 < 0) {
+          return 8;
+      }
+
+      var deltaX2 = this.deltaXFrom(goalX);
+      var deltaY2 = this.deltaYFrom(goalY);
+      var direction = 0;
+
+      if (Math.abs(deltaX2) > Math.abs(deltaY2)) {
+          direction = deltaX2 > 0 ? 4 : 6;
+      } else if (deltaY2 !== 0) {
+          direction = deltaY2 > 0 ? 8 : 2;
+      }
+
+      if (direction > 0) {
+        if (!this.canGoTo(this._x, this._y, direction)) {
+          this.clearCachedNode();
+          direction = 0;
+        }
+      }
+
+      return direction;
+    };
+  }
 
   // If the player is holding two direction buttons, Input.dir4 will give you one of them and this method will give you the other one
   Game_Player.prototype.getAlternativeDirection = function(direction, diagonal_d) {
@@ -1504,4 +1772,4 @@ var Direction = {
   }
 })(SuperOrangeMovement);
 
-Imported.SuperOrangeMovement = 1.3;
+Imported.SuperOrangeMovement = 1.4;
