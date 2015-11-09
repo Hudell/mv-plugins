@@ -2,7 +2,7 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovementEx.js
- * Version: 1.4.1
+ * Version: 1.4.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -78,7 +78,7 @@
  *
  * @param EnableAutoAvoidDiagonal
  * @desc Set this to false to disable the AutoAvoid diagonally feature
- * @default true
+ * @default false
  *
  * @param AvDiagonal_AvoidEvents
  * @desc Set this to false if you don't want the player to avoid events.
@@ -200,7 +200,7 @@
  *
  * @param EnableAutoAvoidDiagonal
  * @desc Set this to false to disable the AutoAvoid diagonally feature
- * @default true
+ * @default false
  *
  * @param AvDiagonal_AvoidEvents
  * @desc Set this to false if you don't want the player to avoid events.
@@ -320,7 +320,7 @@
  *
  * @param EnableAutoAvoidDiagonal
  * @desc Set this to false to disable the AutoAvoid Diagonally feature
- * @default true
+ * @default false
  *
  * @param AvDiagonal_AvoidEvents
  * @desc Set this to false if you don't want the player to avoid events.
