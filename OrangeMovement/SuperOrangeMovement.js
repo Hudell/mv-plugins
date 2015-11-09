@@ -829,7 +829,11 @@ var Direction = {
     };
 
     character.prototype.myStepSize = function() {
-      return $.Param.Step_Size;
+      if (this._moveRoute !== undefined && this._moveRoute !== null) {
+        return 1;
+      } else {
+        return $.Param.Step_Size;
+      }
     };
 
     character.prototype.isTilesetPassable = function(x, y, d) {
@@ -1115,22 +1119,30 @@ var Direction = {
   };
 
   // This method adds or subtracts the step_size to an X position, based on the direction
-  Game_Map.prototype.fractionXWithDirection = function(x, d) {
+  Game_Map.prototype.fractionXWithDirection = function(x, d, stepSize) {
+    if (stepSize === undefined) {
+      stepSize = $.Param.Step_Size;
+    }
+
     if (Direction.goesLeft(d)) {
-      return x - $.Param.Step_Size;
+      return x - stepSize;
     } else if (Direction.goesRight(d)) {
-      return x + $.Param.Step_Size;
+      return x + stepSize;
     } else {
       return x;
     }
   };
 
   // This method adds or subtracts the step_size to a Y position, based on the direction
-  Game_Map.prototype.fractionYWithDirection = function(y, d) {
+  Game_Map.prototype.fractionYWithDirection = function(y, d, stepSize) {
+    if (stepSize === undefined) {
+      stepSize = $.Param.Step_Size;
+    }
+
     if (Direction.goesDown(d)) {
-      return y + $.Param.Step_Size;
+      return y + stepSize;
     } else if (Direction.goesUp(d)) {
-      return y - $.Param.Step_Size;
+      return y - stepSize;
     } else {
       return y;
     }
@@ -1140,15 +1152,14 @@ var Direction = {
     return x >= 0 && x.ceil() < this.width() && y >= 0 && y.ceil() < this.height();
   };
 
-
   // When using horizontally looped maps, this method gets the real X position
-  Game_Map.prototype.roundFractionXWithDirection = function(x, d) {
-    return this.roundX(this.fractionXWithDirection(x, d));
+  Game_Map.prototype.roundFractionXWithDirection = function(x, d, stepSize) {
+    return this.roundX(this.fractionXWithDirection(x, d, stepSize));
   };
 
   // When using vertically looped maps, this method gets the real Y position
-  Game_Map.prototype.roundFractionYWithDirection = function(y, d) {
-    return this.roundY(this.fractionYWithDirection(y, d));
+  Game_Map.prototype.roundFractionYWithDirection = function(y, d, stepSize) {
+    return this.roundY(this.fractionYWithDirection(y, d, stepSize));
   };
 
   // Create two methods that can be overriden by add-ons
@@ -1390,6 +1401,11 @@ var Direction = {
             // return;
             continue;
           }
+
+          if (x1.floor() == goalX && y1.floor() == goalY) {
+            break;
+          }
+          
           if (!this.canPass(x1, y1, direction)) {
             // return;
             continue;
