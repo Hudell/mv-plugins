@@ -888,10 +888,7 @@ var Direction = {
       var x2 = $gameMap.roundFractionXWithDirection(x, horz, this.myStepSize());
       var y2 = $gameMap.roundFractionYWithDirection(y, vert, this.myStepSize());
 
-      if (this.canPass(x, y, vert) && this.canPass(x, y2, horz)) {
-        return true;
-      }
-      if (this.canPass(x, y, horz) && this.canPass(x2, y, vert)) {
+      if (this.canPass(x, y, vert) && this.canPass(x, y, horz) && this.canPass(x, y2, horz) && this.canPass(x2, y, vert)) {
         return true;
       }
       return false;
