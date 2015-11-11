@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.4
+ * Version: 1.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -57,6 +57,26 @@
  * @param WindowPadding
  * @desc The number of pixels to use on the padding of the hud window
  * @default 18
+ *
+ * #param HudNumber
+ * #desc The number of this HUD. Used to identify what should be displayed here
+ * #default 1
+ *
+ * @param ShowOnMap
+ * @desc Display this HUD on the map
+ * @default true
+ *
+ * @param ShowOnBattle
+ * @desc Display this HUD on battles?
+ * @default false
+ *
+ * @param ShowOnMenu
+ * @desc Display this HUD on the menu?
+ * @default false
+ *
+ * @param ShowOnTitle
+ * @desc Display this HUD on the title screen?
+ * @default false
  *
  * @help
  * ============================================================================
@@ -113,6 +133,12 @@ if (Imported["MVCommons"] === undefined) {
   $.Param.SwitchId = Number($.Parameters.SwitchId || 0);
   $.Param.WindowMargin = Number($.Parameters.WindowMargin || 4);
   $.Param.WindowPadding = Number($.Parameters.WindowPadding || 18);
+
+  // $.Param.HudNumber = Number($.Parameters.HudNumber || 1);
+  $.Param.ShowOnTitle = $.Parameters.ShowOnTitle === "true";
+  $.Param.ShowOnMenu = $.Parameters.ShowOnMenu === "true";
+  $.Param.ShowOnBattle = $.Parameters.ShowOnBattle === "true";
+  $.Param.ShowOnMap = $.Parameters.ShowOnMap !== "false";
 
   $._addons = {};
 
@@ -214,31 +240,56 @@ if (Imported["MVCommons"] === undefined) {
     }
   };
 
-  var oldSceneMap_start = Scene_Map.prototype.start;
-  Scene_Map.prototype.start = function() {
-    oldSceneMap_start.call(this);
+  $.canShowOnThisScene = function(scene) {
+    if (scene instanceof Scene_Map) {
+      return $.Param.ShowOnMap;
+    } else if (scene instanceof Scene_Menu) {
+      return $.Param.ShowOnMenu;
+    } else if (scene instanceof Scene_Battle) {
+      return $.Param.ShowOnBattle;
+    } else if (scene instanceof Scene_Title) {
+      return $.Param.ShowOnTitle;
+    } else {
+      return false;
+    }
+  };
+
+  var oldSceneBase_start = Scene_Base.prototype.start;
+  Scene_Base.prototype.start = function() {
+    oldSceneBase_start.call(this);
+
+    if (!$.canShowOnThisScene(this)) {
+      return;
+    }
 
     this.createVarHudWindow();
+    if (this instanceof Scene_Map) {
+      this._spriteset._baseSprite.addChild(this._varHudWindow);
+    } else {
+      this.addChild(this._varHudWindow);
+    }
 
     if ($.Param.SwitchId !== undefined && $.Param.SwitchId > 0) {
       this._varHudWindow.visible = $gameSwitches.value($.Param.SwitchId);
     }
   };
 
-  Scene_Map.prototype.createVarHudWindow = function() {
+  Scene_Base.prototype.createVarHudWindow = function() {
     this._varHudWindow = new Window_OrangeHud();
     this._varHudWindow.x = $.Param.HudX;
     this._varHudWindow.y = $.Param.HudY;
     this._varHudWindow.opacity = $.Param.HudOpacity;
     this._varHudWindow.padding = $.Param.WindowPadding;
     this._varHudWindow.margin = $.Param.WindowMargin;
-
-    this.addChild(this._varHudWindow);
   };
 
-  var oldSceneMap_update = Scene_Map.prototype.update;
-  Scene_Map.prototype.update = function() {
-    oldSceneMap_update.call(this);
+  var oldSceneBase_update = Scene_Base.prototype.update;
+  Scene_Base.prototype.update = function() {
+    oldSceneBase_update.call(this);
+
+    if (this._varHudWindow === undefined) {
+      return;
+    }
 
     if ($.Param.SwitchId !== undefined && $.Param.SwitchId > 0) {
       this._varHudWindow.visible = $gameSwitches.value($.Param.SwitchId);
@@ -248,4 +299,4 @@ if (Imported["MVCommons"] === undefined) {
   };
 })(OrangeHud);
 
-Imported.OrangeHud = 1.4;
+Imported.OrangeHud = 1.5;
