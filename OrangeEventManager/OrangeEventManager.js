@@ -2,7 +2,7 @@
  * Orange - Event Manager
  * By Hudell - www.hudell.com
  * OrangeEventManager.js
- * Version: 1.1
+ * Version: 1.1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -99,6 +99,7 @@ var OrangeEventManager = OrangeEventManager || {};
         }
 
         $gameSwitches.setValue(id, value !== 'FALSE' && value !== 'OFF');
+        return true;
       }
 
       return eval(callback);
