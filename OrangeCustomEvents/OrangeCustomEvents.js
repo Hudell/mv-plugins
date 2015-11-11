@@ -2,7 +2,7 @@
  * Orange - Custom Event
  * By Hudell - www.hudell.com
  * OrangeCustomEvents.js
- * Version: 1.4.1
+ * Version: 1.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -19,9 +19,17 @@
  *=============================================================================*/
 
 var Imported = Imported || {};
-if (Imported['MVCommons'] === undefined) {
-  console.log('Download MVCommons: http://link.hudell.com/mvcommons');
-  throw new Error("This library needs MVCommons to work properly!");
+
+if (Imported["MVCommons"] === undefined) {
+  var MVCommons = {};
+
+  (function($){ 
+    $.ajaxLoadFileAsync = function(filePath, mimeType, onLoad, onError){ mimeType = mimeType || "application/json"; var xhr = new XMLHttpRequest(); var name = '$' + filePath.replace(/^.*(\\|\/|\:)/, '').replace(/\..*/, ''); xhr.open('GET', filePath); if (mimeType && xhr.overrideMimeType) { xhr.overrideMimeType(mimeType); } if(onLoad === undefined){ onLoad = function(xhr, filePath, name) { if (xhr.status < 400) { window[name] = JSON.parse(xhr.responseText); DataManager.onLoad(window[name]); } }; } if(onError === undefined) { onError = function() { DataManager._errorUrl = DataManager._errorUrl || filePath; }; } xhr.onload = function() { onLoad.call(this, xhr, filePath, name); }; xhr.onerror = onError; window[name] = null; xhr.send(); };
+  })(MVCommons);
+
+  if (Utils.isOptionValid('test')) {
+    console.log('MVC not found, OrangeCustomEvents will be using essentials (copied from MVC 1.4.0).');
+  }
 }
 
 var OrangeCustomEvents = OrangeCustomEvents || {};
@@ -423,15 +431,6 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     this.checkCopyCommands(command, args);
     this.checkDeleteCommand(command, args);
   };
-
-  // Compatibility patch:
-  if (MVCommons.ajaxLoadFileAsync === undefined) {
-    MVCommons.ajaxLoadFileAsync = MVCommons.loadFileAsync;
-  }
 })(OrangeCustomEvents);
 
-PluginManager.register("OrangeCustomEvents", "1.4", "This plugin Will let you add or copy events to the current map", {
-  email: "plugins@hudell.com",
-  name: "Hudell",
-  website: "http://www.hudell.com"
-}, "2015-10-22");
+Imported["OrangeCustomEvents"] = 1.5;
