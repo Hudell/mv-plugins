@@ -2,7 +2,7 @@
  * Orange - Time System Events
  * By Hudell - www.hudell.com
  * OrangeTimeSystemEvents.js
- * Version: 1.0
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -39,6 +39,10 @@
  * @desc The number of the common event to call when the day period change
  * @default 0
  *
+ * @param onChangeTime
+ * @desc The number of the common event to call when the time changes
+ * @default 0
+ *
  * @help
  * ============================================================================
  * Latest Version
@@ -70,6 +74,7 @@ var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEv
   $.Param.onChangeMinute = Number($.Parameters['onChangeMinute'] || 0);
   $.Param.onChangeSecond = Number($.Parameters['onChangeSecond'] || 0);
   $.Param.onChangeDayPeriod = Number($.Parameters['onChangeDayPeriod'] || 0);
+  $.Param.onChangeTime = Number($.Parameters['onChangeTime'] || 0);
 
   $.onChangeDay = function() {
     if ($.Param.onChangeDay !== undefined && $.Param.onChangeDay > 0) {
@@ -113,6 +118,12 @@ var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEv
     }
   };
 
+  $.onChangeTime = function() {
+    if ($.Param.onChangeTime !== undefined && $.Param.onChangeTime > 0) {
+      this.executeCallback($.Param.onChangeTime);
+    }
+  };
+
   OrangeTimeSystem.on('changeDay', $.onChangeDay);
   OrangeTimeSystem.on('changeMonth', $.onChangeMonth);
   OrangeTimeSystem.on('changeYear', $.onChangeYear);
@@ -120,7 +131,8 @@ var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEv
   OrangeTimeSystem.on('changeMinute', $.onChangeMinute);
   OrangeTimeSystem.on('changeSecond', $.onChangeSecond);
   OrangeTimeSystem.on('changeDayPeriod', $.onChangeDayPeriod);
+  OrangeTimeSystem.on('changeTime', $.onChangeTime);
 
 })(OrangeTimeSystemEvents);
 
-Imported["OrangeTimeSystemEvents"] = 1.1;
+Imported["OrangeTimeSystemEvents"] = 1.2;
