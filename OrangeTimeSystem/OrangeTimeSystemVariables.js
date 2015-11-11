@@ -2,7 +2,7 @@
  * Orange - Time System Variables
  * By Hudell - www.hudell.com
  * OrangeTimeSystemVariables.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -137,7 +137,7 @@ if (Imported["OrangeTimeSystem"] === undefined) {
   };
 
   // Updates the variables every in-game second
-  OrangeTimeSystem.on('changeSecond', $.configureVariables);
+  OrangeTimeSystem.on('changeTime', $.configureVariables);
 })(OrangeTimeSystemVariables);
 
-Imported.OrangeTimeSystemVariables = 1.2;
+Imported.OrangeTimeSystemVariables = 1.3;
