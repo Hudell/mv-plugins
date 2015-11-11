@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 2.0.1
+ * Version: 2.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -165,11 +165,12 @@ if (Imported['MVCommons'] === undefined) {
 
 if (Imported['OrangeEventManager'] === undefined) {
   var OrangeEventManager = {};
-  (function($) { "use strict"; $._events = [];  $.on = function(eventName, callback) { if (this._events[eventName] === undefined) this._events[eventName] = []; this._events[eventName].push(callback);  };  $.un = function(eventName, callback) { if (this._events[eventName] === undefined) return; for (var i = 0; i < this._events[eventName].length; i++) { if (this._events[eventName][i] == callback) { this._events[eventName][i] = undefined; return;  }  } };  $.executeCallback = function(callback) { if (typeof(callback) == "function") { return callback.call(this); } if (typeof(callback) == "number") { $gameTemp.reserveCommonEvent(callback); return true; } if (typeof(callback) == "string") { if (parseInt(callback, 10) == callback.trim()) { $gameTemp.reserveCommonEvent(parseInt(callback, 10)); return true; } return eval(callback); } console.error("Unknown callback type: ", callback); return undefined; }; $.runEvent = function(eventName) { if (this._events[eventName] === undefined) return; for (var i = 0; i < this._events[eventName].length; i++) { var callback = this._events[eventName][i]; if (this.executeCallback(callback) === false) { break; } } };})(OrangeEventManager);
-  Imported["OrangeEventManager"] = 1;
+  (function($) {"use strict";$._events = [];var oldGameTemp_initialize = Game_Temp.prototype.initialize;Game_Temp.prototype.initialize = function() {oldGameTemp_initialize.call(this);this._orangeCommonEvents = [];};Game_Temp.prototype.reserveOrangeCommonEvent = function(commonEventId) {if (commonEventId > 0) {this._orangeCommonEvents = this._orangeCommonEvents || [];this._orangeCommonEvents.push(commonEventId);}};var oldGameInterpreter_setupReservedCommonEvent = Game_Interpreter.prototype.setupReservedCommonEvent;Game_Interpreter.prototype.setupReservedCommonEvent = function() {var result = oldGameInterpreter_setupReservedCommonEvent.call(this);if (result) return result;if (!$gameTemp._orangeCommonEvents) return result;if ($gameTemp._orangeCommonEvents.length > 0) {var commonEventId = $gameTemp._orangeCommonEvents.shift();var commonEvent = $dataCommonEvents[commonEventId];this.setup(commonEvent.list);return true;}return result;};$.on = function(eventName, callback) {if (this._events[eventName] === undefined) this._events[eventName] = [];this._events[eventName].push(callback);};$.un = function(eventName, callback) {if (this._events[eventName] === undefined) return;for (var i = 0; i < this._events[eventName].length; i++) {if (this._events[eventName][i] == callback) {this._events[eventName][i] = undefined;return;}}};$.executeCallback = function(callback) {if (typeof(callback) == "function") {return callback.call(this);}if (typeof(callback) == "number") {$gameTemp.reserveOrangeCommonEvent(callback);return true;}if (typeof(callback) == "string") {var id = parseInt(callback, 10);if (parseInt(callback, 10) == callback.trim()) {$gameTemp.reserveOrangeCommonEvent(parseInt(callback, 10));return true;} else if (callback.substr(0, 1) == 'S') {var data = callback.split(',');var value = 'TRUE';if (data.length >= 2) {value = data[1].toUppercase();}$gameSwitches.setValue(id, value !== 'FALSE' && value !== 'OFF');}return eval(callback);}console.error("Unknown callback type: ", callback);return undefined;};$.runEvent = function(eventName) {if (this._events[eventName] === undefined) return;for (var i = 0; i < this._events[eventName].length; i++) {var callback = this._events[eventName][i];if (this.executeCallback(callback) === false) {break;}}};})(OrangeEventManager);
+
+  Imported["OrangeEventManager"] = 1.1;
 
   if (Utils.isOptionValid('test')) {
-    console.log('OrangeTimeSystem will be using it\'s internal copy of OrangeEventManager 1.0.');
+    console.log('OrangeTimeSystem will be using it\'s internal copy of OrangeEventManager 1.1.');
   }
 }
 
@@ -371,32 +372,45 @@ var DayPeriods = {
   $.weekDay = 0;
 
   $.runTimeChangeEvents = function(oldData) {
+    var changedTime = false;
+
     if (oldData.seconds != this.seconds) {
+      changedTime = true;
       this._onChangeSecond();
     }
 
     if (oldData.minute !== this.minute) {
+      changedTime = true;
       this._onChangeMinute();
     }
 
     if (oldData.hour !== this.hour) {
+      changedTime = true;
       this._onChangeHour();
     }
 
     if (oldData.day !== this.day) {
+      changedTime = true;
       this._onChangeDay();
     }
 
     if (oldData.month !== this.month) {
+      changedTime = true;
       this._onChangeMonth();
     }
 
     if (oldData.year !== this.year) {
+      changedTime = true;
       this._onChangeYear();
     }
 
     if (oldData.dayPeriod !== this.dayPeriod) {
+      changedTime = true;
       this._onChangeDayPeriod();
+    }
+
+    if (changedTime) {
+      this._onChangeTime();
     }
   };
 
@@ -689,27 +703,37 @@ var DayPeriods = {
     $.updateDayPeriod();
 
     if ($.seconds != oldData.seconds) {
+      anyChanged = true;
       $._onChangeSecond();
     }
 
     if ($.minute != oldData.minute) {
+      anyChanged = true;
       $._onChangeMinute();
     }
 
     if ($.hour != oldData.hour) {
+      anyChanged = true;
       $._onChangeHour();
     }
 
     if ($.day != oldData.day) {
+      anyChanged = true;
       $._onChangeDay();
     }
 
     if ($.month != oldData.month) {
+      anyChanged = true;
       $._onChangeMonth();
     }
 
     if ($.year != oldData.year) {
+      anyChanged = true;
       $._onChangeYear();
+    }
+
+    if (anyChanged) {
+      $._onChangeTime();
     }
   };
 
@@ -810,11 +834,16 @@ var DayPeriods = {
 
       $.updateTime();
       $._onChangeSecond();
+      $._onChangeTime();
     }
   };
 
   $._onChangeSecond = function() {
     this.runEvent('changeSecond');
+  };
+
+  $._onChangeTime = function() {
+    this.runEvent('changeTime');
   };
 
   $._onChangeMinute = function() {
@@ -1154,6 +1183,9 @@ var DayPeriods = {
       case 'SECOND' :
         $.on('changeSecond', eventId);
         break;
+      case 'TIME' :
+        $.on('changeTime', eventId);
+        break;
       case 'DAY' :
         $.on('changeDay', eventId);
         break;
@@ -1246,4 +1278,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 2.0;
+Imported.OrangeTimeSystem = 2.1;
