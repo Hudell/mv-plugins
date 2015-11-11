@@ -2,7 +2,7 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovement.js
- * Version: 1.4.3
+ * Version: 1.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -649,19 +649,19 @@ var Direction = {
       }
     };
 
-    character.prototype.checkUpPassage = function(new_x, the_y, destination_y) {
+    character.prototype.checkUpPassage = function(newX, theY, destinationY) {
       if (this instanceof Game_Player) {
         var vehicle = this.vehicle();
         if (vehicle !== undefined && vehicle !== null) {
-          return vehicle.check_vehicle_passage(new_x, the_y.floor()) && vehicle.check_vehicle_passage(new_x, destination_y.floor());
+          return vehicle.check_vehicle_passage(newX, theY.floor()) && vehicle.check_vehicle_passage(newX, destinationY.floor());
         }
       }
 
-      if (!$gameMap.isPassable(new_x, the_y.ceil(), Direction.UP)) {
+      if (!$gameMap.isPassable(newX, theY.ceil(), Direction.UP)) {
         return false;
       }
 
-      if (!$gameMap.isPassable(new_x, destination_y.floor(), Direction.DOWN)) {
+      if (!$gameMap.isPassable(newX, destinationY.floor(), Direction.DOWN)) {
         return false;
       }
 
@@ -670,20 +670,20 @@ var Direction = {
 
     // Method that checks if the character can move up
     character.prototype.canGoUp = function(x, y) {
-      // Variables the_x and the_y hold the true position, considering the hitbox configuration
-      var the_x = (x + this.hitboxXSize).fix();
-      var the_y = (y + this.hitboxYSize).fix();
+      // Variables theX and theY hold the true position, considering the hitbox configuration
+      var theX = (x + this.hitboxXSize).fix();
+      var theY = (y + this.hitboxYSize).fix();
 
-      // Variable end_x hold the right position, considering the hitbox configuration
+      // Variable endX hold the right position, considering the hitbox configuration
       // The script decreases an insignificant value from it to ensure that this position doesn't pass to the next integer value unless the character is actually on the next tile.
-      var end_x = (the_x + this.hitboxWidthSize - insignificantValue).fix();
+      var endX = (theX + this.hitboxWidthSize - insignificantValue).fix();
 
-      // destination_y is the top position where the player is moving to, considering the hitbox
-      var destination_y = (the_y - $.Param.Step_Size).fix();
+      // destinationY is the top position where the player is moving to, considering the hitbox
+      var destinationY = (theY - $.Param.Step_Size).fix();
 
       // Run the collission check for every X tile the character is touching
-      for (var new_x = the_x.floor(); new_x <= end_x.floor(); new_x++) {
-        if (this.checkUpPassage(new_x, the_y, destination_y) === false) {
+      for (var newX = theX.floor(); newX <= endX.floor(); newX++) {
+        if (this.checkUpPassage(newX, theY, destinationY) === false) {
           return false;
         }
       }
@@ -691,21 +691,21 @@ var Direction = {
       return true;
     };
 
-    character.prototype.checkDownPassage = function(new_x, end_y, destination_end_y) {
+    character.prototype.checkDownPassage = function(newX, endY, destinationEndY) {
       if (this instanceof Game_Player) {
         var vehicle = this.vehicle();
         if (vehicle !== undefined && vehicle !== null) {
-          return vehicle.check_vehicle_passage(new_x, end_y.floor()) && vehicle.check_vehicle_passage(new_x, destination_end_y.floor());
+          return vehicle.check_vehicle_passage(newX, endY.floor()) && vehicle.check_vehicle_passage(newX, destinationEndY.floor());
         }
       }
 
-      if (destination_end_y.floor() > end_y.floor()) {
-        if (!$gameMap.isPassable(new_x, end_y.floor(), Direction.DOWN)) {
+      if (destinationEndY.floor() > endY.floor()) {
+        if (!$gameMap.isPassable(newX, endY.floor(), Direction.DOWN)) {
           return false;
         }
       }
 
-      if (!$gameMap.isPassable(new_x, destination_end_y.floor(), Direction.UP)) {
+      if (!$gameMap.isPassable(newX, destinationEndY.floor(), Direction.UP)) {
         return false;
       }
 
@@ -714,23 +714,23 @@ var Direction = {
 
     // Method that checks if the character can move down
     character.prototype.canGoDown = function(x, y) {
-      // Variables the_x and the_y hold the true position, considering the hitbox configuration
-      var the_x = (x + this.hitboxXSize).fix();
-      var the_y = (y + this.hitboxYSize).fix();
+      // Variables theX and theY hold the true position, considering the hitbox configuration
+      var theX = (x + this.hitboxXSize).fix();
+      var theY = (y + this.hitboxYSize).fix();
 
-      // Variables end_x and end_y hold the right and bottom position, considering the hitbox configuration
+      // Variables endX and endY hold the right and bottom position, considering the hitbox configuration
       // The script decreases an insignificant value from it to ensure that this position doesn't pass to the next integer value unless the character is actually on the next tile.
-      var end_x = (the_x + this.hitboxWidthSize - insignificantValue).fix();
-      var end_y = (the_y + this.hitboxHeightSize - insignificantValue).fix();
+      var endX = (theX + this.hitboxWidthSize - insignificantValue).fix();
+      var endY = (theY + this.hitboxHeightSize - insignificantValue).fix();
 
-      // destination_y is the top position where the player is moving to, considering the hitbox
-      var destination_y = (the_y + $.Param.Step_Size).fix();
-      // destination_end_y is the bottom position where the player is moving to, considering the hitbox
-      var destination_end_y = (end_y + $.Param.Step_Size).fix();
+      // destinationY is the top position where the player is moving to, considering the hitbox
+      var destinationY = (theY + $.Param.Step_Size).fix();
+      // destinationEndY is the bottom position where the player is moving to, considering the hitbox
+      var destinationEndY = (endY + $.Param.Step_Size).fix();
 
       // Run the collission check for every X tile the character is touching
-      for (var new_x = the_x.floor(); new_x <= end_x.floor(); new_x++) {
-        if (this.checkDownPassage(new_x, end_y, destination_end_y) === false) {
+      for (var newX = theX.floor(); newX <= endX.floor(); newX++) {
+        if (this.checkDownPassage(newX, endY, destinationEndY) === false) {
           return false;
         }
       }
@@ -738,19 +738,19 @@ var Direction = {
       return true;
     };
 
-    character.prototype.checkLeftPassage = function(the_x, new_y, destination_x) {
+    character.prototype.checkLeftPassage = function(theX, newY, destination_x) {
       if (this instanceof Game_Player) {
         var vehicle = this.vehicle();
         if (vehicle !== undefined && vehicle !== null) {
-          return vehicle.check_vehicle_passage(the_x.floor(), new_y) && vehicle.check_vehicle_passage(destination_x.floor(), new_y);
+          return vehicle.check_vehicle_passage(theX.floor(), newY) && vehicle.check_vehicle_passage(destination_x.floor(), newY);
         }
       }
 
-      if (!$gameMap.isPassable(the_x.ceil(), new_y, Direction.LEFT)) {
+      if (!$gameMap.isPassable(theX.ceil(), newY, Direction.LEFT)) {
         return false;
       }
 
-      if (!$gameMap.isPassable(destination_x.floor(), new_y, Direction.RIGHT)) {
+      if (!$gameMap.isPassable(destination_x.floor(), newY, Direction.RIGHT)) {
         return false;
       }
 
@@ -759,20 +759,20 @@ var Direction = {
 
     // Method that checks if the character can move left
     character.prototype.canGoLeft = function(x, y) {
-      // Variables the_x and the_y hold the true position, considering the hitbox configuration
-      var the_x = x + this.hitboxXSize;
-      var the_y = y + this.hitboxYSize;
+      // Variables theX and theY hold the true position, considering the hitbox configuration
+      var theX = x + this.hitboxXSize;
+      var theY = y + this.hitboxYSize;
 
-      // Variable end_y hold the bottom position, considering the hitbox configuration
+      // Variable endY hold the bottom position, considering the hitbox configuration
       // The script decreases an insignificant value from it to ensure that this position doesn't pass to the next integer value unless the character is actually on the next tile.
-      var end_y = the_y + this.hitboxHeightSize - insignificantValue;
+      var endY = theY + this.hitboxHeightSize - insignificantValue;
 
       // destination_x is the left position where the player is moving to, considering the hitbox
-      var destination_x = the_x - $.Param.Step_Size;
+      var destination_x = theX - $.Param.Step_Size;
 
       // Run the collission check for every Y tile the character is touching
-      for (var new_y = the_y.floor(); new_y <= end_y.floor(); new_y++) {
-        if (this.checkLeftPassage(the_x, new_y, destination_x) === false) {
+      for (var newY = theY.floor(); newY <= endY.floor(); newY++) {
+        if (this.checkLeftPassage(theX, newY, destination_x) === false) {
           return false;
         }
       }
@@ -780,21 +780,21 @@ var Direction = {
       return true;
     };
 
-    character.prototype.checkRightPassage = function(end_x, new_y, destination_end_x) {
+    character.prototype.checkRightPassage = function(endX, newY, destinationEndX) {
       if (this instanceof Game_Player) {
         var vehicle = this.vehicle();
         if (vehicle !== undefined && vehicle !== null) {
-          return vehicle.check_vehicle_passage(end_x.floor(), new_y) && vehicle.check_vehicle_passage(destination_end_x.floor(), new_y);
+          return vehicle.check_vehicle_passage(endX.floor(), newY) && vehicle.check_vehicle_passage(destinationEndX.floor(), newY);
         }
       }
 
-      if (destination_end_x.floor() > end_x.floor()) {
-        if (!$gameMap.isPassable(end_x.floor(), new_y, Direction.RIGHT)) {
+      if (destinationEndX.floor() > endX.floor()) {
+        if (!$gameMap.isPassable(endX.floor(), newY, Direction.RIGHT)) {
           return false;
         }
       }
 
-      if (!$gameMap.isPassable(destination_end_x.floor(), new_y, Direction.LEFT)) {
+      if (!$gameMap.isPassable(destinationEndX.floor(), newY, Direction.LEFT)) {
         return false;
       }
 
@@ -804,23 +804,23 @@ var Direction = {
 
     // Method that checks if the character can move right
     character.prototype.canGoRight = function(x, y) {
-      // Variables the_x and the_y hold the true position, considering the hitbox configuration
-      var the_x = (x + this.hitboxXSize).fix();
-      var the_y = (y + this.hitboxYSize).fix();
+      // Variables theX and theY hold the true position, considering the hitbox configuration
+      var theX = (x + this.hitboxXSize).fix();
+      var theY = (y + this.hitboxYSize).fix();
 
-      // Variables end_x and end_y hold the right and bottom position, considering the hitbox configuration
+      // Variables endX and endY hold the right and bottom position, considering the hitbox configuration
       // The script decreases an insignificant value from it to ensure that this position doesn't pass to the next integer value unless the character is actually on the next tile.
-      var end_x = (the_x + this.hitboxWidthSize - insignificantValue).fix();
-      var end_y = (the_y + this.hitboxHeightSize - insignificantValue).fix();
+      var endX = (theX + this.hitboxWidthSize - insignificantValue).fix();
+      var endY = (theY + this.hitboxHeightSize - insignificantValue).fix();
 
       // destination_x is the left position where the player is moving to, considering the hitbox
-      var destination_x = (the_x + $.Param.Step_Size).fix();
-      // destination_end_x is the right position where the player is moving to, considering the hitbox
-      var destination_end_x = (end_x + $.Param.Step_Size).fix();
+      var destination_x = (theX + $.Param.Step_Size).fix();
+      // destinationEndX is the right position where the player is moving to, considering the hitbox
+      var destinationEndX = (endX + $.Param.Step_Size).fix();
 
       // Run the collission check for every Y tile the character is touching
-      for (var new_y = the_y.floor(); new_y <= end_y.floor(); new_y++) {
-        if (this.checkRightPassage(end_x, new_y, destination_end_x) === false) {
+      for (var newY = theY.floor(); newY <= endY.floor(); newY++) {
+        if (this.checkRightPassage(endX, newY, destinationEndX) === false) {
           return false;
         }
       }
@@ -946,9 +946,9 @@ var Direction = {
       var first_y = (y + this.hitboxYSize).floor();
       var last_y = (y + this.hitboxYSize + this.hitboxHeightSize - insignificantValue).floor();
 
-      for (var new_x = first_x; new_x <= last_x; new_x++) {
-        for (var new_y = first_y; new_y <= last_y; new_y++) {
-          if (callback.call(this, new_x, new_y) === true) {
+      for (var newX = first_x; newX <= last_x; newX++) {
+        for (var newY = first_y; newY <= last_y; newY++) {
+          if (callback.call(this, newX, newY) === true) {
             return true;
           }
         }
@@ -1081,15 +1081,20 @@ var Direction = {
     this.setThrough(false);
   };
 
+  var oldGameActor_basicFloorDamage = Game_Actor.prototype.basicFloorDamage;
+  Game_Actor.prototype.basicFloorDamage = function() {
+    return oldGameActor_basicFloorDamage.call(this) / $.Param.Tile_Sections;
+  };
+
   Game_Map.prototype.isAirshipLandOk = function(x, y) {
     var first_x = x.floor();
     var last_x = x.ceil();
     var first_y = y.floor();
     var last_y = y.ceil();
 
-    for (var new_x = first_x; new_x <= last_x; new_x++) {
-      for (var new_y = first_y; new_y <= last_y; new_y++) {
-        if (!this.checkPassage(new_x, new_y, 0x800) || !this.checkPassage(new_x, new_y, 0x0f)) {
+    for (var newX = first_x; newX <= last_x; newX++) {
+      for (var newY = first_y; newY <= last_y; newY++) {
+        if (!this.checkPassage(newX, newY, 0x800) || !this.checkPassage(newX, newY, 0x0f)) {
           return false;
         }
       }
@@ -1116,6 +1121,21 @@ var Direction = {
     } else {
       return y;
     }
+  };
+
+  Game_Map.prototype.checkLayeredTilesFlags = function(x, y, bit) {
+    var flags = this.tilesetFlags();
+    for (var newX = x.floor(); newX <= x.ceil(); newX++) {
+      for (var newY = y.floor(); newY <= y.ceil(); newY++) {
+        var result = this.layeredTiles(newX, newY).some(function(tileId) {
+          return (flags[tileId] & bit) !== 0;
+        });
+
+        if (result) return result;
+      }
+    }
+
+    return false;
   };
 
   // This method adds or subtracts the step_size to an X position, based on the direction
@@ -1785,4 +1805,4 @@ var Direction = {
   }
 })(SuperOrangeMovement);
 
-Imported.SuperOrangeMovement = 1.4;
+Imported.SuperOrangeMovement = 1.5;
