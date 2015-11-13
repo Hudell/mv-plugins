@@ -2,7 +2,7 @@
  * Orange - Mapshot
  * By Hudell - www.hudell.com
  * OrangeMapshot.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -15,6 +15,10 @@
  *
  * @param separateLayers
  * @desc if true, the plugin will create two separate images with the lower and upper layer
+ * @default false
+ *
+ * @param drawAutoShadows
+ * @desc set this to false to disable autoshadows on the map shot
  * @default false
  *
  * @param keyCode
@@ -48,6 +52,7 @@ var OrangeMapshot = OrangeMapshot || {};
   $.Parameters = parameters[0].parameters;
   $.Param = {};
   $.Param.useMapName = $.Parameters.useMapName !== "false";
+  $.Param.drawAutoShadows = $.Parameters.drawAutoShadows !== "false";
   $.Param.separateLayers = $.Parameters.separateLayers === "true";
   $.Param.imageType = $.Parameters.imageType || 'png';
   $.Param.imageQuality = Number($.Parameters.imageQuality || 70);
@@ -176,7 +181,9 @@ var OrangeMapshot = OrangeMapshot || {};
     for (var i = 0; i < lowerTiles.length; i++) {
       var lowerTileId = lowerTiles[i];
       if (lowerTileId < 0) {
-        this._drawShadow(lowerBitmap, shadowBits, dx, dy);
+        if ($.Param.drawAutoShadows) {
+          this._drawShadow(lowerBitmap, shadowBits, dx, dy);
+        }
       } else if (lowerTileId >= tableEdgeVirtualId) {
         this._drawTableEdge(lowerBitmap, upperTileId1, dx, dy);
       } else {
@@ -250,4 +257,4 @@ var OrangeMapshot = OrangeMapshot || {};
   };
 })(OrangeMapshot);
 
-Imported["OrangeMapshot"] = 1.1;
+Imported["OrangeMapshot"] = 1.3;
