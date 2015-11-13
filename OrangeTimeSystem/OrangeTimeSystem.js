@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 2.1.1
+ * Version: 2.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -132,6 +132,96 @@
  * 
  * This plugin creates a time system for your game. Nothing will change on the
  * game itself, unless you use another plugin that uses this one.
+ * ============================================================================
+ * Plugin Commands and Script Calls
+ * ============================================================================
+ * The plugin commands for this plugin are written in plain english, using
+ * the following formats:
+ * 
+ * ---------------------------------------------------------------------------- 
+ *  COMMAND:   REFRESH TIME SYSTEM
+ *  COMMAND:   RESTART TIME SYSTEM
+ *  SCRIPT:    OrangeTimeSystem.refreshTimeSystem();
+ * ---------------------------------------------------------------------------- 
+ * Both commands do the same: They disable the time system and enable it again.
+ * This is required when you use the secondLengthVariable param.
+ * Call this every time you change the value of that variable for it to work.
+ * 
+ * 
+ * ---------------------------------------------------------------------------- 
+ *  COMMAND:   RUN COMMON EVENT 10 IN 6 SECONDS
+ *  SCRIPT:    OrangeTimeSystem.runInSecondss(10, 6);
+ *
+ *  COMMAND:   RUN COMMON EVENT 10 IN 5 MINUTES
+ *  SCRIPT:    OrangeTimeSystem.runInMinutes(10, 5);
+ *
+ *  COMMAND:   RUN COMMON EVENT 10 IN 4 HOURS
+ *  SCRIPT:    OrangeTimeSystem.runInHours(10, 4);
+ *
+ *  COMMAND:   RUN COMMON EVENT 10 IN 1 DAY
+ *  SCRIPT:    OrangeTimeSystem.runInDays(10, 1);
+ *
+ *  COMMAND:   RUN COMMON EVENT 10 IN 2 MONTHS
+ *  SCRIPT:    OrangeTimeSystem.runInDays(10, 2);
+ *
+ *  COMMAND:   RUN COMMON EVENT 10 IN 1 YEAR
+ *  SCRIPT:    OrangeTimeSystem.runInYears(10, 1);
+ * ---------------------------------------------------------------------------- 
+ * Commands in this format will make the specified common event (10 in this example)
+ * be triggered when the specified amount of time is passed.
+ * This info is saved on the save file.
+ * If you are using real time and call "run common event 2 in 1 day"
+ * if the player only loads that game three days later, the common event will
+ * called anyway (as soon as the player loads the game).
+ * The common event will only be triggered once.
+ *
+ * 
+ * ---------------------------------------------------------------------------- 
+ *  COMMAND:   RUN COMMON EVENT 10 EVERY HOUR
+ *  SCRIPT:    OrangeTimeSystem.on('changeHour', 10);
+ * 
+ *  COMMAND:   RUN COMMON EVENT 10 EVERY MINUTE
+ *  SCRIPT:    OrangeTimeSystem.on('changeMinute', 10);
+ * 
+ *  COMMAND:   RUN COMMON EVENT 10 EVERY SECOND
+ *  SCRIPT:    OrangeTimeSystem.on('changeSecond', 10);
+ * 
+ *  COMMAND:   RUN COMMON EVENT 10 EVERY DAY
+ *  SCRIPT:    OrangeTimeSystem.on('changeDay', 10);
+ * 
+ *  COMMAND:   RUN COMMON EVENT 10 EVERY MONTH
+ *  SCRIPT:    OrangeTimeSystem.on('changeMonth', 10);
+ * 
+ *  COMMAND:   RUN COMMON EVENT 10 EVERY YEAR
+ *  SCRIPT:    OrangeTimeSystem.on('changeYear', 10);
+ * 
+ *  COMMAND:   RUN COMMON EVENT 10 EVERY PERIOD
+ *  SCRIPT:    OrangeTimeSystem.on('changeDayPeriod', 10);
+ * 
+ *  COMMAND:   RUN COMMON EVENT 10 EVERY TIME
+ *  SCRIPT:    OrangeTimeSystem.on('changeTime', 10);
+ * ---------------------------------------------------------------------------- 
+ * Commands in this format will trigger the specified common event every time
+ * the specified variable changes.
+ * 
+ * 
+ * ---------------------------------------------------------------------------- 
+ *  SCRIPT:    OrangeTimeSystem.onDateTime(commonEvent, day, month, year, hour, minute, second)
+ *  SCRIPT:    OrangeTimeSystem.onTime(commonEvent, hour, minute, second)
+ *  SCRIPT:    OrangeTimeSystem.onDayPeriod(commonEvent, dayPeriod)
+ * ---------------------------------------------------------------------------- 
+ * Those script calls will trigger the specified commonEvent at the exact datetime
+ * specified.
+ * 
+ * For example, to trigger common event 10 at 11:50:21, call:
+ *  SCRIPT:    OrangeTimeSystem.onTime(10, 11, 50, 21)
+ * 
+ * if you don't want to specify any of the variables, use the word undefined.
+ * For example, to trigger common event 10 at every hour when the minutes turn 50, call:
+ *  SCRIPT:    OrangeTimeSystem.onTime(10, undefined, 50, 0)
+ * This will trigger the event at 00:50:00, 01:50:00, 02:50:00 and so on.
+ * 
+ * There are no plugin commands available for this yet.
  * 
  * ============================================================================
  * Latest Version
@@ -140,6 +230,7 @@
  * Get the latest version of this script on http://link.hudell.com/time-system
  * 
  */
+
 
 var Imported = Imported || {};
 
@@ -878,7 +969,25 @@ var DayPeriods = {
     return this.onDateTime(callback, day, month, year, 0, 0, 0, autoRemove);
   };
 
+  $.onDayPeriod = function(callback, dayPeriod, autoRemove) {
+    if (autoRemove === undefined) {
+      autoRemove = false;
+    }
+
+    var config = {
+      callback : callback,
+      dayPeriod : dayPeriod,
+      autoRemove : autoRemove
+    };
+
+    return $.registerTimeEvent(config);
+  };
+
   $.onDateTime = function(callback, day, month, year, hour, minute, second, autoRemove) {
+    if (autoRemove === undefined) {
+      autoRemove = false;
+    }
+
     var config = {
       day: day,
       month: month,
@@ -890,10 +999,6 @@ var DayPeriods = {
       autoRemove : autoRemove,
       after : false
     };
-
-    if (autoRemove === undefined) {
-      autoRemove = false;
-    }
 
     return $.registerTimeEvent(config);
   };
@@ -987,6 +1092,7 @@ var DayPeriods = {
     if (config.minute !== undefined && config.minute != this.minute) return false;
     if (config.second !== undefined && config.second != this.seconds) return false;
     if (config.weekDay !== undefined && config.weekDay != this.weekDay) return false;
+    if (config.dayPeriod !== undefined && config.dayPeriod !== this.dayPeriod) return false;
 
     return true;
   };
@@ -1142,21 +1248,27 @@ var DayPeriods = {
     var value = parseInt(args[4], 10);
 
     switch (args[5].toUpperCase()) {
+      case 'MINUTE' :
       case 'MINUTES' :
         $.runInMinutes(eventId, value);
         break;
+      case 'SECOND' :
       case 'SECONDS' :
         $.runInSeconds(eventId, value);
         break;
+      case 'HOUR' :
       case 'HOURS' :
         $.runInHours(eventId, value);
         break;
+      case 'DAY' :
       case 'DAYS' :
         $.runInDays(eventId, value);
         break;
+      case 'MONTH' :
       case 'MONTHS' :
         $.runInMonths(eventId, value);
         break;
+      case 'YEAR' :
       case 'YEARS' :
         $.runInYears(eventId, value);
         break;
@@ -1278,4 +1390,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 2.1;
+Imported.OrangeTimeSystem = 2.2;
