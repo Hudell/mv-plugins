@@ -19,7 +19,7 @@
  *
  * @param drawAutoShadows
  * @desc set this to false to disable autoshadows on the map shot
- * @default false
+ * @default true
  *
  * @param keyCode
  * @desc code of the key that will be used (44 = printscreen). http://link.hudell.com/js-keys
