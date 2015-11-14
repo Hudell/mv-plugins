@@ -2,7 +2,7 @@
  * Orange - Mapshot
  * By Hudell - www.hudell.com
  * OrangeMapshot.js
- * Version: 1.3
+ * Version: 1.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -13,9 +13,9 @@
  * @desc if true, the filename will be the name of the map. If false it will be the number.
  * @default true
  *
- * @param separateLayers
- * @desc if true, the plugin will create two separate images with the lower and upper layer
- * @default false
+ * @param layerType
+ * @desc 0 = all, 1 = upper and lower, 2 = separate everything
+ * @default 0
  *
  * @param drawAutoShadows
  * @desc set this to false to disable autoshadows on the map shot
@@ -53,7 +53,7 @@ var OrangeMapshot = OrangeMapshot || {};
   $.Param = {};
   $.Param.useMapName = $.Parameters.useMapName !== "false";
   $.Param.drawAutoShadows = $.Parameters.drawAutoShadows !== "false";
-  $.Param.separateLayers = $.Parameters.separateLayers === "true";
+  $.Param.layerType = Number($.Parameters.layerType || 0);
   $.Param.imageType = $.Parameters.imageType || 'png';
   $.Param.imageQuality = Number($.Parameters.imageQuality || 70);
 
@@ -98,18 +98,26 @@ var OrangeMapshot = OrangeMapshot || {};
   };
 
   $.getMapshot = function() {
-    var lowerBitmap, upperBitmap;
+    switch($.Param.layerType) {
+      case 1 :
+        var lowerBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+        var upperBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+        SceneManager._scene._spriteset._tilemap._paintEverything(lowerBitmap, upperBitmap);
+        return [lowerBitmap, upperBitmap];
+      case 2 :
+        var groundBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+        var ground2Bitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+        var lowerBitmapLayer = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+        var upperBitmapLayer = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+        var shadowBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
 
-    lowerBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
-    if ($.Param.separateLayers) {
-      upperBitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
-    } else {
-      upperBitmap = lowerBitmap;
+        SceneManager._scene._spriteset._tilemap._paintLayered(groundBitmap, ground2Bitmap, lowerBitmapLayer, upperBitmapLayer, shadowBitmap);
+        return [groundBitmap, ground2Bitmap, lowerBitmapLayer, upperBitmapLayer, shadowBitmap];
+      default :
+        var bitmap = new Bitmap($dataMap.width * $gameMap.tileWidth(), $dataMap.height * $gameMap.tileHeight());
+        SceneManager._scene._spriteset._tilemap._paintEverything(bitmap, bitmap);        
+        return [bitmap];
     }
-
-    SceneManager._scene._spriteset._tilemap._paintEverything(lowerBitmap, upperBitmap);
-
-    return [lowerBitmap, upperBitmap];
   };
 
   Tilemap.prototype._paintEverything = function(lowerBitmap, upperBitmap) {
@@ -119,6 +127,99 @@ var OrangeMapshot = OrangeMapshot || {};
     for (var y = 0; y < tileRows; y++) {
       for (var x = 0; x < tileCols; x++) {
         this._paintTilesOnBitmap(lowerBitmap, upperBitmap, x, y);
+      }
+    }
+  };
+
+  Tilemap.prototype._paintLayered = function(groundBitmap, ground2Bitmap, lowerBitmap, upperLayer, shadowBitmap) {
+    var tileCols = $dataMap.width;
+    var tileRows = $dataMap.height;
+
+    for (var y = 0; y < tileRows; y++) {
+      for (var x = 0; x < tileCols; x++) {
+        this._paintTileOnLayers(groundBitmap, ground2Bitmap, lowerBitmap, upperLayer, shadowBitmap, x, y);
+      }
+    }
+  };
+
+  Tilemap.prototype._paintTileOnLayers = function(groundBitmap, ground2Bitmap, lowerBitmap, upperBitmap, shadowBitmap, x, y) {
+    var tableEdgeVirtualId = 10000;
+    var mx = x;
+    var my = y;
+    var dx = (mx * this._tileWidth);
+    var dy = (my * this._tileHeight);
+    var lx = dx / this._tileWidth;
+    var ly = dy / this._tileHeight;
+    var tileId0 = this._readMapData(mx, my, 0);
+    var tileId1 = this._readMapData(mx, my, 1);
+    var tileId2 = this._readMapData(mx, my, 2);
+    var tileId3 = this._readMapData(mx, my, 3);
+    var shadowBits = this._readMapData(mx, my, 4);
+    var upperTileId1 = this._readMapData(mx, my - 1, 1);
+
+    if (groundBitmap !== undefined) {
+      groundBitmap.clearRect(dx, dy, this._tileWidth, this._tileHeight);
+    }
+
+    if (ground2Bitmap !== undefined) {
+      ground2Bitmap.clearRect(dx, dy, this._tileWidth, this._tileHeight);
+    }
+
+    if (lowerBitmap !== undefined) {
+      lowerBitmap.clearRect(dx, dy, this._tileWidth, this._tileHeight);
+    }
+
+    if (upperBitmap !== undefined) {
+      upperBitmap.clearRect(dx, dy, this._tileWidth, this._tileHeight);
+    }
+
+    if (shadowBitmap !== undefined) {
+      shadowBitmap.clearRect(dx, dy, this._tileWidth, this._tileHeight);
+    }
+
+    var me = this;
+
+    function drawTiles(bitmap, tileId, shadowBits, upperTileId1) {
+      if (tileId < 0) {
+        if ($.Param.drawAutoShadows && shadowBits !== undefined) {
+          me._drawShadow(bitmap, shadowBits, dx, dy);
+        }
+      } else if (tileId >= tableEdgeVirtualId) {
+        me._drawTableEdge(bitmap, upperTileId1, dx, dy);
+      } else {
+        me._drawTile(bitmap, tileId, dx, dy);
+      }
+    }
+
+    if (groundBitmap !== undefined) {
+      drawTiles(groundBitmap, tileId0, undefined, upperTileId1);
+  
+      if (shadowBitmap !== undefined && tileId0 < 0) {
+        drawTiles(shadowBitmap, tileId0, shadowBits, upperTileId1);
+      }
+    }
+
+    if (ground2Bitmap !== undefined) {
+      drawTiles(ground2Bitmap, tileId1, undefined, upperTileId1);
+  
+      if (shadowBitmap !== undefined && tileId1 < 0) {
+        drawTiles(shadowBitmap, tileId1, shadowBits, upperTileId1);
+      }
+    }
+
+    if (lowerBitmap !== undefined) {
+      drawTiles(lowerBitmap, tileId2, undefined, upperTileId1);
+  
+      if (shadowBitmap !== undefined && tileId2 < 0) {
+        drawTiles(shadowBitmap, tileId2, shadowBits, upperTileId1);
+      }
+    }
+
+    if (upperBitmap !== undefined) {
+      drawTiles(upperBitmap, tileId3, shadowBits, upperTileId1);
+
+      if (shadowBitmap !== undefined && tileId3 < 0) {
+        drawTiles(shadowBitmap, tileId3, shadowBits, upperTileId1);
       }
     }
   };
@@ -208,20 +309,35 @@ var OrangeMapshot = OrangeMapshot || {};
           var fileName = path + '/' + $.baseFileName();
           var ext = $.fileExtension();
           var names = [fileName + ext];
-          var maxFiles = 1;
           var regex = $.imageRegex();
 
-          if ($.Param.separateLayers) {
-            maxFiles = 2;
-            names = [
-              fileName + '_lower' + ext,
-              fileName + '_upper' + ext
-            ];
+          switch ($.Param.layerType) {
+            case 1 :
+              names = [
+                fileName + ' Lower' + ext,
+                fileName + ' Upper' + ext
+              ];
+              break;
+            case 2 :
+              names = [
+                fileName + ' Ground' + ext,
+                fileName + ' Ground 2' + ext,
+                fileName + ' Lower' + ext,
+                fileName + ' Upper' + ext
+              ];
+
+              // if ($.Param.drawAutoShadows) {
+              //   names.push(fileName + ' Shadows' + ext);
+              // }
+              break;
+            default :
+              names = [fileName + ext];
+              break;
           } 
 
           var snaps = $.getMapshot();
 
-          for (var i = 0; i < maxFiles; i++) {
+          for (var i = 0; i < names.length; i++) {
             var urlData = snaps[i].canvas.toDataURL($.imageType(), $.imageQuality());
 
             var base64Data = urlData.replace(regex, "");
@@ -257,4 +373,4 @@ var OrangeMapshot = OrangeMapshot || {};
   };
 })(OrangeMapshot);
 
-Imported["OrangeMapshot"] = 1.3;
+Imported["OrangeMapshot"] = 1.4;
