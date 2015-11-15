@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 2.2.1
+ * Version: 2.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -206,6 +206,11 @@
  * 
  * 
  * ---------------------------------------------------------------------------- 
+ *  COMMAND:   RUN COMMON EVENT 10 ON HOUR 10 MINUTE 20
+ *  COMMAND:   RUN COMMON EVENT 10 ON DAY 1 HOUR 20 MINUTE 15
+ *  COMMAND:   RUN COMMON EVENT 10 ON YEAR 2 DAY 1 HOUR 15
+ *  COMMAND:   RUN COMMON EVENT 10 ON PERIOD 2
+ * 
  *  SCRIPT:    OrangeTimeSystem.onDateTime(commonEvent, day, month, year, hour, minute, second)
  *  SCRIPT:    OrangeTimeSystem.onTime(commonEvent, hour, minute, second)
  *  SCRIPT:    OrangeTimeSystem.onDayPeriod(commonEvent, dayPeriod)
@@ -214,14 +219,17 @@
  * specified.
  * 
  * For example, to trigger common event 10 at 11:50:21, call:
+ * 
  *  SCRIPT:    OrangeTimeSystem.onTime(10, 11, 50, 21)
+ *  COMMAND:   RUN COMMON EVENT 10 ON HOUR 11 MINUTE 50 SECOND 21
  * 
- * if you don't want to specify any of the variables, use the word undefined.
+ * If you don't want to specify any of the variables, use the word undefined.
  * For example, to trigger common event 10 at every hour when the minutes turn 50, call:
- *  SCRIPT:    OrangeTimeSystem.onTime(10, undefined, 50, 0)
- * This will trigger the event at 00:50:00, 01:50:00, 02:50:00 and so on.
  * 
- * There are no plugin commands available for this yet.
+ *  SCRIPT:    OrangeTimeSystem.onTime(10, undefined, 50, 0)
+ *  COMMAND:   RUN COMMON EVENT 10 ON MINUTE 50 SECOND 0
+ * 
+ * This will trigger the event at 00:50:00, 01:50:00, 02:50:00 and so on.
  * 
  * ============================================================================
  * Latest Version
@@ -1279,8 +1287,66 @@ var DayPeriods = {
   };
 
   $.checkRunOnCommands = function(eventId, args) {
-    // #ToDo: Plugin Commands for ON events (onDateTime)
+    if (args.length < 5) return;
 
+    var hour, minute, seconds, day, month, year, dayPeriod;
+    var nextIndex = 4;
+    var autoRemove = false;
+
+    while (true) {
+      if (args.length < nextIndex + 1) break;
+
+      switch(args[nextIndex].toUpperCase()) {
+        case 'HOUR' :
+          hour = parseInt(args[nextIndex + 1], 10);
+          nextIndex++;
+          break;
+        case 'MINUTE' :
+          minute = parseInt(args[nextIndex + 1], 10);
+          nextIndex++;
+          break;
+        case 'SECOND' :
+          seconds = parseInt(args[nextIndex + 1], 10);
+          nextIndex++;
+          break;
+        case 'DAY' :
+          day = parseInt(args[nextIndex + 1], 10);
+          nextIndex++;
+          break;
+        case 'MONTH' :
+          month = parseInt(args[nextIndex + 1], 10);
+          nextIndex++;
+          break;
+        case 'YEAR' :
+          year = parseInt(args[nextIndex + 1], 10);
+          nextIndex++;
+          break;
+        case 'PERIOD' :
+          dayPeriod = parseInt(args[nextIndex + 1], 10);
+          nextIndex++;
+          break;
+        case 'ONCE' :
+          autoRemove = true;
+          break;
+        default :
+          break;
+      }
+
+      nextIndex++;
+    }
+
+    var config = {
+      callback : eventId,
+      hour : hour,
+      minute : minute,
+      seconds : seconds,
+      day : day,
+      month : month,
+      year : year,
+      dayPeriod : dayPeriod
+    };
+
+    $.registerTimeEvent(config);
   };
 
   $.checkRunEveryCommands = function(eventId, args) {
@@ -1391,4 +1457,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 2.2;
+Imported.OrangeTimeSystem = 2.3;
