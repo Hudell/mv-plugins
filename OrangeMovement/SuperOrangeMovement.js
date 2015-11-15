@@ -2,11 +2,11 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovement.js
- * Version: 1.5
+ * Version: 1.5.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Movement Improvements: Diagonal Movement, Pixel Movement, Actor Hitbox Changer.
+ * @plugindesc Movement Improvements: Diagonal Movement, Pixel Movement, Actor Hitbox Changer. <SuperOrangeMovement>
  *
  * @param Tile_Sections
  * @desc How many pieces do you want to break the tiles into?
@@ -321,7 +321,11 @@ var Direction = {
 (function($) {
   "use strict";
 
-  $.Parameters = PluginManager.parameters('SuperOrangeMovement');
+  var parameters = $plugins.filter(function(plugin) { return plugin.description.contains('<SuperOrangeMovement>'); });
+  if (parameters.length === 0) {
+    throw new Error("Couldn't find Hudell's SuperOrangeMovement parameters.");
+  }
+  $.Parameters = parameters[0].parameters;
   $.Param = $.Param || {};
 
   $.Param.Tile_Sections = Number($.Parameters["Tile_Sections"] || 4);
