@@ -128,7 +128,7 @@
  * 
  *=============================================================================*/
 /*:pt
- * @plugindesc Melhorias no movimento: Movimentação Diagonal, Movimentação por Pixel, Mudança na caixa de colisão dos personagens.
+ * @plugindesc Melhorias no movimento: Movimentação Diagonal, Movimentação por Pixel, Mudança na caixa de colisão dos personagens. <SuperOrangeMovementEx>
  *
  * @param Tile_Sections
  * @desc Em quantos pedaços os tiles deverão ser quebrados?
@@ -248,7 +248,7 @@
  * 
  *=============================================================================*/
 /*:fr
- * @plugindesc Amélioration des déplacements : déplacement en diagonale, déplacement au pixel près et adaptation de la hitbox du personnage
+ * @plugindesc Amélioration des déplacements : déplacement en diagonale, déplacement au pixel près et adaptation de la hitbox du personnage <SuperOrangeMovementEx>
  *
  * @param Tile_Sections
  * @desc En combien de sous-divisions voulez-vous diviser un tile ?
