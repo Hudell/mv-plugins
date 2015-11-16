@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 2.3
+ * Version: 2.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -20,6 +20,10 @@
  * @param secondLength
  * @desc How many real time milliseconds should an ingame second last
  * @default 100
+ *
+ * @param secondLengthDuringTest
+ * @desc Use a different testLength during playtest
+ * @default 0
  *
  * @param secondLengthVariable
  * @desc Load the length of the second from a variable instead of a fixed value
@@ -296,6 +300,13 @@ var DayPeriods = {
     $.Param.secondLength = 1000;
   } else {
     $.Param.secondLength = Number($.Parameters['secondLength'] || 100);
+
+    if (Utils.isOptionValid('test')) {
+      var testingLength = Number($.Parameters["secondLengthDuringTest" || 0]);
+      if (testingLength > 0) {
+        $.Param.secondLength = testingLength;
+      }
+    }
   }
 
   if ($.Param.useRealTime || $.Param.useRealTimeStructure) {
@@ -1457,4 +1468,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 2.3;
+Imported.OrangeTimeSystem = 2.4;
