@@ -1,16 +1,16 @@
 /*=============================================================================
- * Orange - Lightning
+ * Orange - Lighting
  * By Hudell - www.hudell.com
- * OrangeLightning.js
- * Version: 1.0
+ * OrangeLighting.js
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Lightning system <OrangeLightning>
+ * @plugindesc Lighting system <OrangeLighting>
  * @author Hudell
  *
  * @param lightMaskSwitch
- * @desc When this switch is on, the lightning system will be activated
+ * @desc When this switch is on, the lighting system will be activated
  * @default 0
  *
  * @param resetOnMapChange
@@ -56,16 +56,16 @@
  *=============================================================================*/
 var Imported = Imported || {};
 var Hudell = Hudell || {};
-Hudell.OrangeLightning = Hudell.OrangeLightning || {};
+Hudell.OrangeLighting = Hudell.OrangeLighting || {};
 
 (function(namespace) {
   "use strict";
 
   var parameters = $plugins.filter(function(plugin) {
-    return plugin.description.contains('<OrangeLightning>');
+    return plugin.description.contains('<OrangeLighting>');
   });
   if (parameters.length === 0) {
-    throw new Error("Couldn't find Hudell's OrangeLightning parameters.");
+    throw new Error("Couldn't find Hudell's OrangeLighting parameters.");
   }
   namespace.Parameters = parameters[0].parameters;
   namespace.Param = {};
@@ -443,7 +443,7 @@ Hudell.OrangeLightning = Hudell.OrangeLightning || {};
       this._setDirty();
     };
   })(Bitmap.prototype);
-})(Hudell.OrangeLightning);
+})(Hudell.OrangeLighting);
 
-OrangeLightning = Hudell.OrangeLightning;
-Imported["OrangeLightning"] = 1.0;
+OrangeLighting = Hudell.OrangeLighting;
+Imported["OrangeLighting"] = 1.1;
