@@ -1078,7 +1078,6 @@ Window_RegionName.prototype.constructor = Window_RegionName;
         this.drawBackground(0, 0, width, this.lineHeight());
         this.drawText(regionName, 0, 0, width, 'center');
       }
-
     }
   };
 
@@ -1109,7 +1108,7 @@ Window_RegionName.prototype.constructor = Window_RegionName;
     if ($gamePlayer.isTransferring()) {
       this._regionNameWindow.close();
     }
-    
+
     $.oldSceneMap_updateTransferPlayer.call(this);
     this._regionNameWindow.update();
   };

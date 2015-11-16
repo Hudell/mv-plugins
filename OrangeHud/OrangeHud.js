@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.5
+ * Version: 1.6
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -58,10 +58,6 @@
  * @desc The number of pixels to use on the padding of the hud window
  * @default 18
  *
- * #param HudNumber
- * #desc The number of this HUD. Used to identify what should be displayed here
- * #default 1
- *
  * @param ShowOnMap
  * @desc Display this HUD on the map
  * @default true
@@ -76,6 +72,10 @@
  *
  * @param ShowOnTitle
  * @desc Display this HUD on the title screen?
+ * @default false
+ *
+ * @param ShowUnderTintLayer
+ * @desc Set this to true to hide the HUD under tint and face effects
  * @default false
  *
  * @help
@@ -117,6 +117,7 @@ if (Imported["MVCommons"] === undefined) {
   $.Param.DefaultFontSize = Number($.Parameters.DefaultFontSize || 18);
   $.Param.DefaultFontColor = String($.Parameters.DefaultFontColor || '#FFFFFF');
   $.Param.DefaultFontItalic = $.Parameters.DefaultFontItalic === "true";
+  $.Param.ShowUnderTintLayer = ($.Parameters.ShowUnderTintLayer || "false").toLowerCase() === "true";
 
   $.Param.HudWidth = Number($.Parameters.HudWidth || SceneManager._screenWidth);
   if ($.Param.HudWidth === 0) {
@@ -263,7 +264,7 @@ if (Imported["MVCommons"] === undefined) {
     }
 
     this.createVarHudWindow();
-    if (this instanceof Scene_Map) {
+    if (this instanceof Scene_Map && $.Param.ShowUnderTintLayer) {
       this._spriteset._baseSprite.addChild(this._varHudWindow);
     } else {
       this.addChild(this._varHudWindow);
@@ -299,4 +300,4 @@ if (Imported["MVCommons"] === undefined) {
   };
 })(OrangeHud);
 
-Imported.OrangeHud = 1.5;
+Imported.OrangeHud = 1.6;
