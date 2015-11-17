@@ -60,10 +60,10 @@ if (Imported["OrangeHud"] === undefined) {
   throw new Error("Please add OrangeHud before OrangeHudGold!");
 }
 
-var OrangeHudDefaultLine = OrangeHudDefaultLine || {};
+var OrangeHudGoldLine = OrangeHudGoldLine || {};
 
 if (Imported["OrangeHudGold"] === undefined) {
-  OrangeHudDefaultLine.validateParams = function(line) {
+  OrangeHudGoldLine.validateParams = function(line) {
     if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
       line.ScriptPattern = undefined;
     }
@@ -95,7 +95,7 @@ if (Imported["OrangeHudGold"] === undefined) {
     line.SwitchId = Number(line.SwitchId || 0);
   };
 
-  OrangeHudDefaultLine.drawLine = function(window, variableData) {
+  OrangeHudGoldLine.drawLine = function(window, variableData) {
     if (variableData.SwitchId > 0) {
       if (!$gameSwitches.value(variableData.SwitchId)) {
         return;
@@ -119,14 +119,14 @@ if (Imported["OrangeHudGold"] === undefined) {
     window.resetFontSettings();
   };
 
-  OrangeHudDefaultLine.getValue = function(variableData) {
+  OrangeHudGoldLine.getValue = function(variableData) {
     return $gameParty.gold();
   };
 
-  OrangeHudDefaultLine.getKey = function(variableData) {
+  OrangeHudGoldLine.getKey = function(variableData) {
     return 'gold';
   };
 
-  OrangeHud.registerLineType('OrangeHudGold', OrangeHudDefaultLine);
+  OrangeHud.registerLineType('OrangeHudGold', OrangeHudGoldLine);
   Imported["OrangeHudGold"] = 1.0;
 }

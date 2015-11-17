@@ -104,10 +104,10 @@ if (Imported["OrangeHud"] === undefined) {
   throw new Error("Please add OrangeHud before OrangeHudLineGroup!");
 }
 
-var OrangeHudDefaultLine = OrangeHudDefaultLine || {};
+var OrangeHudLineGroup = OrangeHudLineGroup || {};
 
 if (Imported["OrangeHudLineGroup"] === undefined) {
-  OrangeHudDefaultLine.validateParams = function(line) {
+  OrangeHudLineGroup.validateParams = function(line) {
     if (line.DefaultPattern === undefined) {
       line.DefaultPattern = "%1";
     } else if (line.DefaultPattern.trim() === "") {
@@ -137,7 +137,7 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
     line.SwitchId = Number(line.SwitchId || 0);
   };
 
-  OrangeHudDefaultLine.drawLine = function(window, variableData) {
+  OrangeHudLineGroup.drawLine = function(window, variableData) {
     if (variableData.SwitchId > 0) {
       if (!$gameSwitches.value(variableData.SwitchId)) {
         return;
@@ -173,7 +173,7 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
     window.resetFontSettings();
   };
 
-  OrangeHudDefaultLine.getValue = function(variableData) {
+  OrangeHudLineGroup.getValue = function(variableData) {
     var values = [];
 
     for (var i = 0; i < variableData.VariableList.length; i++) {
@@ -188,10 +188,10 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
     return values.join(',');
   };
 
-  OrangeHudDefaultLine.getKey = function(variableData) {
+  OrangeHudLineGroup.getKey = function(variableData) {
     return variableData.VariableList.join(',');
   };
 
-  OrangeHud.registerLineType('OrangeHudLineGroup', OrangeHudDefaultLine);
+  OrangeHud.registerLineType('OrangeHudLineGroup', OrangeHudLineGroup);
   Imported["OrangeHudLineGroup"] = 1.0;
 }
