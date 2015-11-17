@@ -34,12 +34,6 @@
  * @default 0
  *
  * @help
- * ============================================================================
- * Latest Version
- * ============================================================================
- * 
- * Get the latest version of this script on
- * http://link.hudell.com/hud-line-variable-picture
  * */
 
 var Imported = Imported || {};
