@@ -11,7 +11,7 @@
  *
  * @param Pattern
  * @desc The pattern of the line that will be drawn. Click the help button for more info.
- * @default <hp>
+ * @default <hp> / <mhp>
  *
  * @param ActorIndex
  * @desc The index of the actor in the party. If the index is invalid, nothing will be shown
@@ -56,6 +56,40 @@
  * 
  * Get the latest version of this script on
  * http://link.hudell.com/hud-line
+ * ============================================================================
+ * Valid variables:
+ * ============================================================================
+ * <hp>
+ * <mp>
+ * <tp>
+ * <mhp>
+ * <mmp>
+ * <atk>
+ * <def>
+ * <mat>
+ * <mdf>
+ * <agi>
+ * <luk>
+ * <hit>
+ * <eva>
+ * <cri>
+ * <cev>
+ * <mev>
+ * <mrf>
+ * <cnt>
+ * <hrg>
+ * <mrg>
+ * <trg>
+ * <tgr>
+ * <grd>
+ * <rec>
+ * <pha>
+ * <mcr>
+ * <tcr>
+ * <pdr>
+ * <mdr>
+ * <fdr>
+ * <exr>
  * */
 
 var Imported = Imported || {};
@@ -73,7 +107,7 @@ if (Imported["OrangeHudActorStatus"] === undefined) {
     }
 
     if (line.Pattern === undefined) {
-      line.Pattern = "%1";
+      line.Pattern = "<hp> / <mhp>";
     } else if (line.Pattern.trim() === "") {
       line.Pattern = "";
     }
