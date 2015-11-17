@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 2.4
+ * Version: 2.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -248,7 +248,7 @@ var Imported = Imported || {};
 var none = undefined;
 
 if (Imported['MVCommons'] === undefined) {
-  var MVC = {};
+  var MVC = MVC || {};
 
   (function($){ 
     $.isArray = function(obj) { return Object.prototype.toString.apply(obj) === '[object Array]'; };
@@ -763,8 +763,16 @@ var DayPeriods = {
       }
     }
 
+    var increment = 1;
+
+    if (length < 10) {
+      var multiplier = Math.ceil(10 / length);
+      increment *= multiplier;
+      length *= multiplier;
+    }
+
     this._intervalHandler = setInterval(function() {
-      $.progressTime();
+      $.progressTime(increment);
     }, length);
   };
 
@@ -933,15 +941,19 @@ var DayPeriods = {
     return false;
   };
 
-  $.progressTime = function() {
+  $.progressTime = function(increment) {
     if (this.paused) return;
     if (this.isInternallyPaused()) return;
+
+    if (increment === undefined) {
+      increment = 1;
+    }
 
     if ($.Param.useRealTime) {
       $.loadRealTime();
       $._onUpdateTime();
     } else if (SceneManager._scene instanceof Scene_Map) {
-      $.seconds += 1;
+      $.seconds += increment;
 
       $.updateTime();
       $._onChangeSecond();
@@ -1468,4 +1480,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 2.4;
+Imported.OrangeTimeSystem = 2.5;

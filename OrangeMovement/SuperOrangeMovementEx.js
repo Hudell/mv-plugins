@@ -379,7 +379,7 @@ if (Imported["SuperOrangeMovement"]) {
 }
 
 if (Imported['MVCommons'] === undefined) {
-  var MVC = {};
+  var MVC = MVC || {};
 
   (function($) {
     $.defaultGetter = function(name) {return function() {return this['_' + name];};};
