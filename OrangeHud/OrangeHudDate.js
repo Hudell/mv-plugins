@@ -77,7 +77,7 @@ if (Imported["OrangeHudDate"] === undefined) {
     }
 
     if (line.Pattern === undefined) {
-      line.Pattern = "%1:%2:%3";
+      line.Pattern = "%1/%2/%3";
     } else if (line.Pattern.trim() === "") {
       line.Pattern = "";
     }

@@ -6,7 +6,7 @@
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Adds a new Variable to Orange Hud
+ * @plugindesc Adds a new Variable Picture to Orange Hud
  * @author Hudell
  *
  * @param Pattern
