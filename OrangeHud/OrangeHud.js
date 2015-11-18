@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.6
+ * Version: 1.7
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -142,6 +142,11 @@ if (Imported["MVCommons"] === undefined) {
   $.Param.ShowOnMap = $.Parameters.ShowOnMap !== "false";
 
   $._addons = {};
+  $._isDirty = false;
+
+  $.setDirty = function() {
+    $._isDirty = true;
+  };
 
   $.registerLineType = function(lineType, manager) {
     $._addons[lineType] = {
@@ -197,6 +202,8 @@ if (Imported["MVCommons"] === undefined) {
   };
 
   Window_OrangeHud.prototype.refresh = function() {
+    $._isDirty = false;
+
     if (this.contents) {
       this.contents.clear();
       this.drawHud();
@@ -220,7 +227,7 @@ if (Imported["MVCommons"] === undefined) {
   Window_OrangeHud.prototype.update = function() {
     Window_Base.prototype.update.call(this);
 
-    var shouldRefresh = false;
+    var shouldRefresh = $._isDirty;
     var self = this;
     
     for (var lineType in $._addons) {
@@ -300,4 +307,4 @@ if (Imported["MVCommons"] === undefined) {
   };
 })(OrangeHud);
 
-Imported.OrangeHud = 1.6;
+Imported.OrangeHud = 1.7;

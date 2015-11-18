@@ -2,7 +2,7 @@
  * Orange - Face Picture HUD
  * By HUDell - www.hudell.com
  * OrangeHudFacePicture.js
- * Version: 1.0
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -40,6 +40,10 @@ var Imported = Imported || {};
 
 if (Imported["OrangeHud"] === undefined) {
   throw new Error("Please add OrangeHud before OrangeHudFacePicture!");
+}
+
+if (Imported["OrangeHud"] < 1.7) {
+  throw new Error("Please update OrangeHud!");
 }
 
 var OrangeHudFacePicture = OrangeHudFacePicture || {};
@@ -89,6 +93,11 @@ if (Imported["OrangeHudFacePicture"] === undefined) {
       x = this.realX(variableData);
       y = this.realY(variableData);
 
+      var bitmap = ImageManager.loadFace(fileData[0]);
+      bitmap.addLoadListener(function(){
+        OrangeHud.setDirty();
+      });
+
       hudWindow.drawFace(fileData[0], fileData[1], x, y);
     }
   };
@@ -116,5 +125,5 @@ if (Imported["OrangeHudFacePicture"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudFacePicture', OrangeHudFacePicture);
-  Imported["OrangeHudFacePicture"] = 1.0;
+  Imported["OrangeHudFacePicture"] = 1.2;
 }

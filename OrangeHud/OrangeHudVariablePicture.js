@@ -2,7 +2,7 @@
  * Orange - Variable Picture HUD
  * By HUDell - www.hudell.com
  * OrangeHudVariablePicture.js
- * Version: 1.4
+ * Version: 1.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -46,18 +46,15 @@
  * @default 
  *
  * @help
- * ============================================================================
- * Latest Version
- * ============================================================================
- * 
- * Get the latest version of this script on
- * http://link.hudell.com/hud-line-variable-picture
  * */
 
 var Imported = Imported || {};
 
 if (Imported["OrangeHud"] === undefined) {
   throw new Error("Please add OrangeHud before OrangeHudVariablePicture!");
+}
+if (Imported["OrangeHud"] < 1.7) {
+  throw new Error("Please update OrangeHud!");
 }
 
 var OrangeHudVariablePicture = OrangeHudVariablePicture || {};
@@ -152,6 +149,9 @@ if (Imported["OrangeHudVariablePicture"] === undefined) {
     y = this.realY(variableData);
 
     var bitmap = ImageManager.loadPicture(filename);
+    bitmap.addLoadListener(function(){
+      OrangeHud.setDirty();
+    });
     var key = OrangeHudVariablePicture.getKey(variableData);
     
     this.images = this.images || {};
@@ -194,5 +194,5 @@ if (Imported["OrangeHudVariablePicture"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudVariablePicture', OrangeHudVariablePicture);
-  Imported["OrangeHudVariablePicture"] = 1.4;
+  Imported["OrangeHudVariablePicture"] = 1.5;
 }
