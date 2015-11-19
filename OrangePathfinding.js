@@ -2,7 +2,7 @@
  * Orange - Pathfinding
  * By Hudell - www.hudell.com
  * OrangePathfinding.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -96,7 +96,7 @@ if (Imported["SuperOrangeMovement"] !== undefined || Imported["SuperOrangeMoveme
         if (closedList.contains(pos2)) {
           continue;
         }
-        if (!this.canPass(x1, y1, direction)) {
+        if (!this.canPass(x1, y1, direction) && (x2 !== goalX || y2 !== goalY)) {
           continue;
         }
 
