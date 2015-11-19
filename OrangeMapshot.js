@@ -2,7 +2,7 @@
  * Orange - Mapshot
  * By Hudell - www.hudell.com
  * OrangeMapshot.js
- * Version: 1.4
+ * Version: 1.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -302,6 +302,7 @@ var OrangeMapshot = OrangeMapshot || {};
 
     var fs = require('fs');
     var path = './Mapshots';
+    var openedAny = false;
 
     try {
       fs.mkdir(path, function() {
@@ -354,6 +355,19 @@ var OrangeMapshot = OrangeMapshot || {};
           }
         }
       });
+
+      var nodePath = require('path');
+      var longPath = nodePath.resolve(path);
+
+      if (process.platform == 'win32') {
+        setTimeout(function(){
+          var exec = require('child_process').exec;
+          exec('explorer ' + longPath);
+        }, 50);
+      } else {
+        $gameMessage.add('Mapshot saved to \n' + longPath.replace(/\\/g, '\\\\').match(/.{1,40}/g).join('\n')); 
+      }
+
     } catch (error) {
       if (error !== undefined && error !== null) {
         console.error('An error occured while saving the mapshot:', error);
@@ -361,16 +375,15 @@ var OrangeMapshot = OrangeMapshot || {};
     }
   };
 
-  var oldInput_onKeyUp = Input._onKeyUp;
-  Input._onKeyUp = function(event) {
-    oldInput_onKeyUp.call(this, event);
-
+  $.onKeyUp = function(event) {
     if (event.keyCode == $.Param.keyCode) {
       if (SceneManager._scene instanceof Scene_Map) {
         $.saveMapshot();
       }
     }
   };
+
+  document.addEventListener('keyup', $.onKeyUp);
 })(OrangeMapshot);
 
-Imported["OrangeMapshot"] = 1.4;
+Imported["OrangeMapshot"] = 1.5;
