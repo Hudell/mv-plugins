@@ -2,7 +2,7 @@
  * Orange - Notetag to Variable
  * By Hudell - www.hudell.com
  * OrangeNoteTagToVariable.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -17,8 +17,12 @@
  * @desc The name of the notetag to look for on the maps and event notes
  * @default 0
  *
+ * @param noteList
+ * @desc Configure several notes with a single plugin using this param
+ * @default 
+ *
  * @help
- * Add the <notetag> on the notes of the maps and events that you want to tag.
+ * Add the <notetag:value> on the notes of the maps and events that you want to tag.
  *
  * This plugin can be added multiple times to the same project
  * (just make a copy of the file and add it)
@@ -56,6 +60,28 @@ if (Imported["OrangeNoteTagToVariable"] === undefined) {
               variableId : variableId,
               notetagName : notetagName
             });
+          }
+
+          var list = $plugins[i].parameters['noteList'];
+          if (list !== undefined) {
+            var re = /<([^<>:]+):([^>]*)>/g;
+
+            while(true) {
+              var match = re.exec(list);
+              if (match) {
+                notetagName = match[1];
+                variableId = Number(match[2] || 0);
+
+                if (variableId > 0 && notetagName.trim().length > 0) {
+                  paramList.push({
+                    variableId : variableId,
+                    notetagName : notetagName
+                  });
+                }
+              } else {
+                break;
+              }
+            }
           }
         }
       }
@@ -105,5 +131,5 @@ if (Imported["OrangeNoteTagToVariable"] === undefined) {
     }
   })();
 
-  Imported["OrangeNoteTagToVariable"] = 1;
+  Imported["OrangeNoteTagToVariable"] = 1.1;
 }
