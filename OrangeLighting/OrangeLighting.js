@@ -2,7 +2,7 @@
  * Orange - Lighting
  * By Hudell - www.hudell.com
  * OrangeLighting.js
- * Version: 1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -36,6 +36,10 @@
  * @param flashlightSwitch
  * @desc When this switch is on, a flashlight will be added to the player.
  * @default 0
+ *
+ * @param tintSpeed
+ * @desc The speed in which the color will change. (4 = black to white in 1 second, 255 = instant)
+ * @default 0.3
  *
  * @param hourColors
  * @desc A different color mask for each hour of the day. Requires OrangeTimeSystem.
@@ -75,6 +79,7 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
   namespace.Param.playerColor = namespace.Parameters.playerColor || '#FFFFFF';
   namespace.Param.playerFlicker = (namespace.Parameters.playerFlicker || "false").toUpperCase() === "TRUE";
   namespace.Param.flashlightSwitch = Number(namespace.Parameters.flashlightSwitch || 0);
+  namespace.Param.tintSpeed = Number(namespace.Parameters.tintSpeed || 0.3);
   namespace.Param.lightMaskSwitch = Number(namespace.Parameters.lightMaskSwitch || 0);
   namespace.Param.opacityVariable = Number(namespace.Parameters.opacityVariable || 0);
 
@@ -129,6 +134,51 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
   namespace.Lightmask = OrangeLightmask;
   namespace.Lightmask.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
   namespace.Lightmask.prototype.constructor = namespace.Lightmask;
+
+  //Copied from http://stackoverflow.com/questions/1573053/javascript-function-to-convert-color-names-to-hex-codes
+  namespace.colorNameToHex = function(color)
+  {
+    if (color.charAt('0') == '#') return color;
+
+    var colors = {"aliceblue":"#f0f8ff","antiquewhite":"#faebd7","aqua":"#00ffff","aquamarine":"#7fffd4","azure":"#f0ffff",
+    "beige":"#f5f5dc","bisque":"#ffe4c4","black":"#000000","blanchedalmond":"#ffebcd","blue":"#0000ff","blueviolet":"#8a2be2","brown":"#a52a2a","burlywood":"#deb887",
+    "cadetblue":"#5f9ea0","chartreuse":"#7fff00","chocolate":"#d2691e","coral":"#ff7f50","cornflowerblue":"#6495ed","cornsilk":"#fff8dc","crimson":"#dc143c","cyan":"#00ffff",
+    "darkblue":"#00008b","darkcyan":"#008b8b","darkgoldenrod":"#b8860b","darkgray":"#a9a9a9","darkgreen":"#006400","darkkhaki":"#bdb76b","darkmagenta":"#8b008b","darkolivegreen":"#556b2f",
+    "darkorange":"#ff8c00","darkorchid":"#9932cc","darkred":"#8b0000","darksalmon":"#e9967a","darkseagreen":"#8fbc8f","darkslateblue":"#483d8b","darkslategray":"#2f4f4f","darkturquoise":"#00ced1",
+    "darkviolet":"#9400d3","deeppink":"#ff1493","deepskyblue":"#00bfff","dimgray":"#696969","dodgerblue":"#1e90ff",
+    "firebrick":"#b22222","floralwhite":"#fffaf0","forestgreen":"#228b22","fuchsia":"#ff00ff",
+    "gainsboro":"#dcdcdc","ghostwhite":"#f8f8ff","gold":"#ffd700","goldenrod":"#daa520","gray":"#808080","green":"#008000","greenyellow":"#adff2f",
+    "honeydew":"#f0fff0","hotpink":"#ff69b4",
+    "indianred ":"#cd5c5c","indigo":"#4b0082","ivory":"#fffff0","khaki":"#f0e68c",
+    "lavender":"#e6e6fa","lavenderblush":"#fff0f5","lawngreen":"#7cfc00","lemonchiffon":"#fffacd","lightblue":"#add8e6","lightcoral":"#f08080","lightcyan":"#e0ffff","lightgoldenrodyellow":"#fafad2",
+    "lightgrey":"#d3d3d3","lightgreen":"#90ee90","lightpink":"#ffb6c1","lightsalmon":"#ffa07a","lightseagreen":"#20b2aa","lightskyblue":"#87cefa","lightslategray":"#778899","lightsteelblue":"#b0c4de",
+    "lightyellow":"#ffffe0","lime":"#00ff00","limegreen":"#32cd32","linen":"#faf0e6",
+    "magenta":"#ff00ff","maroon":"#800000","mediumaquamarine":"#66cdaa","mediumblue":"#0000cd","mediumorchid":"#ba55d3","mediumpurple":"#9370d8","mediumseagreen":"#3cb371","mediumslateblue":"#7b68ee",
+    "mediumspringgreen":"#00fa9a","mediumturquoise":"#48d1cc","mediumvioletred":"#c71585","midnightblue":"#191970","mintcream":"#f5fffa","mistyrose":"#ffe4e1","moccasin":"#ffe4b5",
+    "navajowhite":"#ffdead","navy":"#000080",
+    "oldlace":"#fdf5e6","olive":"#808000","olivedrab":"#6b8e23","orange":"#ffa500","orangered":"#ff4500","orchid":"#da70d6",
+    "palegoldenrod":"#eee8aa","palegreen":"#98fb98","paleturquoise":"#afeeee","palevioletred":"#d87093","papayawhip":"#ffefd5","peachpuff":"#ffdab9","peru":"#cd853f","pink":"#ffc0cb","plum":"#dda0dd","powderblue":"#b0e0e6","purple":"#800080",
+    "red":"#ff0000","rosybrown":"#bc8f8f","royalblue":"#4169e1",
+    "saddlebrown":"#8b4513","salmon":"#fa8072","sandybrown":"#f4a460","seagreen":"#2e8b57","seashell":"#fff5ee","sienna":"#a0522d","silver":"#c0c0c0","skyblue":"#87ceeb","slateblue":"#6a5acd","slategray":"#708090","snow":"#fffafa","springgreen":"#00ff7f","steelblue":"#4682b4",
+    "tan":"#d2b48c","teal":"#008080","thistle":"#d8bfd8","tomato":"#ff6347","turquoise":"#40e0d0",
+    "violet":"#ee82ee",
+    "wheat":"#f5deb3","white":"#ffffff","whitesmoke":"#f5f5f5",
+    "yellow":"#ffff00","yellowgreen":"#9acd32"};
+
+    if (typeof colors[color.toLowerCase()] != 'undefined')
+      return colors[color.toLowerCase()];
+
+    return false;
+  };
+
+  namespace.hexToRgb = function(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      red : parseInt(result[1], 16),
+      green : parseInt(result[2], 16),
+      blue : parseInt(result[3], 16)
+    } : null;
+  };
 
   (function($) {
     Object.defineProperties($, {
@@ -226,6 +276,22 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
       }
     };
 
+    $.walkColor = function(newRGB, currentRGB, colorName, tintSpeed) {
+      if (newRGB[colorName] < currentRGB[colorName]) {
+        currentRGB[colorName] = currentRGB[colorName] - tintSpeed;
+        if (newRGB[colorName] > currentRGB[colorName]) {
+          currentRGB[colorName] = newRGB[colorName];
+        }
+      } else if(newRGB[colorName] > currentRGB[colorName]) {
+        currentRGB[colorName] = currentRGB[colorName] + tintSpeed;
+        if (newRGB[colorName] < currentRGB[colorName]) {
+          currentRGB[colorName] = newRGB[colorName];
+        }
+      }
+
+      newRGB[colorName] = newRGB[colorName].clamp(0, 255);
+    };
+
     $.refreshMask = function() {
       this.popAllSprites();
 
@@ -237,7 +303,36 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
           backOpacity = $gameVariables.value(namespace.Param.opacityVariable).clamp(0, 255);
         }
 
-        namespace._lastMaskColor = $.maskColor();
+        var destinationColor = $.maskColor();
+        var newColor = destinationColor;
+
+        if (namespace._lastMaskColor !== undefined && destinationColor !== namespace._lastMaskColor) {
+          var currentColor = namespace._lastMaskColor;
+          var currentRGB = namespace._currentRGB;
+
+          if (!!currentRGB || currentColor.charAt(0) == '#') {
+            newColor = namespace.colorNameToHex(destinationColor);
+            if (newColor === false) {
+              newColor = destinationColor;
+            }
+
+            if (currentRGB === undefined) {
+              currentRGB = namespace.hexToRgb(currentColor);
+            }
+            var newRGB = namespace.hexToRgb(newColor);
+
+            this.walkColor(newRGB, currentRGB, 'red', namespace.Param.tintSpeed);
+            this.walkColor(newRGB, currentRGB, 'green', namespace.Param.tintSpeed);
+            this.walkColor(newRGB, currentRGB, 'blue', namespace.Param.tintSpeed);
+
+            newColor = '#' + ((1 << 24) + (Math.floor(currentRGB.red) << 16) + (Math.floor(currentRGB.green) << 8) + Math.floor(currentRGB.blue)).toString(16).slice(1);
+            namespace._currentRGB = currentRGB;
+          }
+        } else {
+          namespace._currentRGB = undefined;
+        }
+
+        namespace._lastMaskColor = newColor;
 
         // Adds the black background
         this.addSprite(0, 0, this._maskBitmap, backOpacity);
@@ -352,23 +447,17 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
     namespace.Game_Player_prototype_update = $.update;
     $.update = function(sceneActive) {
       var oldD = this._direction;
+      var oldX = this._x;
+      var oldY = this._y;
       namespace.Game_Player_prototype_update.call(this, sceneActive);
 
-      if (this.isMoving() || oldD !== this._direction) {
+      if (this.isMoving() || oldD !== this._direction || oldX !== this._x || oldY !== this._y) {
         namespace.dirty = true;
       }
     };
   })(Game_Player.prototype);
 
   (function($){
-    function hexToRgb(hex) {
-      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? {
-        red : parseInt(result[1], 16),
-        green : parseInt(result[2], 16),
-        blue : parseInt(result[3], 16)
-      } : null;
-    }  
 
     $.radialgradientFillRect = function (x, y, startRadius, endRadius, color1, color2, flicker) {
       var context = this._context;
@@ -378,9 +467,9 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
       if (flicker === true && wait == 1) {
         var gradRnd = Math.floor((Math.random() * 7) + 1);
         var colorRnd = Math.floor((Math.random() * 10) - 5);
-        var red = hexToRgb(color1).red;
-        var green = hexToRgb(color1).green;
-        var blue = hexToRgb(color1).blue;
+        var red = namespace.hexToRgb(color1).red;
+        var green = namespace.hexToRgb(color1).green;
+        var blue = namespace.hexToRgb(color1).blue;
 
         green = (green + colorRnd).clamp(0, 255);
         color1 = '#' + ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
@@ -446,4 +535,4 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
 })(Hudell.OrangeLighting);
 
 OrangeLighting = Hudell.OrangeLighting;
-Imported["OrangeLighting"] = 1.1;
+Imported["OrangeLighting"] = 1.2;
