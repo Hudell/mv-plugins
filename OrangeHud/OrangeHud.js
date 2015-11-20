@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.7
+ * Version: 1.7.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -304,6 +304,16 @@ if (Imported["MVCommons"] === undefined) {
     }
 
     this._varHudWindow.update();
+  };
+
+  var oldSceneMap_updateScene = Scene_Map.prototype.updateScene;
+  Scene_Map.prototype.updateScene = function() {  
+    oldSceneMap_updateScene.call(this);
+    if (SceneManager.isSceneChanging()) {
+      if (!!this._varHudWindow) {
+        this._varHudWindow.visible = false;
+      }
+    }
   };
 })(OrangeHud);
 
