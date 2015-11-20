@@ -2,7 +2,7 @@
  * Orange - Notetag to Switch
  * By Hudell - www.hudell.com
  * OrangeNoteTagToSwitch.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -16,6 +16,10 @@
  * @param notetag
  * @desc The name of the notetag to look for on the maps notes
  * @default 0
+ *
+ * @param noteList
+ * @desc Configure several notes with a single plugin using this param
+ * @default 
  *
  * @help
  * Add the <notetag> on the notes of the maps that you want to tag.
@@ -57,6 +61,28 @@ if (Imported["OrangeNoteTagToSwitch"] === undefined) {
               notetagName : notetagName
             });
           }
+
+          var list = $plugins[i].parameters['noteList'];
+          if (list !== undefined) {
+            var re = /<([^<>:]+):([^>]*)>/g;
+
+            while(true) {
+              var match = re.exec(list);
+              if (match) {
+                notetagName = match[1];
+                switchId = Number(match[2] || 0);
+
+                if (switchId > 0 && notetagName.trim().length > 0) {
+                  paramList.push({
+                    switchId : switchId,
+                    notetagName : notetagName
+                  });
+                }
+              } else {
+                break;
+              }
+            }
+          }          
         }
       }
     }
@@ -67,14 +93,29 @@ if (Imported["OrangeNoteTagToSwitch"] === undefined) {
       var updateSwitchList = function() {
         if (SceneManager._scene instanceof Scene_Map) {
           for (var i = 0; i < paramList.length; i++) {
-            $gameSwitches.setValue(paramList[i].switchId, $gameMap.isNoteTagThere(paramList[i].notetagName));
+            var value = undefined;
+
+            if ($gameMap._interpreter._eventId > 0) {
+              var eventData = $dataMap.events[$gameMap._interpreter._eventId];
+              if (eventData) {
+                value = getProp(eventData.meta, paramList[i].notetagName);
+              }
+            }
+
+            if (value === undefined) {
+              value = getProp($dataMap.meta, paramList[i].notetagName) === true;
+            }
+
+            $gameSwitches.setValue(paramList[i].switchId, value);
           }
         }
       };
 
-      Game_Map.prototype.isNoteTagThere = function(notetagName) {
-        return getProp($dataMap.meta, notetagName) === true;
-      };
+      var oldGameInterpreter_setup = Game_Interpreter.prototype.setup;
+      Game_Interpreter.prototype.setup = function(list, eventId) {
+        oldGameInterpreter_setup.call(this, list, eventId);
+        updateSwitchList();
+      };      
 
       var oldGamePlayer_performTransfer = Game_Player.prototype.performTransfer;
       Game_Player.prototype.performTransfer = function() {
@@ -88,5 +129,5 @@ if (Imported["OrangeNoteTagToSwitch"] === undefined) {
     }
   })();
 
-  Imported["OrangeNoteTagToSwitch"] = 1;
+  Imported["OrangeNoteTagToSwitch"] = 1.1;
 }
