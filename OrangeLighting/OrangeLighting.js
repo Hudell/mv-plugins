@@ -2,7 +2,7 @@
  * Orange - Lighting
  * By Hudell - www.hudell.com
  * OrangeLighting.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -13,41 +13,13 @@
  * @desc When this switch is on, the lighting system will be activated
  * @default 0
  *
- * @param resetOnMapChange
- * @desc Reset light switches automatically on map change?
- * @default false
- *
- * @param playerRadius
- * @desc The size of the light globe around the player
- * @default 40
- *
- * @param playerColor
- * @desc The color of the light around the player
- * @default #FFFFFF
- *
- * @param playerFlicker
- * @desc Should the plugin flick the light around the player?
- * @default false
- *
  * @param opacityVariable
  * @desc The variable that defines the opacity of the black mask. If none is defined, the opacity will be 255.
- * @default 0
- *
- * @param flashlightSwitch
- * @desc When this switch is on, a flashlight will be added to the player.
  * @default 0
  *
  * @param tintSpeed
  * @desc The speed in which the color will change. (4 = black to white in 1 second, 255 = instant)
  * @default 0.3
- *
- * @param hourColors
- * @desc A different color mask for each hour of the day. Requires OrangeTimeSystem.
- * @default #000000, #000000, #000000, #000000, #000000, #111111, #111111, #666666, #AAAAAA, #EEEEEE, #FFFFFF, #FFFFFF, #FFFFFF, #FFFFFF, #FFFFFF, #FFFFFF, #FFFFFF, #FFFFFF, #EEEEEE, #AAAAAA, #776666, #441111, #000000, #000000, #000000
- *
- * @param insideBuildingsHourColor
- * @desc A different color mask to use inside buildings, for each hour of the day. Requires OrangeTimeSystem.
- * @default #FFFFFF
  *
  * @help
  * ============================================================================
@@ -65,6 +37,9 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
 (function(namespace) {
   "use strict";
 
+  namespace.addOns = {};
+  namespace._listeners = {};
+
   var parameters = $plugins.filter(function(plugin) {
     return plugin.description.contains('<OrangeLighting>');
   });
@@ -74,34 +49,9 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
   namespace.Parameters = parameters[0].parameters;
   namespace.Param = {};
 
-  namespace.Param.resetOnMapChange = (namespace.Parameters.resetOnMapChange || "false").toUpperCase() === "TRUE";
-  namespace.Param.playerRadius = Number(namespace.Parameters.playerRadius || 40);
-  namespace.Param.playerColor = namespace.Parameters.playerColor || '#FFFFFF';
-  namespace.Param.playerFlicker = (namespace.Parameters.playerFlicker || "false").toUpperCase() === "TRUE";
-  namespace.Param.flashlightSwitch = Number(namespace.Parameters.flashlightSwitch || 0);
-  namespace.Param.tintSpeed = Number(namespace.Parameters.tintSpeed || 0.3);
   namespace.Param.lightMaskSwitch = Number(namespace.Parameters.lightMaskSwitch || 0);
   namespace.Param.opacityVariable = Number(namespace.Parameters.opacityVariable || 0);
-
-  namespace.Param.hourColors = (namespace.Parameters.hourColors || "").split(",");
-  namespace.Param.insideBuildingsHourColor = (namespace.Parameters.insideBuildingsHourColor || "").split(",");
-  (function(){
-    for (var i = 0; i < namespace.Param.hourColors.length; i++) {
-      namespace.Param.hourColors[i] = namespace.Param.hourColors[i].trim();
-    }
-
-    for (i = 0; i < namespace.Param.insideBuildingsHourColor.length; i++) {
-      namespace.Param.insideBuildingsHourColor[i] = namespace.Param.insideBuildingsHourColor[i].trim();
-    }
-
-    if (namespace.Param.hourColors.length === 0){
-      namespace.Param.hourColors.push('black');
-    }
-
-    if (namespace.Param.insideBuildingsHourColor.length === 0){
-      namespace.Param.insideBuildingsHourColor.push('#FFFFFF');
-    }
-  })();
+  namespace.Param.tintSpeed = Number(namespace.Parameters.tintSpeed || 0.3);
 
   Object.defineProperties(namespace, {
     dirty: {
@@ -127,8 +77,32 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
     return namespace.Param.lightMaskSwitch === 0 || $gameSwitches.value(namespace.Param.lightMaskSwitch);
   };
 
-  namespace.shouldShowFlashlight = function(){
-    return namespace.Param.flashlightSwitch > 0 && $gameSwitches.value(namespace.Param.flashlightSwitch);
+  namespace.on = function(eventName, callback) {
+    if (this._listeners[eventName] === undefined) this._listeners[eventName] = [];
+
+    this._listeners[eventName].push(callback);
+  };
+
+  namespace.un = function(eventName, callback) {
+    if (this._listeners[eventName] === undefined) return;
+
+    for (var i = 0; i < this._listeners[eventName].length; i++) {
+      if (this._listeners[eventName][i] == callback) {
+        this._listeners[eventName][i] = undefined;
+        return;
+      }
+    }
+  };
+
+  namespace.runEvent = function(eventName, scope) {
+    if (this._listeners[eventName] === undefined) return;
+    if (scope === undefined) scope = this;
+
+    for (var i = 0; i < this._listeners[eventName].length; i++) {
+      var callback = this._listeners[eventName][i];
+
+      callback.call(scope);
+    }
   };
 
   namespace.Lightmask = OrangeLightmask;
@@ -180,6 +154,21 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
     } : null;
   };
 
+  namespace.getCharacterPosition = function(character) {
+    var pw = $gameMap.tileWidth();
+    var ph = $gameMap.tileHeight();
+    var dx = $gameMap.displayX();
+    var dy = $gameMap.displayY();
+    var px = character._realX;
+    var py = character._realY;
+    var pd = character._direction;
+
+    var x1 = (pw / 2) + ((px - dx) * pw);
+    var y1 = (ph / 2) + ((py - dy) * ph);
+
+    return [x1, y1, pd];
+  };  
+
   (function($) {
     Object.defineProperties($, {
       width: {
@@ -227,53 +216,8 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
       this._maskBitmap = new Bitmap(Graphics.width, Graphics.height);
     };
 
-    $.getPlayerPosition = function() {
-      var pw = $gameMap.tileWidth();
-      var ph = $gameMap.tileHeight();
-      var dx = $gameMap.displayX();
-      var dy = $gameMap.displayY();
-      var px = $gamePlayer._realX;
-      var py = $gamePlayer._realY;
-      var pd = $gamePlayer._direction;
-
-      var x1 = (pw / 2) + ((px - dx) * pw);
-      var y1 = (ph / 2) + ((py - dy) * ph);
-
-      return [x1, y1, pd];
-    };
-
-    $.refreshPlayerLightGlobe = function() {
-      var canvas = this._maskBitmap.canvas;
-      var ctx = canvas.getContext("2d");
-
-      ctx.globalCompositeOperation = 'lighter';
-
-      var positions = this.getPlayerPosition();
-
-      if (namespace.shouldShowFlashlight()) {
-        this._maskBitmap.makeFlashlightEffect(positions[0], positions[1], 0, namespace.Param.playerRadius, namespace.Param.playerColor, 'black', positions[2]);
-      } else {
-        if (namespace.Param.playerRadius < 100) {
-          this._maskBitmap.radialgradientFillRect(positions[0], positions[1], 0, namespace.Param.playerRadius, '#999999', 'black', namespace.Param.playerFlicker);
-        } else {
-          this._maskBitmap.radialgradientFillRect(positions[0], positions[1], 20, namespace.Param.playerRadius, namespace.Param.playerColor, 'black', namespace.Param.playerFlicker);
-        }
-      }
-
-      ctx.globalCompositeOperation = 'source-over';
-    };
-
     $.maskColor = function() {
-      if (Imported["OrangeTimeSystem"] !== undefined) {
-        var hour = OrangeTimeSystem.hour;
-        if (OrangeTimeSystem.inside) {
-          return namespace.Param.insideBuildingsHourColor[hour % namespace.Param.insideBuildingsHourColor.length];
-        } else {
-          return namespace.Param.hourColors[hour % namespace.Param.hourColors.length];
-        }
-      } else {
-        return "black";
-      }
+      return "black";
     };
 
     $.walkColor = function(newRGB, currentRGB, colorName, tintSpeed) {
@@ -292,56 +236,63 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
       newRGB[colorName] = newRGB[colorName].clamp(0, 255);
     };
 
+    $.refreshMaskColor = function() {
+      var destinationColor = $.maskColor();
+      var newColor = destinationColor;
+
+      if (namespace._lastMaskColor !== undefined && destinationColor !== namespace._lastMaskColor) {
+        var currentColor = namespace._lastMaskColor;
+        var currentRGB = namespace._currentRGB;
+
+        if (!!currentRGB || currentColor.charAt(0) == '#') {
+          newColor = namespace.colorNameToHex(destinationColor);
+          if (newColor === false) {
+            newColor = destinationColor;
+          }
+
+          if (currentRGB === undefined) {
+            currentRGB = namespace.hexToRgb(currentColor);
+          }
+          var newRGB = namespace.hexToRgb(newColor);
+
+          this.walkColor(newRGB, currentRGB, 'red', namespace.Param.tintSpeed);
+          this.walkColor(newRGB, currentRGB, 'green', namespace.Param.tintSpeed);
+          this.walkColor(newRGB, currentRGB, 'blue', namespace.Param.tintSpeed);
+
+          newColor = '#' + ((1 << 24) + (Math.floor(currentRGB.red) << 16) + (Math.floor(currentRGB.green) << 8) + Math.floor(currentRGB.blue)).toString(16).slice(1);
+          namespace._currentRGB = currentRGB;
+        }
+      } else {
+        namespace._currentRGB = undefined;
+      }
+
+      namespace._lastMaskColor = newColor;
+    };
+
     $.refreshMask = function() {
+      namespace.runEvent('beforeRefreshMask', this);
+
       this.popAllSprites();
 
       namespace._showing = namespace.shouldShowLightMask();
 
       if (namespace._showing) {
+        namespace.runEvent('refreshMask', this);
+
         var backOpacity = 255;
         if (namespace.Param.opacityVariable > 0) {
           backOpacity = $gameVariables.value(namespace.Param.opacityVariable).clamp(0, 255);
         }
 
-        var destinationColor = $.maskColor();
-        var newColor = destinationColor;
+        //calculates what will be the new mask color
+        this.refreshMaskColor();        
+        namespace.runEvent('refreshMaskColor', this);
 
-        if (namespace._lastMaskColor !== undefined && destinationColor !== namespace._lastMaskColor) {
-          var currentColor = namespace._lastMaskColor;
-          var currentRGB = namespace._currentRGB;
-
-          if (!!currentRGB || currentColor.charAt(0) == '#') {
-            newColor = namespace.colorNameToHex(destinationColor);
-            if (newColor === false) {
-              newColor = destinationColor;
-            }
-
-            if (currentRGB === undefined) {
-              currentRGB = namespace.hexToRgb(currentColor);
-            }
-            var newRGB = namespace.hexToRgb(newColor);
-
-            this.walkColor(newRGB, currentRGB, 'red', namespace.Param.tintSpeed);
-            this.walkColor(newRGB, currentRGB, 'green', namespace.Param.tintSpeed);
-            this.walkColor(newRGB, currentRGB, 'blue', namespace.Param.tintSpeed);
-
-            newColor = '#' + ((1 << 24) + (Math.floor(currentRGB.red) << 16) + (Math.floor(currentRGB.green) << 8) + Math.floor(currentRGB.blue)).toString(16).slice(1);
-            namespace._currentRGB = currentRGB;
-          }
-        } else {
-          namespace._currentRGB = undefined;
-        }
-
-        namespace._lastMaskColor = newColor;
-
-        // Adds the black background
+        // Adds the mask sprite
         this.addSprite(0, 0, this._maskBitmap, backOpacity);
         this._maskBitmap.fillRect(0, 0, Graphics.width, Graphics.height, namespace._lastMaskColor);
 
-        namespace._showingFlashlight = namespace.shouldShowFlashlight();
-
-        //Refreshes the player's light globe
-        this.refreshPlayerLightGlobe();
+        namespace.runEvent('afterRefreshMask', this);
       }
     };
 
@@ -362,17 +313,11 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
         namespace.dirty = true;
       }
 
-      if (namespace.shouldShowFlashlight() !== namespace._showingFlashlight) {
-        namespace.dirty = true;
-      }
-
-      if (namespace.Param.playerFlicker && !namespace.shouldShowFlashlight()) {
-        namespace.dirty = true;
-      }
-
       if (namespace._lastMaskColor !== $.maskColor()) {
         namespace.dirty = true;
       }
+
+      namespace.runEvent('updateMask', this);
 
       if (namespace.dirty) {
         this.refreshMask();
@@ -442,20 +387,6 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
     };
   })(Spriteset_Map.prototype);
 
-
-  (function($) {
-    namespace.Game_Player_prototype_update = $.update;
-    $.update = function(sceneActive) {
-      var oldD = this._direction;
-      var oldX = this._x;
-      var oldY = this._y;
-      namespace.Game_Player_prototype_update.call(this, sceneActive);
-
-      if (this.isMoving() || oldD !== this._direction || oldX !== this._x || oldY !== this._y) {
-        namespace.dirty = true;
-      }
-    };
-  })(Game_Player.prototype);
 
   (function($){
 
@@ -535,4 +466,4 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
 })(Hudell.OrangeLighting);
 
 OrangeLighting = Hudell.OrangeLighting;
-Imported["OrangeLighting"] = 1.2;
+Imported["OrangeLighting"] = 1.3;
