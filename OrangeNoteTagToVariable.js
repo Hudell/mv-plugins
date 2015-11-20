@@ -2,7 +2,7 @@
  * Orange - Notetag to Variable
  * By Hudell - www.hudell.com
  * OrangeNoteTagToVariable.js
- * Version: 1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -95,7 +95,7 @@ if (Imported["OrangeNoteTagToVariable"] === undefined) {
           for (var i = 0; i < paramList.length; i++) {
             var value = undefined;
 
-            if ($gameMap._interpreter._eventId > 0) {
+            if ($gameMap._interpreter.isRunning() && $gameMap._interpreter._eventId > 0) {
               var eventData = $dataMap.events[$gameMap._interpreter._eventId];
               if (eventData) {
                 value = getProp(eventData.meta, paramList[i].notetagName);
@@ -119,6 +119,12 @@ if (Imported["OrangeNoteTagToVariable"] === undefined) {
         updateVariableList();
       };
 
+      var oldGameInterpreter_terminate = Game_Interpreter.prototype.terminate;
+      Game_Interpreter.prototype.terminate = function(list, eventId) {
+        oldGameInterpreter_terminate.call(this, list, eventId);
+        updateVariableList();
+      };
+
       Game_Map.prototype.getNoteTagValue = function(notetagName) {
         return getProp($dataMap.meta, notetagName);
       };
@@ -131,5 +137,5 @@ if (Imported["OrangeNoteTagToVariable"] === undefined) {
     }
   })();
 
-  Imported["OrangeNoteTagToVariable"] = 1.1;
+  Imported["OrangeNoteTagToVariable"] = 1.2;
 }

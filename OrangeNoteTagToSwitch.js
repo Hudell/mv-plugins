@@ -2,7 +2,7 @@
  * Orange - Notetag to Switch
  * By Hudell - www.hudell.com
  * OrangeNoteTagToSwitch.js
- * Version: 1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -95,7 +95,7 @@ if (Imported["OrangeNoteTagToSwitch"] === undefined) {
           for (var i = 0; i < paramList.length; i++) {
             var value = undefined;
 
-            if ($gameMap._interpreter._eventId > 0) {
+            if ($gameMap._interpreter.isRunning() && $gameMap._interpreter._eventId > 0) {
               var eventData = $dataMap.events[$gameMap._interpreter._eventId];
               if (eventData) {
                 value = getProp(eventData.meta, paramList[i].notetagName);
@@ -115,7 +115,13 @@ if (Imported["OrangeNoteTagToSwitch"] === undefined) {
       Game_Interpreter.prototype.setup = function(list, eventId) {
         oldGameInterpreter_setup.call(this, list, eventId);
         updateSwitchList();
-      };      
+      };
+
+      var oldGameInterpreter_terminate = Game_Interpreter.prototype.terminate;
+      Game_Interpreter.prototype.terminate = function(list, eventId) {
+        oldGameInterpreter_terminate.call(this, list, eventId);
+        updateSwitchList();
+      };
 
       var oldGamePlayer_performTransfer = Game_Player.prototype.performTransfer;
       Game_Player.prototype.performTransfer = function() {
@@ -129,5 +135,5 @@ if (Imported["OrangeNoteTagToSwitch"] === undefined) {
     }
   })();
 
-  Imported["OrangeNoteTagToSwitch"] = 1.1;
+  Imported["OrangeNoteTagToSwitch"] = 1.2;
 }
