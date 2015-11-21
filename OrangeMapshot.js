@@ -327,9 +327,6 @@ var OrangeMapshot = OrangeMapshot || {};
                 fileName + ' Upper' + ext
               ];
 
-              // if ($.Param.drawAutoShadows) {
-              //   names.push(fileName + ' Shadows' + ext);
-              // }
               break;
             default :
               names = [fileName + ext];

@@ -21,14 +21,4 @@
 Game_Temp.prototype.setDestination = function(x, y) {};
 
 var Imported = Imported || {};
-
-// If MVCommons is imported, register the plugin with it's PluginManager.
-if (Imported['MVCommons'] !== undefined) {
-  PluginManager.register("OrangeDisableMouseMovement", "1.0.0", "This plugin will disable the player movement with the use of the mouse", {
-    email: "plugins@hudell.com",
-    name: "Hudell",
-    website: "http://www.hudell.com"
-  }, "2015-10-22");
-} else {
-  Imported["OrangeDisableMouseMovement"] = true;
-}
+Imported["OrangeDisableMouseMovement"] = true;
