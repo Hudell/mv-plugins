@@ -40,7 +40,7 @@ var OrangeChangeSaveFileName = OrangeChangeSaveFileName || {};
 
     var oldStorageManager_localFilePath = StorageManager.localFilePath;
     StorageManager.localFilePath = function(savefileId) {
-      if (savefileId <= 0) {
+      if (savefileId &lt;= 0) {
         return oldStorageManager_localFilePath.call(this, savefileId);
       }
 
@@ -56,7 +56,7 @@ var OrangeChangeSaveFileName = OrangeChangeSaveFileName || {};
 
     var oldStorageManager_webStorageKey = StorageManager.webStorageKey;
     StorageManager.webStorageKey = function(savefileId) {
-      if (savefileId <= 0) {
+      if (savefileId &lt;= 0) {
         return oldStorageManager_webStorageKey.call(this, savefileId);
       }
 
@@ -65,13 +65,4 @@ var OrangeChangeSaveFileName = OrangeChangeSaveFileName || {};
   }
 })(OrangeChangeSaveFileName);
 
-// If MVCommons is imported, register the plugin with it's PluginManager.
-if (Imported['MVCommons'] !== undefined) {
-  PluginManager.register("OrangeChangeSaveFileName", "1.0.0", "This plugin will let you change the base name of the save files", {
-    email: "plugins@hudell.com",
-    name: "Hudell",
-    website: "http://www.hudell.com"
-  }, "2015-10-20");
-} else {
-  Imported["OrangeChangeSaveFileName"] = true;
-}
+Imported["OrangeChangeSaveFileName"] = 1;
