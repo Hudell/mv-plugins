@@ -2,11 +2,11 @@
  * Orange - Variable Picture HUD
  * By HUDell - www.hudell.com
  * OrangeHudVariablePicture.js
- * Version: 1.5
+ * Version: 1.5.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Adds a new Variable Picture to Orange Hud
+ * @plugindesc OrangeHudVariablePicture 1.5.1 - Adds a new Variable Picture to Orange Hud
  * @author Hudell
  *
  * @param Pattern
@@ -92,6 +92,12 @@ if (Imported["OrangeHudVariablePicture"] === undefined) {
       var me = this;
 
       TouchInput._onMouseDown = function(event) {
+        if (paramsLine.SwitchId > 0) {
+          if (!$gameSwitches.value(paramsLine.SwitchId)) {
+            return;
+          }
+        }
+
         var x = Graphics.pageToCanvasX(event.pageX);
         var y = Graphics.pageToCanvasY(event.pageY);
 

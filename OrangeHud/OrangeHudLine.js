@@ -2,11 +2,11 @@
  * Orange - Line HUD
  * By HUDell - www.hudell.com
  * OrangeHudLine.js
- * Version: 1.4
+ * Version: 1.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Adds a new Variable to Orange Hud
+ * @plugindesc OrangeHudLine 1.5 - Adds a new Variable to Orange Hud
  * @author Hudell
  *
  * @param Pattern
@@ -49,6 +49,14 @@
  * @desc A script call to be used instead of the Pattern
  * @default 
  *
+ * @param VariableX
+ * @desc The number of the variable that holds the X position of the picture inside the HUD
+ * @default 0
+ *
+ * @param VariableY
+ * @desc The number of the variable that holds the Y position of the picture inside the HUD
+ * @default 0
+ *
  * @help
  * ============================================================================
  * Latest Version
@@ -88,6 +96,8 @@ if (Imported["OrangeHudLine"] === undefined) {
     }
 
     line.FontSize = Number(line.FontSize || OrangeHud.Param.DefaultFontSize);
+    line.VariableX = Number(line.VariableX || 0);
+    line.VariableY = Number(line.VariableY || 0);
     line.X = Number(line.X || 0);
     line.Y = Number(line.Y || 0);
 
@@ -119,10 +129,31 @@ if (Imported["OrangeHudLine"] === undefined) {
     window.contents.fontItalic = variableData.FontItalic;
     window.changeTextColor(variableData.FontColor);
 
-    window.drawTextEx(line, variableData.X, variableData.Y);
+    window.drawTextEx(line, this.realX(variableData), this.realY(variableData));
 
     window.resetFontSettings();
 	};
+
+  OrangeHudDefaultLine.realX = function(variableData) {
+    var x = variableData.X;
+
+    if (variableData.VariableX > 0) {
+      x = $gameVariables.value(variableData.VariableX);
+    }
+
+    return x;
+  };
+
+  OrangeHudDefaultLine.realY = function(variableData) {
+    var y = variableData.Y;
+
+    if (variableData.VariableY > 0) {
+      y = $gameVariables.value(variableData.VariableY);
+    }
+
+    return y;
+  };
+
 
 	OrangeHudDefaultLine.getValue = function(variableData) {
 		return $gameVariables.value(variableData.VariableId);
@@ -133,5 +164,5 @@ if (Imported["OrangeHudLine"] === undefined) {
 	};
 
 	OrangeHud.registerLineType('OrangeHudLine', OrangeHudDefaultLine);
-	Imported["OrangeHudLine"] = 1.4;
+	Imported["OrangeHudLine"] = 1.5;
 }

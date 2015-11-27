@@ -6,7 +6,7 @@
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Player Lights <OrangeTimeSystemLighting>
+ * @plugindesc Time System Lights <OrangeTimeSystemLighting>
  * @author Hudell
  *
  * @param hourColors
