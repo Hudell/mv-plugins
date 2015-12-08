@@ -49,6 +49,10 @@
  * @desc The Height of each line inside this group
  * @default 24
  *
+ * @param UseScriptPattern
+ * @desc If true, the pattern lines will be evaluated as scripts
+ * @default false
+ *
  * @param PatternLine1
  * @desc The pattern of the line 1. Leave empty to use the default pattern.
  * @default 
@@ -114,6 +118,12 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
       line.DefaultPattern = "";
     }
 
+    if (line.UseScriptPattern === undefined || line.UseScriptPattern !== 'true') {
+      line.UseScriptPattern = false;
+    } else {
+      line.UseScriptPattern = true;
+    }
+
     line.VariableList = line.VariableList.split(',');
     if (line.FontFace === undefined || line.FontFace.trim() === "") {
       line.FontFace = OrangeHud.Param.DefaultFontFace;
@@ -159,6 +169,10 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
       var pattern = variableData['PatternLine' + lineNumber];
       if (pattern === undefined || pattern === "") {
         pattern = defaultPattern;
+      }
+
+      if (line.UseScriptPattern) {
+        pattern = Function("return " + pattern)();
       }
 
       var variableId = parseInt(variableData.VariableList[i], 10);
