@@ -2,11 +2,11 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovementEx.js
- * Version: 1.5.1
+ * Version: 1.6
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Movement Improvements: Diagonal Movement, Pixel Movement, Actor Hitbox Changer. <SuperOrangeMovementEx>
+ * @plugindesc V1.6 - Movement Improvements: Diagonal Movement, Pixel Movement, Actor Hitbox Changer and More. <SuperOrangeMovementEx>
  *
  * @param Tile_Sections
  * @desc How many pieces do you want to break the tiles into?
@@ -42,6 +42,10 @@
  *
  * @param CustomPathfinding
  * @desc Change this to false if you don't want to use OrangePathfinding
+ * @default true
+ *
+ * @param AdjustMoveRoutes
+ * @desc If true, the player will move an entire tile when using a move route
  * @default true
  *
  * #param DiagonalPathfinding
@@ -166,6 +170,10 @@
  * @desc Troque este parametro para false para desativar meu pathfinding personalizado
  * @default true
  *
+ * @param AdjustMoveRoutes
+ * @desc Se true, o jogador irá se mover um tile inteiro através de rotas de movimento
+ * @default true
+ *
  * #param DiagonalPathfinding
  * #desc Determina se o jogador pode andar diagonalmente em rotas geradas
  * #default true
@@ -284,6 +292,10 @@
  *
  * @param CustomPathfinding
  * @desc Set this to false to disable my custom pathfinding
+ * @default true
+ *
+ * @param AdjustMoveRoutes
+ * @desc If true, the player will move an entire tile when using a move route
  * @default true
  *
  * #param DiagonalPathfinding
@@ -489,6 +501,7 @@ var Direction = {
   $.Param.IgnoreEmptyEvents = $.Parameters["IgnoreEmptyEvents"] !== "false";
   $.Param.DisablePixelMovementForMouseRoutes = $.Parameters["DisablePixelMovementForMouseRoutes"] !== "false";
   $.Param.CustomPathfinding = $.Parameters["CustomPathfinding"] !== "false";
+  $.Param.AdjustMoveRoutes = $.Parameters["AdjustMoveRoutes"] !== "false";
   $.Param.DiagonalPathfinding = false;
   // $.Param.DiagonalPathfinding = $.Parameters["DiagonalPathfinding"] !== "false";
 
@@ -523,10 +536,6 @@ var Direction = {
   // The insignificantValue is used to decrease from the 'right' and 'bottom' positions of the hitboxes, so that those position do not "flow" to the next integer value
   // Example:  Left  = 10, Top = 15, Right = 10.999999, Bottom = 15.999999 instead of Right = 11 and Bottom = 16
   var insignificantValue = 0.000001;
-
-  MVC.reader(Game_CharacterBase.prototype, 'enableFractionalMovement', function() {
-    return false;
-  });
 
   Game_Player.prototype.actor = function() {
     if ($gameParty._actors.length > 0) {
@@ -750,11 +759,6 @@ var Direction = {
     // Adds the hitbox properties to this character
     addPropertiesToCharacter(character);
 
-    // Activates Fractional Movement on this character
-    MVC.reader(Game_CharacterBase.prototype, 'enableFractionalMovement', function() {
-      return true;
-    });
-
     // Gets the real _x position of the character
     MVC.reader(character.prototype, 'floatX', function() {
       return this._x;
@@ -784,6 +788,28 @@ var Direction = {
         return this._x.ceil();
       }
     });
+
+    var oldCharacter_update = character.prototype.update;
+    character.prototype.update = function(sceneActive) {
+      // Checks if the character was moving in a way that won't be detected by the isMoving method
+      var wasMovingUndetected = (this._realX !== this._x || this._realY !== this._y) && (this._oldX === this._realX || this._oldX === undefined) && (this._oldY == this._realY || this._oldY === undefined);
+
+      this._oldX = this._realX;
+      this._oldY = this._realY;
+
+      oldCharacter_update.call(this, sceneActive);
+
+      if(wasMovingUndetected) {
+        if (!this.isMoving()) {
+          this.updateNonmoving(wasMoving);
+        }        
+      }
+    };
+
+    var oldCharacter_isMoving = character.prototype.isMoving;
+    character.prototype.isMoving = function() {
+      return this._oldX !== this._realX || this._oldY !== this._realY || oldCharacter_isMoving.call(this);
+    };
 
     character.prototype.deltaXFrom = function(x) {
       return $gameMap.deltaX(this._x, x);
@@ -997,7 +1023,7 @@ var Direction = {
     };
 
     character.prototype.myStepSize = function() {
-      if (this._moveRoute !== undefined && this._moveRoute !== null) {
+      if ($.Param.AdjustMoveRoutes && (this._moveRoute !== undefined && this._moveRoute !== null) || (this._moveEntireTile === true)) {
         return 1;
       } else {
         return $.Param.Step_Size;
@@ -1125,6 +1151,18 @@ var Direction = {
       return false;
     };
 
+    character.prototype.isTouchingRegion = function(regionId) {
+      return this.runForAllPositions(this._x, this._y, function(blockX, blockY) {
+        return $gameMap.regionId(blockX, blockY) == regionId;
+      });
+    };
+
+    character.prototype.isTouchingTag = function(tag) {
+      return this.runForAllPositions(this._x, this._y, function(blockX, blockY) {
+        return $gameMap.terrainTag(blockX, blockY) == tag;
+      });
+    };
+
     // Replaces the method that checks if the position would collide with an event, because fractional positions should test more than one tile
     character.prototype.isCollidedWithEvents = function(x, y) {
       return this.runForAllPositions(x, y, function(block_x, block_y) {
@@ -1156,6 +1194,21 @@ var Direction = {
       });
     };
 
+    character.prototype.stepTimes = function(){
+      var distance = this.distancePerFrame();
+      var stepSize = this.myStepSize();
+
+      var times = 1;
+      var totalDistance = stepSize;
+
+      while (totalDistance < distance) {
+        totalDistance += stepSize;
+        times += 1;
+      }
+
+      return times;
+    };
+
     // Replaces the original moveStraight method, changing the calculation of the new position to consider the step_size
     character.prototype.moveStraight = function(d) {
       this.setMovementSuccess(this.canPass(this._x, this._y, d));
@@ -1168,10 +1221,33 @@ var Direction = {
         this._realY = $gameMap.fractionYWithDirection(this._y, this.reverseDir(d), this.myStepSize());
 
         this.increaseSteps();
+
+        var times = this.stepTimes();
+        var checkEvents = true;
+
+        for (var i = 1; i < times; i++) {
+          if (this.canPass(this._x, this._y, d)) {
+            if (checkEvents) {
+              checkEvents = !this.onMoveFurther();
+            }
+
+            if (this._followers !== undefined && this._followers !== null) {
+              this._followers.updateMove();
+            }
+            this._x = $gameMap.roundFractionXWithDirection(this._x, d, this.myStepSize());
+            this._y = $gameMap.roundFractionYWithDirection(this._y, d, this.myStepSize());
+            this.increaseSteps();
+          }
+        }
+
       } else {
         this.setDirection(d);
         this.checkEventTriggerTouchFront(d);
       }
+    };
+
+    character.prototype.onMoveFurther = function() {
+      return false;
     };
 
     // Replaces the original moveDiagonally method, changing the calculation of the new position to consider the step_size
@@ -1184,6 +1260,25 @@ var Direction = {
         this._realX = $gameMap.fractionXWithDirection(this._x, this.reverseDir(horz), this.myStepSize());
         this._realY = $gameMap.fractionYWithDirection(this._y, this.reverseDir(vert), this.myStepSize());
         this.increaseSteps();
+
+        var times = this.stepTimes();
+        var checkEvents = true;
+
+        for (var i = 1; i < times; i++) {
+          if (this.canPassDiagonally(this._x, this._y, horz, vert)) {
+            if (checkEvents) {
+              checkEvents = !this.onMoveFurther();
+            }
+
+            if (this._followers !== undefined && this._followers !== null) {
+              this._followers.updateMove();
+            }
+
+            this._x = $gameMap.roundFractionXWithDirection(this._x, horz, this.myStepSize());
+            this._y = $gameMap.roundFractionYWithDirection(this._y, vert, this.myStepSize());
+            this.increaseSteps();
+          }
+        }
       }
 
       if (this._direction === this.reverseDir(horz)) {
@@ -1202,8 +1297,13 @@ var Direction = {
   var oldGamePlayer_moveStraight = Game_Player.prototype.moveStraight;
   var oldGamePlayer_moveDiagonally = Game_Player.prototype.moveDiagonally;
 
+  Game_Player.prototype.onMoveFurther = function() {
+    this.checkEventTriggerHere([1,2]);
+    return $gameMap.setupStartingEvent();
+  };
+
   Game_Player.prototype.moveStraight = function(d) {
-    if (this.isMovementSucceeded()) {
+    if (this.canPass(this.x, this.y, d)) {
       this._followers.updateMove();
     }
 
@@ -1211,7 +1311,7 @@ var Direction = {
   };
 
   Game_Player.prototype.moveDiagonally = function(horz, vert) {
-    if (this.isMovementSucceeded()) {
+    if (this.canPassDiagonally(this.x, this.y, horz, vert)) {
       this._followers.updateMove();
     }
 
@@ -1241,11 +1341,16 @@ var Direction = {
     return false;
   };
 
+  // This method is called when the player enters a vehicle
   Game_Player.prototype.forceMoveForward = function() {
     this.setThrough(true);
-    for (var i = 0; i < $.Param.Tile_Sections; i++) {
-      this.moveForward();
-    }
+    
+    var oldMoveEntireTile = this._moveEntireTile;
+    this._moveEntireTile = true;
+    
+    this.moveForward();
+    
+    this._moveEntireTile = oldMoveEntireTile;
     this.setThrough(false);
   };
 
@@ -2202,4 +2307,4 @@ var Direction = {
   }
 })(SuperOrangeMovementEx);
 
-Imported.SuperOrangeMovementEx = 1.5;
+Imported.SuperOrangeMovementEx = 1.6;
