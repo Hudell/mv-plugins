@@ -2,7 +2,7 @@
  * Orange - Mapshot
  * By Hudell - www.hudell.com
  * OrangeMapshot.js
- * Version: 1.5
+ * Version: 1.6
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -33,6 +33,10 @@
  * @desc If the imageType is jpeg or webp, you can set this to a number between 0 and 100 indicating the quality of the image
  * @default 70
  *
+ * @param imagePath
+ * @desc The path where the images will be saved
+ * @default ./Mapshots
+ *
  * @help
  * Check keycodes at  http://link.hudell.com/js-keys
  */
@@ -55,6 +59,7 @@ var OrangeMapshot = OrangeMapshot || {};
   $.Param.drawAutoShadows = $.Parameters.drawAutoShadows !== "false";
   $.Param.layerType = Number($.Parameters.layerType || 0);
   $.Param.imageType = $.Parameters.imageType || 'png';
+  $.Param.imagePath = $.Parameters.imagePath || './Mapshots';
   $.Param.imageQuality = Number($.Parameters.imageQuality || 70);
 
   $.Param.keyCode = Number($.Parameters.keyCode || 44);
@@ -301,8 +306,7 @@ var OrangeMapshot = OrangeMapshot || {};
     if (!Utils.isNwjs()) return;
 
     var fs = require('fs');
-    var path = './Mapshots';
-    var openedAny = false;
+    var path = $.Param.imagePath;
 
     try {
       fs.mkdir(path, function() {
@@ -337,7 +341,6 @@ var OrangeMapshot = OrangeMapshot || {};
 
           for (var i = 0; i < names.length; i++) {
             var urlData = snaps[i].canvas.toDataURL($.imageType(), $.imageQuality());
-
             var base64Data = urlData.replace(regex, "");
 
             fs.writeFile(names[i], base64Data, 'base64', function(error) {
@@ -356,11 +359,13 @@ var OrangeMapshot = OrangeMapshot || {};
       var nodePath = require('path');
       var longPath = nodePath.resolve(path);
 
-      if (process.platform == 'win32') {
+      if (process.platform == 'win32' && $._openedFolder === undefined) {
+        $._openedFolder = true;
+
         setTimeout(function(){
           var exec = require('child_process').exec;
           exec('explorer ' + longPath);
-        }, 50);
+        }, 100);
       } else {
         $gameMessage.add('Mapshot saved to \n' + longPath.replace(/\\/g, '\\\\').match(/.{1,40}/g).join('\n')); 
       }
@@ -383,4 +388,4 @@ var OrangeMapshot = OrangeMapshot || {};
   document.addEventListener('keyup', $.onKeyUp);
 })(OrangeMapshot);
 
-Imported["OrangeMapshot"] = 1.5;
+Imported["OrangeMapshot"] = 1.6;
