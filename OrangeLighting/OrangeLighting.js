@@ -2,7 +2,7 @@
  * Orange - Lighting
  * By Hudell - www.hudell.com
  * OrangeLighting.js
- * Version: 1.3
+ * Version: 1.3.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -52,6 +52,7 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
   namespace.Param.lightMaskSwitch = Number(namespace.Parameters.lightMaskSwitch || 0);
   namespace.Param.opacityVariable = Number(namespace.Parameters.opacityVariable || 0);
   namespace.Param.tintSpeed = Number(namespace.Parameters.tintSpeed || 0.3);
+  namespace.enabled = true;
 
   Object.defineProperties(namespace, {
     dirty: {
@@ -66,7 +67,7 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
   });
 
   namespace.isActive = function() {
-    return true;
+    return this.enabled;
   };
 
   function OrangeLightmask() {
