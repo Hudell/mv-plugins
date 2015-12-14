@@ -2,7 +2,7 @@
  * Orange Lighting - Player Light
  * By Hudell - www.hudell.com
  * OrangeLightingPlayerLight.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -56,6 +56,7 @@ if (!Hudell || !Hudell.OrangeLighting) {
     playerLight.Param.playerColor = playerLight.Parameters.playerColor || '#FFFFFF';
     playerLight.Param.playerFlicker = (playerLight.Parameters.playerFlicker || "false").toUpperCase() === "TRUE";
     playerLight.Param.flashlightSwitch = Number(playerLight.Parameters.flashlightSwitch || 0);
+    playerLight.enabled = true;
 
     playerLight.shouldShowFlashlight = function(){
       return playerLight.Param.flashlightSwitch > 0 && $gameSwitches.value(playerLight.Param.flashlightSwitch);
@@ -67,6 +68,8 @@ if (!Hudell || !Hudell.OrangeLighting) {
 
     //Refreshes the player's light
     playerLight.refresh = function() {
+      if (!playerLight.enabled) return;
+
       lightSystem._showingFlashlight = playerLight.shouldShowFlashlight();
 
       var canvas = this._maskBitmap.canvas;
@@ -90,6 +93,8 @@ if (!Hudell || !Hudell.OrangeLighting) {
     };
 
     playerLight.update = function(){
+      if (!playerLight.enabled) return;
+
       if (playerLight.shouldShowFlashlight() !== lightSystem._showingFlashlight) {
         lightSystem.dirty = true;
       }
