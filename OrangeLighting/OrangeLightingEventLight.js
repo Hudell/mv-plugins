@@ -273,4 +273,4 @@ if (!Hudell || !Hudell.OrangeLighting) {
 
 })(Hudell.OrangeLighting);
 
-Imported["OrangeLighting.EventLight"] = 1.0.1;
+Imported["OrangeLighting.EventLight"] = 1.0;
