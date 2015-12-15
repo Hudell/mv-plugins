@@ -275,30 +275,37 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
 
       this.popAllSprites();
 
-      namespace._showing = namespace.shouldShowLightMask();
+      if (namespace.isActive()) {
+        namespace._showing = namespace.shouldShowLightMask();
 
-      if (namespace._showing) {
-        namespace.runEvent('refreshMask', this);
+        if (namespace._showing) {
+          namespace.runEvent('refreshMask', this);
 
-        var backOpacity = 255;
-        if (namespace.Param.opacityVariable > 0) {
-          backOpacity = $gameVariables.value(namespace.Param.opacityVariable).clamp(0, 255);
+          var backOpacity = 255;
+          if (namespace.Param.opacityVariable > 0) {
+            backOpacity = $gameVariables.value(namespace.Param.opacityVariable).clamp(0, 255);
+          }
+
+          //calculates what will be the new mask color
+          this.refreshMaskColor();        
+          namespace.runEvent('refreshMaskColor', this);
+
+          // Adds the mask sprite
+          this.addSprite(0, 0, this._maskBitmap, backOpacity);
+          this._maskBitmap.fillRect(0, 0, Graphics.width, Graphics.height, namespace._lastMaskColor);
+
+          namespace.runEvent('afterRefreshMask', this);
         }
-
-        //calculates what will be the new mask color
-        this.refreshMaskColor();        
-        namespace.runEvent('refreshMaskColor', this);
-
-        // Adds the mask sprite
-        this.addSprite(0, 0, this._maskBitmap, backOpacity);
-        this._maskBitmap.fillRect(0, 0, Graphics.width, Graphics.height, namespace._lastMaskColor);
-
-        namespace.runEvent('afterRefreshMask', this);
       }
     };
 
     $.updateMask = function() {
-      if (!namespace.isActive()) return;
+      if (!namespace.isActive()){
+        if (this._sprites.length > 0) {
+          namespace.dirty = true;
+        }
+        return;
+      } 
 
       var newId = 0;
 
