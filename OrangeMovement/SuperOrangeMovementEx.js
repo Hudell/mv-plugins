@@ -506,7 +506,7 @@ var Direction = {
   // $.Param.DiagonalPathfinding = $.Parameters["DiagonalPathfinding"] !== "false";
 
   $.Param.BlockRepeatedTouchEvents = $.Parameters["BlockRepeatedTouchEvents"] !== "false";
-  $.Param.FollowersDistance = Number($.Parameters["FollowersDistance"] || 0.5);
+  $.Param.FollowersDistance = Number($.Parameters["FollowersDistance"] || 1);
   $.Param.TriggerAllAvailableEvents = $.Parameters["TriggerAllAvailableEvents"] === "true";
   $.Param.TriggerTouchEventsAfterTeleport = $.Parameters["TriggerTouchEventsAfterTeleport"] === "true";
 
@@ -536,6 +536,10 @@ var Direction = {
   // The insignificantValue is used to decrease from the 'right' and 'bottom' positions of the hitboxes, so that those position do not "flow" to the next integer value
   // Example:  Left  = 10, Top = 15, Right = 10.999999, Bottom = 15.999999 instead of Right = 11 and Bottom = 16
   var insignificantValue = 0.000001;
+
+  $.followersPxDistance = function() {
+    return $.Param.FollowersDistance * $gameMap.tileWidth();
+  };
 
   Game_Player.prototype.actor = function() {
     if ($gameParty._actors.length > 0) {
@@ -596,7 +600,7 @@ var Direction = {
     return $gameMap.roundYWithDirection(y, direction);
   };  
 
-  var addPropertiesToCharacter = function(character) {
+  var addOrangeMovementToCharacter = function(character) {
     // X position of the character hitbox (in pixels)
     MVC.accessor(character.prototype, 'hitboxX', function(value) {
       this._hitboxX = value;
@@ -753,11 +757,6 @@ var Direction = {
     MVC.reader(character.prototype, 'bottom', function() {
       return (this._y + this.hitboxYSize + this.hitboxHeightSize - insignificantValue).fix();
     });
-  };
-
-  var addOrangeMovementToCharacter = function(character) {
-    // Adds the hitbox properties to this character
-    addPropertiesToCharacter(character);
 
     // Gets the real _x position of the character
     MVC.reader(character.prototype, 'floatX', function() {
@@ -789,6 +788,24 @@ var Direction = {
       }
     });
 
+    MVC.accessor(character.prototype, 'walkedDistanceX', function(value){
+      this._walkedDistanceX = value;
+    }, function(){
+      return this._walkedDistanceX || 0;
+    });
+
+    MVC.accessor(character.prototype, 'walkedDistance', function(value){
+      this._walkedDistance = value;
+    }, function(){
+      return this._walkedDistance || 0;
+    });
+    
+    MVC.accessor(character.prototype, 'walkedDistanceY', function(value){
+      this._walkedDistanceY = value;
+    }, function(){
+      return this._walkedDistanceY || 0;
+    });
+
     var oldCharacter_update = character.prototype.update;
     character.prototype.update = function(sceneActive) {
       // Checks if the character was moving in a way that won't be detected by the isMoving method
@@ -802,7 +819,7 @@ var Direction = {
       if(wasMovingUndetected) {
         if (!this.isMoving()) {
           this.updateNonmoving(wasMoving);
-        }        
+        }
       }
     };
 
@@ -1209,11 +1226,19 @@ var Direction = {
       return times;
     };
 
+    MVC.accessor(character.prototype, 'lastMovement', function(value){
+      this._lastMovement = value;
+    }, function(){
+      return this._lastMovement;
+    });
+
     // Replaces the original moveStraight method, changing the calculation of the new position to consider the step_size
     character.prototype.moveStraight = function(d) {
       this.setMovementSuccess(this.canPass(this._x, this._y, d));
 
       if (this.isMovementSucceeded()) {
+        var oldX = this._x;
+        var oldY = this._y;
         this.setDirection(d);
         this._x = $gameMap.roundFractionXWithDirection(this._x, d, this.myStepSize());
         this._y = $gameMap.roundFractionYWithDirection(this._y, d, this.myStepSize());
@@ -1231,18 +1256,28 @@ var Direction = {
               checkEvents = !this.onMoveFurther();
             }
 
-            if (this._followers !== undefined && this._followers !== null) {
-              this._followers.updateMove();
-            }
             this._x = $gameMap.roundFractionXWithDirection(this._x, d, this.myStepSize());
             this._y = $gameMap.roundFractionYWithDirection(this._y, d, this.myStepSize());
             this.increaseSteps();
           }
         }
 
+        this.walkedDistanceX += (this._x - oldX);
+        this.walkedDistanceY += (this._y - oldY);
+        this.walkedDistance += Math.abs(this._x - oldX) + Math.abs(this._y - oldY);
+
+        this._lastMovement = {
+          type : 'straight',
+          d : d
+        };
       } else {
         this.setDirection(d);
         this.checkEventTriggerTouchFront(d);
+
+        this._lastMovement ={
+          type : 'face',
+          d : d
+        };
       }
     };
 
@@ -1252,9 +1287,19 @@ var Direction = {
 
     // Replaces the original moveDiagonally method, changing the calculation of the new position to consider the step_size
     character.prototype.moveDiagonally = function(horz, vert) {
-      this.setMovementSuccess(this.canPassDiagonally(this._x, this._y, horz, vert));
+      if (!this.canPass(this._x, this._y, horz)) {
+        this.moveStraight(vert);
+        return;
+      } else if (!this.canPass(this._x, this._y, vert)) {
+        this.moveStraight(horz);
+        return;
+      }
 
+      this.setMovementSuccess(this.canPassDiagonally(this._x, this._y, horz, vert));
       if (this.isMovementSucceeded()) {
+        var oldX = this._x;
+        var oldY = this._y;
+
         this._x = $gameMap.roundFractionXWithDirection(this._x, horz, this.myStepSize());
         this._y = $gameMap.roundFractionYWithDirection(this._y, vert, this.myStepSize());
         this._realX = $gameMap.fractionXWithDirection(this._x, this.reverseDir(horz), this.myStepSize());
@@ -1270,15 +1315,27 @@ var Direction = {
               checkEvents = !this.onMoveFurther();
             }
 
-            if (this._followers !== undefined && this._followers !== null) {
-              this._followers.updateMove();
-            }
-
             this._x = $gameMap.roundFractionXWithDirection(this._x, horz, this.myStepSize());
             this._y = $gameMap.roundFractionYWithDirection(this._y, vert, this.myStepSize());
             this.increaseSteps();
           }
         }
+
+        this.walkedDistanceX += (this._x - oldX);
+        this.walkedDistanceY += (this._y - oldY);
+        this.walkedDistance += Math.abs(this._x - oldX) + Math.abs(this._y - oldY);
+
+        this._lastMovement = {
+          type : 'diagonal',
+          horz : horz,
+          vert : vert
+        };
+      } else {
+        this._lastMovement ={
+          type : 'face-diagonal',
+          horz : horz,
+          vert : vert
+        };
       }
 
       if (this._direction === this.reverseDir(horz)) {
@@ -1287,6 +1344,7 @@ var Direction = {
       if (this._direction === this.reverseDir(vert)) {
         this.setDirection(vert);
       }
+
     };
   };
 
@@ -1303,9 +1361,9 @@ var Direction = {
   };
 
   Game_Player.prototype.moveStraight = function(d) {
-    if (this.canPass(this.x, this.y, d)) {
+    // if (this.canPass(this.x, this.y, d)) {
       this._followers.updateMove();
-    }
+    // }
 
     oldGamePlayer_moveStraight.call(this, d);
   };
@@ -2021,43 +2079,92 @@ var Direction = {
     }
   };
 
+  Game_Follower.prototype.chaseStraightMovement = function(character, movement) {
+    // if (Direction.goesUp(movement.d) || Direction.goesDown(movement.d)) {
+    //   if (Math.abs(character.walkedDistanceY) < $.Param.FollowersDistance) return;
+    // } else {
+    //   if (Math.abs(character.walkedDistanceX) < $.Param.FollowersDistance) return;
+    // }
+
+
+    // if (character.walkedDistance < $.Param.FollowersDistance) return;
+
+    if (Math.abs(character._x - this._x) + Math.abs(character._y - this._y) < $.Param.FollowersDistance) return;
+
+    var oldX = this._x;
+    var oldY = this._y;
+
+    this.moveStraight(movement.d);
+
+    var diffX = this._x - oldX;
+    var diffY = this._y - oldY;
+
+    character.walkedDistanceX -= diffX;
+    character.walkedDistanceY -= diffY;
+    character.walkedDistance -= Math.abs(diffX) + Math.abs(diffY);
+  };
+
+  Game_Follower.prototype.chaseDiagonalMovement = function(character, movement) {
+    // if (Math.abs(character.walkedDistanceY) < $.Param.FollowersDistance) {
+    //   this.chaseStraightMovement(character, {
+    //     type : 'straight',
+    //     d : movement.horz
+    //   });
+    //   return;
+    // }
+
+    // if (Math.abs(character.walkedDistanceX) < $.Param.FollowersDistance) {
+    //   this.chaseStraightMovement(character, {
+    //     type : 'straight',
+    //     d : movement.vert
+    //   });
+
+    //   return;
+    // }
+    
+
+    // if (character.walkedDistance < $.Param.FollowersDistance) return;
+
+    if (Math.abs(character._x - this._x) + Math.abs(character._y - this._y) < $.Param.FollowersDistance) return;
+
+
+
+    var oldX = this._x;
+    var oldY = this._y;
+    this.moveDiagonally(movement.horz, movement.vert);
+
+    var diffX = this._x - oldX;
+    var diffY = this._y - oldY;
+
+    character.walkedDistanceX -= diffX;
+    character.walkedDistanceY -= diffY;
+    character.walkedDistance -= Math.abs(diffX) + Math.abs(diffY);
+  };
+
   // Changes the logic used to chase characters, because the old one didn't work well with pixel movement
   // Also adds the FollowersDistance param.
   Game_Follower.prototype.chaseCharacter = function(character) {
-    if (!this.isMoving()) {
-      var ideal_x = character.floatX;
-      var ideal_y = character.floatY;
+    if (!character.lastMovement || !character.lastMovement.type) return;
 
-      switch (character.direction()) {
-        case Direction.DOWN:
-          ideal_y -= $.Param.FollowersDistance;
-          break;
-        case Direction.LEFT:
-          ideal_x += $.Param.FollowersDistance;
-          break;
-        case Direction.RIGHT:
-          ideal_x -= $.Param.FollowersDistance;
-          break;
-        case Direction.UP:
-          ideal_y += $.Param.FollowersDistance;
-          break;
-        default:
-          break;
-      }
+    var item = character.lastMovement;
 
-      var sx = this.deltaXFrom(ideal_x);
-      var sy = this.deltaYFrom(ideal_y);
-
-      if (sx.abs() >= $.Param.Step_Size && sy.abs() >= $.Param.Step_Size) {
-        this.moveDiagonally(sx > 0 ? Direction.LEFT : Direction.RIGHT, sy > 0 ? Direction.UP : Direction.DOWN);
-      } else if (sx.abs() >= $.Param.Step_Size) {
-        this.moveStraight(sx > 0 ? Direction.LEFT : Direction.RIGHT);
-      } else if (sy.abs() >= $.Param.Step_Size) {
-        this.moveStraight(sy > 0 ? Direction.UP : Direction.DOWN);
-      }
-
-      this.setMoveSpeed($gamePlayer.realMoveSpeed());
+    switch(item.type) {
+      case 'face-diagonal' :
+        this.setDirection(item.horz);
+        break;
+      case 'face' :
+        this.setDirection(item.d);
+        break;
+      case 'straight' :
+        this.chaseStraightMovement(character, item);
+        break;
+      case 'diagonal' :
+        this.chaseDiagonalMovement(character, item);
+        break;
     }
+    character.lastMovement = {};
+
+    // this._lastMovement = item;
   };
 
   if ($.Param.BlockRepeatedTouchEvents === true) {
