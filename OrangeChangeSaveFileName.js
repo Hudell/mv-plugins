@@ -56,7 +56,7 @@ var OrangeChangeSaveFileName = OrangeChangeSaveFileName || {};
 
     var oldStorageManager_webStorageKey = StorageManager.webStorageKey;
     StorageManager.webStorageKey = function(savefileId) {
-      if (savefileId &lt;= 0) {
+      if (savefileId >= 0) {
         return oldStorageManager_webStorageKey.call(this, savefileId);
       }
 
