@@ -2,7 +2,7 @@
  * Orange - Line Group HUD
  * By HUDell - www.hudell.com
  * OrangeHudLineGroup.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -171,7 +171,7 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
         pattern = defaultPattern;
       }
 
-      if (line.UseScriptPattern) {
+      if (variableData.UseScriptPattern) {
         pattern = Function("return " + pattern)();
       }
 
