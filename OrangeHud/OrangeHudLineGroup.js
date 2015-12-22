@@ -2,7 +2,7 @@
  * Orange - Line Group HUD
  * By HUDell - www.hudell.com
  * OrangeHudLineGroup.js
- * Version: 1.0.1
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -46,8 +46,12 @@
  * @default
  *
  * @param LineHeight
- * @desc The Height of each line inside this group
+ * @desc The Y distance between each line on the group
  * @default 24
+ *
+ * @param LineWidth
+ * @desc The X distance between each line on the group
+ * @default 0
  *
  * @param UseScriptPattern
  * @desc If true, the pattern lines will be evaluated as scripts
@@ -135,6 +139,7 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
 
     line.FontSize = Number(line.FontSize || OrangeHud.Param.DefaultFontSize);
     line.LineHeight = Number(line.LineHeight || line.FontSize + 4);
+    line.LineWidth = Number(line.LineWidth || 0);
     line.X = Number(line.X || 0);
     line.Y = Number(line.Y || 0);
 
@@ -155,6 +160,7 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
     }
 
     var defaultPattern = variableData.DefaultPattern;
+    var x = variableData.X;
     var y = variableData.Y;
 
     window.contents.fontFace = variableData.FontFace;
@@ -178,9 +184,10 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
       var variableId = parseInt(variableData.VariableList[i], 10);
       if (variableId > 0) {
         var line = pattern.format($gameVariables.value(variableId));
-        window.drawTextEx(line, variableData.X, y);
+        window.drawTextEx(line, x, y);
 
         y += variableData.LineHeight;
+        x += variableData.LineWidth;
       }
     }
 
@@ -207,5 +214,5 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudLineGroup', OrangeHudLineGroup);
-  Imported["OrangeHudLineGroup"] = 1.0;
+  Imported["OrangeHudLineGroup"] = 1.1;
 }
