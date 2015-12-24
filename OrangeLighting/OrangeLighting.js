@@ -2,7 +2,7 @@
  * Orange - Lighting
  * By Hudell - www.hudell.com
  * OrangeLighting.js
- * Version: 1.3.1
+ * Version: 1.3.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -471,6 +471,18 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
       this._setDirty();
     };
   })(Bitmap.prototype);
+
+  namespace.clear = function() {
+    this._currentRGB = undefined;
+    this._lastMaskColor = undefined;
+  };
+
+  namespace.oldGameMap_setup = Game_Map.prototype.setup;
+  Game_Map.prototype.setup = function(mapId) {
+    namespace.oldGameMap_setup.call(this, mapId);
+    namespace.clear();
+  };
+
 })(Hudell.OrangeLighting);
 
 OrangeLighting = Hudell.OrangeLighting;
