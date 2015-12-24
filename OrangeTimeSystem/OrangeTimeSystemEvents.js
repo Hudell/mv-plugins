@@ -2,7 +2,7 @@
  * Orange - Time System Events
  * By Hudell - www.hudell.com
  * OrangeTimeSystemEvents.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -43,6 +43,22 @@
  * @desc The number of the common event to call when the time changes
  * @default 0
  *
+ * @param onNightPeriod
+ * @desc The number of the common event to call when the night starts
+ * @default 0
+ *
+ * @param onEarlyMorningPeriod
+ * @desc The number of the common event to call when the night ends
+ * @default 0
+ *
+ * @param onDayPeriod
+ * @desc The number of the common event to call when the sun rises
+ * @default 0
+ *
+ * @param onEveningPeriod
+ * @desc The number of the common event to call when the sun starts to set
+ * @default 0
+ *
  * @help
  * ============================================================================
  * Latest Version
@@ -75,6 +91,10 @@ var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEv
   $.Param.onChangeSecond = Number($.Parameters['onChangeSecond'] || 0);
   $.Param.onChangeDayPeriod = Number($.Parameters['onChangeDayPeriod'] || 0);
   $.Param.onChangeTime = Number($.Parameters['onChangeTime'] || 0);
+  $.Param.onNightPeriod = Number($.Parameters['onNightPeriod'] || 0);
+  $.Param.onEarlyMorningPeriod = Number($.Parameters['onEarlyMorningPeriod'] || 0);
+  $.Param.onDayPeriod = Number($.Parameters['onDayPeriod'] || 0);
+  $.Param.onEveningPeriod = Number($.Parameters['onEveningPeriod'] || 0);
 
   $.onChangeDay = function() {
     if ($.Param.onChangeDay !== undefined && $.Param.onChangeDay > 0) {
@@ -116,6 +136,30 @@ var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEv
     if ($.Param.onChangeDayPeriod !== undefined && $.Param.onChangeDayPeriod > 0) {
       this.executeCallback($.Param.onChangeDayPeriod);
     }
+
+    if (OrangeTimeSystem.dayPeriod == DayPeriods.NIGHT) {
+      if ($.Param.onNightPeriod !== undefined && $.Param.onNightPeriod > 0) {
+        this.executeCallback($.Param.onNightPeriod);
+      }
+    }
+
+    if (OrangeTimeSystem.dayPeriod === DayPeriods.EARLY_MORNING) {
+      if ($.Param.onEarlyMorningPeriod !== undefined && $.Param.onEarlyMorningPeriod > 0) {
+        this.executeCallback($.Param.onEarlyMorningPeriod);
+      }
+    }
+
+    if (OrangeTimeSystem.dayPeriod === DayPeriods.DAY) {
+      if ($.Param.onDayPeriod !== undefined && $.Param.onDayPeriod > 0) {
+        this.executeCallback($.Param.onDayPeriod);
+      }
+    }
+
+    if (OrangeTimeSystem.dayPeriod === DayPeriods.EVENING) {
+      if ($.Param.onEveningPeriod !== undefined && $.Param.onEveningPeriod > 0) {
+        this.executeCallback($.Param.onEveningPeriod);
+      }
+    }
   };
 
   $.onChangeTime = function() {
@@ -135,4 +179,4 @@ var OrangeTimeSystemEvents = OrangeTimeSystemEvents || MVC.shallowClone(OrangeEv
 
 })(OrangeTimeSystemEvents);
 
-Imported["OrangeTimeSystemEvents"] = 1.2;
+Imported["OrangeTimeSystemEvents"] = 1.3;
