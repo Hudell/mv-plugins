@@ -2,7 +2,7 @@
  * Orange Lighting - Event Light
  * By Hudell - www.hudell.com
  * OrangeLightingEventLight.js
- * Version: 1.0.1
+ * Version: 1.0.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -150,14 +150,7 @@ if (!Hudell || !Hudell.OrangeLighting) {
           var eventData = $gameMap.event(eventId);
 
           if (eventData) {
-            eventData.orangeLight = {
-              flashlight : flashlight,
-              radius : radius,
-              color : color,
-              flicker : flicker
-            };
-            
-            lightSystem.dirty = true;
+            eventData.enableLight(flashlight, radius, color, flicker);
           }
         }
       };
@@ -167,8 +160,7 @@ if (!Hudell || !Hudell.OrangeLighting) {
           var eventData = $gameMap.event(eventId);
 
           if (eventData) {
-            eventData.orangeLight = undefined;
-            lightSystem.dirty = true;
+            eventData.disableLight();
           }
         }        
       };
@@ -199,6 +191,30 @@ if (!Hudell || !Hudell.OrangeLighting) {
     })(Game_Interpreter.prototype);
 
     (function($) {
+      $.enableLight = function(flashlight, radius, color, flicker) {
+        this.orangeLight = {
+          flashlight : flashlight,
+          radius : radius,
+          color : color,
+          flicker : flicker
+        };
+        
+        lightSystem.dirty = true;
+      };
+
+      $.disableLight = function() {
+        this.orangeLight = undefined;
+        lightSystem.dirty = true;
+      };
+
+      $.enableFlashlight = function() {
+        this.enableEventLight(true);
+      };
+
+      $.disableFlashlight = function() {
+        this.enableEventLight(false);
+      };
+
       eventLight.Game_Event_prototype_update = $.update;
       $.update = function(sceneActive) {
         var oldD = this._direction;
