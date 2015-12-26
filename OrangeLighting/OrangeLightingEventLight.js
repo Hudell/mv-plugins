@@ -208,11 +208,11 @@ if (!Hudell || !Hudell.OrangeLighting) {
       };
 
       $.enableFlashlight = function() {
-        this.enableEventLight(true);
+        this.enableLight(true);
       };
 
       $.disableFlashlight = function() {
-        this.enableEventLight(false);
+        this.enableLight(false);
       };
 
       eventLight.Game_Event_prototype_update = $.update;
