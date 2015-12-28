@@ -73,16 +73,16 @@
 var Imported = Imported || {};
 
 if (Imported["OrangeHud"] === undefined) {
-	throw new Error("Please add OrangeHud before OrangeHudLine!");
+  throw new Error("Please add OrangeHud before OrangeHudLine!");
 }
 
 var OrangeHudDefaultLine = OrangeHudDefaultLine || {};
 
 if (Imported["OrangeHudLine"] === undefined) {
-	OrangeHudDefaultLine.validateParams = function(line) {
+  OrangeHudDefaultLine.validateParams = function(line) {
     line.GroupName = line.GroupName || "main";
     
-		if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
+    if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
       line.ScriptPattern = undefined;
     }
 
@@ -114,10 +114,10 @@ if (Imported["OrangeHudLine"] === undefined) {
     }
 
     line.SwitchId = Number(line.SwitchId || 0);
-	};
+  };
 
-	OrangeHudDefaultLine.drawLine = function(window, variableData) {
-		if (variableData.SwitchId > 0) {
+  OrangeHudDefaultLine.drawLine = function(window, variableData) {
+    if (variableData.SwitchId > 0) {
       if (!$gameSwitches.value(variableData.SwitchId)) {
         return;
       }
@@ -138,7 +138,7 @@ if (Imported["OrangeHudLine"] === undefined) {
     window.drawTextEx(line, this.realX(variableData), this.realY(variableData));
 
     window.resetFontSettings();
-	};
+  };
 
   OrangeHudDefaultLine.realX = function(variableData) {
     var x = variableData.X;
@@ -161,14 +161,14 @@ if (Imported["OrangeHudLine"] === undefined) {
   };
 
 
-	OrangeHudDefaultLine.getValue = function(variableData) {
-		return $gameVariables.value(variableData.VariableId);
-	};
+  OrangeHudDefaultLine.getValue = function(variableData) {
+    return $gameVariables.value(variableData.VariableId);
+  };
 
-	OrangeHudDefaultLine.getKey = function(variableData) {
-		return variableData.VariableId;
-	};
+  OrangeHudDefaultLine.getKey = function(variableData) {
+    return variableData.VariableId;
+  };
 
-	OrangeHud.registerLineType('OrangeHudLine', OrangeHudDefaultLine);
-	Imported["OrangeHudLine"] = 1.6;
+  OrangeHud.registerLineType('OrangeHudLine', OrangeHudDefaultLine);
+  Imported["OrangeHudLine"] = 1.6;
 }
