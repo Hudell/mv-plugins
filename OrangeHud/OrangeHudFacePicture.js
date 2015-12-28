@@ -2,12 +2,16 @@
  * Orange - Face Picture HUD
  * By HUDell - www.hudell.com
  * OrangeHudFacePicture.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
  * @plugindesc Adds a new Variable to Orange Hud
  * @author Hudell
+ *
+ * @param GroupName
+ * @desc The name of the HUD group where this line should be displayed
+ * @default main
  *
  * @param ActorIndex
  * @desc The index of the actor in the party. If the index is invalid, nothing will be shown
@@ -50,6 +54,8 @@ var OrangeHudFacePicture = OrangeHudFacePicture || {};
 
 if (Imported["OrangeHudFacePicture"] === undefined) {
   OrangeHudFacePicture.validateParams = function(paramsLine) {
+    paramsLine.GroupName = paramsLine.GroupName || "main";
+    
     paramsLine.ActorIndex = Number(paramsLine.ActorIndex || 0);
 
     paramsLine.X = Number(paramsLine.X || 0);
@@ -125,5 +131,5 @@ if (Imported["OrangeHudFacePicture"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudFacePicture', OrangeHudFacePicture);
-  Imported["OrangeHudFacePicture"] = 1.2;
+  Imported["OrangeHudFacePicture"] = 1.3;
 }

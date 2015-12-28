@@ -2,12 +2,16 @@
  * Orange - Actor Status HUD
  * By HUDell - www.hudell.com
  * OrangeHudActorStatus.js
- * Version: 1.4
+ * Version: 1.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
  * @plugindesc Adds a new Variable to Orange Hud
  * @author Hudell
+ *
+ * @param GroupName
+ * @desc The name of the HUD group where this line should be displayed
+ * @default main
  *
  * @param Pattern
  * @desc The pattern of the line that will be drawn. Click the help button for more info.
@@ -102,6 +106,8 @@ var OrangeHudActorStatusLine = OrangeHudActorStatusLine || {};
 
 if (Imported["OrangeHudActorStatus"] === undefined) {
   OrangeHudActorStatusLine.validateParams = function(line) {
+    line.GroupName = line.GroupName || "main";
+    
     if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
       line.ScriptPattern = undefined;
     }
@@ -211,5 +217,5 @@ if (Imported["OrangeHudActorStatus"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudActorStatus', OrangeHudActorStatusLine);
-  Imported["OrangeHudActorStatus"] = 1.4;
+  Imported["OrangeHudActorStatus"] = 1.5;
 }

@@ -2,12 +2,16 @@
  * Orange - Line HUD
  * By HUDell - www.hudell.com
  * OrangeHudLine.js
- * Version: 1.5
+ * Version: 1.6
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
  * @plugindesc OrangeHudLine 1.5 - Adds a new Variable to Orange Hud
  * @author Hudell
+ *
+ * @param GroupName
+ * @desc The name of the HUD group where this line should be displayed
+ * @default main
  *
  * @param Pattern
  * @desc The pattern of the line that will be drawn
@@ -76,6 +80,8 @@ var OrangeHudDefaultLine = OrangeHudDefaultLine || {};
 
 if (Imported["OrangeHudLine"] === undefined) {
 	OrangeHudDefaultLine.validateParams = function(line) {
+    line.GroupName = line.GroupName || "main";
+    
 		if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
       line.ScriptPattern = undefined;
     }
@@ -164,5 +170,5 @@ if (Imported["OrangeHudLine"] === undefined) {
 	};
 
 	OrangeHud.registerLineType('OrangeHudLine', OrangeHudDefaultLine);
-	Imported["OrangeHudLine"] = 1.5;
+	Imported["OrangeHudLine"] = 1.6;
 }

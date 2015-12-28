@@ -2,12 +2,16 @@
  * Orange - Gold HUD
  * By HUDell - www.hudell.com
  * OrangeHudGold.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
  * @plugindesc Adds the Gold value to Orange Hud
  * @author Hudell
+ *
+ * @param GroupName
+ * @desc The name of the HUD group where this line should be displayed
+ * @default main
  *
  * @param Pattern
  * @desc The pattern of the line that will be drawn
@@ -64,6 +68,8 @@ var OrangeHudGoldLine = OrangeHudGoldLine || {};
 
 if (Imported["OrangeHudGold"] === undefined) {
   OrangeHudGoldLine.validateParams = function(line) {
+    line.GroupName = line.GroupName || "main";
+    
     if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
       line.ScriptPattern = undefined;
     }
@@ -128,5 +134,5 @@ if (Imported["OrangeHudGold"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudGold', OrangeHudGoldLine);
-  Imported["OrangeHudGold"] = 1.0;
+  Imported["OrangeHudGold"] = 1.1;
 }

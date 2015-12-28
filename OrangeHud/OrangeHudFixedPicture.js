@@ -2,12 +2,16 @@
  * Orange - Fixed Picture HUD
  * By HUDell - www.hudell.com
  * OrangeHudFixedPicture.js
- * Version: 1.5
+ * Version: 1.6
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
  * @plugindesc Adds a new Fixed Picture to Orange Hud
  * @author Hudell
+ *
+ * @param GroupName
+ * @desc The name of the HUD group where this line should be displayed
+ * @default main
  *
  * @param FileName
  * @desc The picture filename that will be drawn
@@ -47,6 +51,8 @@ var OrangeHudFixedPicture = OrangeHudFixedPicture || {};
 
 if (Imported["OrangeHudFixedPicture"] === undefined) {
   OrangeHudFixedPicture.validateParams = function(line) {
+    line.GroupName = line.GroupName || "main";
+    
     if (line.FileName === undefined) {
       line.FileName = "";
     } else if (line.FileName.trim() === "") {
@@ -85,5 +91,5 @@ if (Imported["OrangeHudFixedPicture"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudFixedPicture', OrangeHudFixedPicture);
-  Imported["OrangeHudFixedPicture"] = 1.5;
+  Imported["OrangeHudFixedPicture"] = 1.6;
 }

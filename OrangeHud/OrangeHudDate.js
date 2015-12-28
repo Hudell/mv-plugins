@@ -2,12 +2,16 @@
  * Orange - Date HUD
  * By HUDell - www.hudell.com
  * OrangeHudDate.js
- * Version: 1.4
+ * Version: 1.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
  * @plugindesc Adds a new Variable to Orange Hud
  * @author Hudell
+ *
+ * @param GroupName
+ * @desc The name of the HUD group where this line should be displayed
+ * @default main
  *
  * @param Pattern
  * @desc The pattern of the line that will be drawn
@@ -72,6 +76,8 @@ var OrangeHudDate = OrangeHudDate || {};
 
 if (Imported["OrangeHudDate"] === undefined) {
   OrangeHudDate.validateParams = function(line) {
+    line.GroupName = line.GroupName || "main";
+    
     if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
       line.ScriptPattern = undefined;
     }
@@ -163,5 +169,5 @@ if (Imported["OrangeHudDate"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudDate', OrangeHudDate);
-  Imported["OrangeHudDate"] = true;
+  Imported["OrangeHudDate"] = 1.5;
 }

@@ -2,12 +2,16 @@
  * Orange - Variable Icon HUD
  * By HUDell - www.hudell.com
  * OrangeHudVariableIcon.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
  * @plugindesc Adds a new Variable Icon to Orange Hud
  * @author Hudell
+ *
+ * @param GroupName
+ * @desc The name of the HUD group where this line should be displayed
+ * @default main
  *
  * @param VariableId
  * @desc The number of the variable that will be used to control this Icon.
@@ -46,6 +50,8 @@ var OrangeHudVariableIcon = OrangeHudVariableIcon || {};
 
 if (Imported["OrangeHudVariableIcon"] === undefined) {
   OrangeHudVariableIcon.validateParams = function(paramsLine) {
+    paramsLine.GroupName = paramsLine.GroupName || "main";
+    
     paramsLine.VariableId = Number(paramsLine.VariableId || 0);
 
     paramsLine.X = Number(paramsLine.X || 0);
@@ -121,5 +127,5 @@ if (Imported["OrangeHudVariableIcon"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudVariableIcon', OrangeHudVariableIcon);
-  Imported["OrangeHudVariableIcon"] = 1.0;
+  Imported["OrangeHudVariableIcon"] = 1.1;
 }

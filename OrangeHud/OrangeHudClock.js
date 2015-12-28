@@ -2,12 +2,16 @@
  * Orange - Clock HUD
  * By HUDell - www.hudell.com
  * OrangeHudClock.js
- * Version: 1.4
+ * Version: 1.5
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
  * @plugindesc Adds a new Variable to Orange Hud
  * @author Hudell
+ *
+ * @param GroupName
+ * @desc The name of the HUD group where this line should be displayed
+ * @default main
  *
  * @param Pattern
  * @desc The pattern of the line that will be drawn
@@ -76,39 +80,41 @@ var OrangeHudClock = OrangeHudClock || {};
 
 if (Imported["OrangeHudClock"] === undefined) {
   OrangeHudClock.validateParams = function(line) {
+    line.GroupName = line.GroupName || "main";
+    
     if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
-    line.ScriptPattern = undefined;
-  }
+      line.ScriptPattern = undefined;
+    }
 
-  if (line.Pattern === undefined) {
-    line.Pattern = "%1:%2:%3";
-  } else if (line.Pattern.trim() === "") {
-    line.Pattern = "";
-  }
+    if (line.Pattern === undefined) {
+      line.Pattern = "%1:%2:%3";
+    } else if (line.Pattern.trim() === "") {
+      line.Pattern = "";
+    }
 
-  line.VariableHour = Number(line.VariableHour || 0);
-  line.VariableMinute = Number(line.VariableMinute || 0);
-  line.VariableSecond = Number(line.VariableSecond || 0);
+    line.VariableHour = Number(line.VariableHour || 0);
+    line.VariableMinute = Number(line.VariableMinute || 0);
+    line.VariableSecond = Number(line.VariableSecond || 0);
 
-  if (line.FontFace === undefined || line.FontFace.trim() === "") {
-    line.FontFace = OrangeHud.Param.DefaultFontFace;
-  }
+    if (line.FontFace === undefined || line.FontFace.trim() === "") {
+      line.FontFace = OrangeHud.Param.DefaultFontFace;
+    }
 
-  if (line.FontColor === undefined || line.FontColor.trim() === "") {
-    line.FontColor = OrangeHud.Param.DefaultFontColor;
-  }
+    if (line.FontColor === undefined || line.FontColor.trim() === "") {
+      line.FontColor = OrangeHud.Param.DefaultFontColor;
+    }
 
-  line.FontSize = Number(line.FontSize || OrangeHud.Param.DefaultFontSize);
-  line.X = Number(line.X || 0);
-  line.Y = Number(line.Y || 0);
+    line.FontSize = Number(line.FontSize || OrangeHud.Param.DefaultFontSize);
+    line.X = Number(line.X || 0);
+    line.Y = Number(line.Y || 0);
 
-  if (line.FontItalic === undefined || line.FontItalic.trim() === "") {
-    line.FontItalic = OrangeHud.Param.DefaultFontItalic;
-  } else {
-    line.FontItalic = line.FontItalic == "true";
-  }
+    if (line.FontItalic === undefined || line.FontItalic.trim() === "") {
+      line.FontItalic = OrangeHud.Param.DefaultFontItalic;
+    } else {
+      line.FontItalic = line.FontItalic == "true";
+    }
 
-  line.SwitchId = Number(line.SwitchId || 0);
+    line.SwitchId = Number(line.SwitchId || 0);
   };
 
   OrangeHudClock.drawLine = function(window, variableData) {
@@ -160,5 +166,5 @@ if (Imported["OrangeHudClock"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudClock', OrangeHudClock);
-  Imported["OrangeHudClock"] = true;
+  Imported["OrangeHudClock"] = 1.5;
 }

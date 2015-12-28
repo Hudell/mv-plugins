@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.7.1
+ * Version: 1.8
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -114,6 +114,7 @@ if (Imported["MVCommons"] === undefined) {
   $.Parameters = PluginManager.parameters('OrangeHud');
   $.Param = $.Param || {};
 
+  $.Param.GroupName = "main";
   $.Param.DefaultFontSize = Number($.Parameters.DefaultFontSize || 18);
   $.Param.DefaultFontColor = String($.Parameters.DefaultFontColor || '#FFFFFF');
   $.Param.DefaultFontItalic = $.Parameters.DefaultFontItalic === "true";
@@ -135,17 +136,66 @@ if (Imported["MVCommons"] === undefined) {
   $.Param.WindowMargin = Number($.Parameters.WindowMargin || 4);
   $.Param.WindowPadding = Number($.Parameters.WindowPadding || 18);
 
-  // $.Param.HudNumber = Number($.Parameters.HudNumber || 1);
   $.Param.ShowOnTitle = $.Parameters.ShowOnTitle === "true";
   $.Param.ShowOnMenu = $.Parameters.ShowOnMenu === "true";
   $.Param.ShowOnBattle = $.Parameters.ShowOnBattle === "true";
   $.Param.ShowOnMap = $.Parameters.ShowOnMap !== "false";
 
   $._addons = {};
+  $._groups = {};
   $._isDirty = false;
 
   $.setDirty = function() {
     $._isDirty = true;
+  };
+
+  $.validateGroupParams = function(params) {
+    params.GroupName = params.GroupName || "group";
+    params.DefaultFontSize = Number(params.DefaultFontSize || 18);
+    params.DefaultFontColor = String(params.DefaultFontColor || '#FFFFFF');
+    params.DefaultFontItalic = params.DefaultFontItalic === "true";
+    params.ShowUnderTintLayer = (params.ShowUnderTintLayer || "false").toLowerCase() === "true";
+
+    params.HudWidth = Number(params.HudWidth || SceneManager._screenWidth);
+    if (params.HudWidth === 0) {
+      params.HudWidth = SceneManager._screenWidth;
+    }
+    params.HudHeight = Number(params.HudHeight || SceneManager._screenHeight);
+    if (params.HudHeight === 0) {
+      params.HudHeight = SceneManager._screenHeight;
+    }
+    params.HudX = Number(params.HudX || 0);
+    params.HudY = Number(params.HudY || 0);
+    params.HudOpacity = Number(params.HudOpacity || 0);
+
+    params.SwitchId = Number(params.SwitchId || 0);
+    params.WindowMargin = Number(params.WindowMargin || 4);
+    params.WindowPadding = Number(params.WindowPadding || 18);
+
+    params.ShowOnTitle = params.ShowOnTitle === "true";
+    params.ShowOnMenu = params.ShowOnMenu === "true";
+    params.ShowOnBattle = params.ShowOnBattle === "true";
+    params.ShowOnMap = params.ShowOnMap !== "false";
+  };
+
+  $.configureGroups = function() {
+    this._groups = {
+      main : [this.Param]
+    };
+
+    var groups = PluginManager.getParamList('OrangeHudGroup');
+    for (var i = 0; i < groups.length; i++) {
+      var group = groups[i];
+      this.validateGroupParams(group);
+
+      if (!!group.GroupName) {
+        if (this._groups[group.GroupName] === undefined) {
+          this._groups[group.GroupName] = [];
+        }
+
+        this._groups[group.GroupName].push(group);
+      }
+    }
   };
 
   $.registerLineType = function(lineType, manager) {
@@ -160,7 +210,8 @@ if (Imported["MVCommons"] === undefined) {
     }
   };
 
-  Window_OrangeHud.prototype.initialize = function() {
+  Window_OrangeHud.prototype.initialize = function(group) {
+    this.group = group;
     Window_Base.prototype.initialize.call(this, 0, 0, this.windowWidth(), this.windowHeight());
     this.refresh();
   };
@@ -218,8 +269,10 @@ if (Imported["MVCommons"] === undefined) {
       var addOn = $._addons[lineType];
 
       addOn.params.forEach(function(line){
-        addOn.manager.drawLine(self, line);
-        addOn.lines[addOn.manager.getKey(line)] = addOn.manager.getValue(line);
+        if (line.GroupName == self.group.GroupName || (!line.GroupName && self.group.GroupName == "main")) {
+          addOn.manager.drawLine(self, line);
+          addOn.lines[addOn.manager.getKey(line)] = addOn.manager.getValue(line);
+        }
       });
     }
   };
@@ -234,11 +287,13 @@ if (Imported["MVCommons"] === undefined) {
       var addOn = $._addons[lineType];
 
       addOn.params.forEach(function(line){
-        var key = addOn.manager.getKey(line);
-        var value = addOn.manager.getValue(line);
+        if (line.GroupName == self.group.GroupName || (!line.GroupName && self.group.GroupName == "main")) {
+          var key = addOn.manager.getKey(line);
+          var value = addOn.manager.getValue(line);
 
-        if (value != addOn.lines[key]) {
-          shouldRefresh = true;
+          if (value != addOn.lines[key]) {
+            shouldRefresh = true;
+          }
         }
       });
     }
@@ -271,50 +326,90 @@ if (Imported["MVCommons"] === undefined) {
     }
 
     this.createVarHudWindow();
-    if (this instanceof Scene_Map && $.Param.ShowUnderTintLayer) {
-      this._spriteset._baseSprite.addChild(this._varHudWindow);
-    } else {
-      this.addChild(this._varHudWindow);
-    }
-
-    if ($.Param.SwitchId !== undefined && $.Param.SwitchId > 0) {
-      this._varHudWindow.visible = $gameSwitches.value($.Param.SwitchId);
-    }
   };
 
   Scene_Base.prototype.createVarHudWindow = function() {
-    this._varHudWindow = new Window_OrangeHud();
-    this._varHudWindow.x = $.Param.HudX;
-    this._varHudWindow.y = $.Param.HudY;
-    this._varHudWindow.opacity = $.Param.HudOpacity;
-    this._varHudWindow.padding = $.Param.WindowPadding;
-    this._varHudWindow.margin = $.Param.WindowMargin;
+    this._hudWindows = {};
+    for (var key in OrangeHud._groups) {
+      var groups = OrangeHud._groups[key];
+
+      this._hudWindows[key] = [];
+
+      for (var i = 0; i < groups.length; i++) {
+        var group = groups[i];
+
+        var newWindow = new Window_OrangeHud(group);
+        newWindow.x = group.HudX;
+        newWindow.y = group.HudY;
+        newWindow.opacity = group.HudOpacity;
+        newWindow.padding = group.WindowPadding;
+        newWindow.margin = group.WindowMargin;
+
+        this._hudWindows[key].push(newWindow);
+
+        if (this instanceof Scene_Map && group.ShowUnderTintLayer) {
+          this._spriteset._baseSprite.addChild(newWindow);
+        } else {
+          this.addChild(newWindow);
+        }
+
+        if (group.SwitchId !== undefined && group.SwitchId > 0) {
+          newWindow.visible = $gameSwitches.value(group.SwitchId);
+        }
+      }
+    }
   };
 
   var oldSceneBase_update = Scene_Base.prototype.update;
   Scene_Base.prototype.update = function() {
     oldSceneBase_update.call(this);
 
-    if (this._varHudWindow === undefined) {
+    if (this._hudWindows === undefined) {
       return;
     }
 
-    if ($.Param.SwitchId !== undefined && $.Param.SwitchId > 0) {
-      this._varHudWindow.visible = $gameSwitches.value($.Param.SwitchId);
-    }
+    for (var key in this._hudWindows) {
+      var groupWindows = this._hudWindows[key];
 
-    this._varHudWindow.update();
+      for (var i = 0; i < groupWindows.length; i++) {
+        var hudWindow = groupWindows[i];
+
+        if (SceneManager.isSceneChanging()) {
+          hudWindow.visible = false;
+        } else {
+          if (hudWindow.group.SwitchId !== undefined && hudWindow.group.SwitchId > 0) {
+            hudWindow.visible = $gameSwitches.value(hudWindow.group.SwitchId);
+          } else {
+            hudWindow.visible = true;
+          }
+        }
+
+        hudWindow.update();
+      }
+    }
   };
 
   var oldSceneMap_updateScene = Scene_Map.prototype.updateScene;
   Scene_Map.prototype.updateScene = function() {  
     oldSceneMap_updateScene.call(this);
     if (SceneManager.isSceneChanging()) {
-      if (!!this._varHudWindow) {
-        this._varHudWindow.visible = false;
+      if (this._hudWindows === undefined) {
+        return;
+      }
+
+      for (var key in this._hudWindows) {
+        var groupWindows = this._hudWindows[key];
+
+        for (var i = 0; i < groupWindows.length; i++) {
+          var hudWindow = groupWindows[i];
+
+          hudWindow.visible = false;
+        }
       }
     }
   };
+
+  $.configureGroups();
 })(OrangeHud);
 
-Imported.OrangeHud = 1.7;
+Imported.OrangeHud = 1.8;
