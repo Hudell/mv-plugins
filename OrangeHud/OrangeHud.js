@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.8
+ * Version: 1.8.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -217,10 +217,10 @@ if (Imported["MVCommons"] === undefined) {
   };
 
   Window_OrangeHud.prototype.windowWidth = function() {
-    return $.Param.HudWidth;
+    return this.group.HudWidth;
   };
   Window_OrangeHud.prototype.windowHeight = function() {
-    return $.Param.HudHeight;
+    return this.group.HudHeight;
   };
 
   Window_OrangeHud.prototype.drawTextEx = function(text, x, y) {
