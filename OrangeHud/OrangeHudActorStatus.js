@@ -2,7 +2,7 @@
  * Orange - Actor Status HUD
  * By HUDell - www.hudell.com
  * OrangeHudActorStatus.js
- * Version: 1.5
+ * Version: 1.5.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -201,6 +201,7 @@ if (Imported["OrangeHudActorStatus"] === undefined) {
       line = line.replace(/\<mdr\>/gi, actorData.mdr);
       line = line.replace(/\<fdr\>/gi, actorData.fdr);
       line = line.replace(/\<exr\>/gi, actorData.exr);
+      line = line.replace(/\<exp\>/gi, actorData.currentExp());
 
       return line;
     } else {

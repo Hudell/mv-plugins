@@ -75,7 +75,7 @@
  * @default false
  *
  * @param ShowUnderTintLayer
- * @desc Set this to true to hide the HUD under tint and face effects
+ * @desc Set this to true to hide the HUD under tint and fade effects
  * @default false
  *
  * @help
