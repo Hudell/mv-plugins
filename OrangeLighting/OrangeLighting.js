@@ -2,7 +2,7 @@
  * Orange - Lighting
  * By Hudell - www.hudell.com
  * OrangeLighting.js
- * Version: 1.3.3
+ * Version: 1.3.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -308,6 +308,8 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
           this.refreshMaskColor();        
           namespace.runEvent('refreshMaskColor', this);
 
+          namespace._lastOpacity = backOpacity;
+          
           // Adds the mask sprite
           this.addSprite(0, 0, this._maskBitmap, backOpacity);
           this._maskBitmap.fillRect(0, 0, Graphics.width, Graphics.height, namespace._lastMaskColor);
@@ -345,6 +347,13 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
 
       if (namespace._lastMaskColor !== $.maskColor()) {
         namespace.dirty = true;
+      }
+
+      if (namespace.Param.opacityVariable > 0) {
+        var backOpacity = $gameVariables.value(namespace.Param.opacityVariable).clamp(0, 255);
+        if (backOpacity !== namespace._lastOpacity) {
+          namespace.dirty = true;
+        }
       }
 
       namespace.runEvent('updateMask', this);
@@ -499,6 +508,7 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
   namespace.clear = function() {
     this._currentRGB = undefined;
     this._lastMaskColor = undefined;
+    this._lastOpacity = undefined;
   };
 
   namespace.oldGameMap_setup = Game_Map.prototype.setup;
@@ -510,4 +520,4 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
 })(Hudell.OrangeLighting);
 
 OrangeLighting = Hudell.OrangeLighting;
-Imported["OrangeLighting"] = 1.3;
+Imported.OrangeLighting = 1.3;
