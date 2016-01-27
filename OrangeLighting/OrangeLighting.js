@@ -2,7 +2,7 @@
  * Orange - Lighting
  * By Hudell - www.hudell.com
  * OrangeLighting.js
- * Version: 1.3.4
+ * Version: 1.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -20,6 +20,10 @@
  * @param tintSpeed
  * @desc The speed in which the color will change. (4 = black to white in 1 second, 255 = instant)
  * @default 0.3
+ *
+ * @param defaultMaskColor
+ * @desc The default mask color
+ * @default black
  *
  * @help
  * ============================================================================
@@ -52,6 +56,7 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
   namespace.Param.lightMaskSwitch = Number(namespace.Parameters.lightMaskSwitch || 0);
   namespace.Param.opacityVariable = Number(namespace.Parameters.opacityVariable || 0);
   namespace.Param.tintSpeed = Number(namespace.Parameters.tintSpeed || 0.3);
+  namespace.Param.defaultMaskColor = namespace.Parameters.defaultMaskColor || "black";
   namespace.enabled = true;
 
   Object.defineProperties(namespace, {
@@ -236,7 +241,7 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
     };
 
     $.maskColor = function() {
-      return "black";
+      return namespace.Param.defaultMaskColor;
     };
 
     $.walkColor = function(newRGB, currentRGB, colorName, tintSpeed) {
@@ -349,12 +354,12 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
         namespace.dirty = true;
       }
 
-      if (namespace.Param.opacityVariable > 0) {
-        var backOpacity = $gameVariables.value(namespace.Param.opacityVariable).clamp(0, 255);
-        if (backOpacity !== namespace._lastOpacity) {
-          namespace.dirty = true;
-        }
-      }
+      // if (namespace.Param.opacityVariable > 0) {
+      //   var backOpacity = $gameVariables.value(namespace.Param.opacityVariable).clamp(0, 255);
+      //   if (backOpacity !== namespace._lastOpacity) {
+      //     namespace.dirty = true;
+      //   }
+      // }
 
       namespace.runEvent('updateMask', this);
 
@@ -520,4 +525,4 @@ Hudell.OrangeLighting = Hudell.OrangeLighting || {};
 })(Hudell.OrangeLighting);
 
 OrangeLighting = Hudell.OrangeLighting;
-Imported.OrangeLighting = 1.3;
+Imported.OrangeLighting = 1.4;
