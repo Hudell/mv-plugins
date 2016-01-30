@@ -408,6 +408,12 @@ if (Imported["MVCommons"] === undefined) {
       }
     }
   };
+  
+  var oldGameMap_requestRefresh = Game_Map.prototype.requestRefresh;
+  Game_Map.prototype.requestRefresh = function(mapId) {
+    oldGameMap_requestRefresh.call(this, mapId);
+    $._isDirty = true;
+  };
 
   $.configureGroups();
 })(OrangeHud);
