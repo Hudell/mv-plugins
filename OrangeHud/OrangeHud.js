@@ -2,7 +2,7 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.8.1
+ * Version: 1.9
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -418,4 +418,4 @@ if (Imported["MVCommons"] === undefined) {
   $.configureGroups();
 })(OrangeHud);
 
-Imported.OrangeHud = 1.8;
+Imported.OrangeHud = 1.9;
