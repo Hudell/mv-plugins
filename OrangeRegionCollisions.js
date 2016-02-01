@@ -2,7 +2,7 @@
  * Orange - Region Collisions
  * By Hudell - www.hudell.com
  * OrangeRegionCollisions.js
- * Version: 1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -39,7 +39,7 @@
  * ============================================================================
  * 
  * Get the latest version of this script on
- * http://link.hudell.com/region-collisions
+ * http://download.hudell.com/OrangeRegionCollisions.js
  * 
  *=============================================================================*/
 var Imported = Imported || {};
@@ -99,7 +99,7 @@ var OrangeRegionCollisions = OrangeRegionCollisions || {};
   };
 
   var oldGamePlayer_isMapPassable = Game_Player.prototype.isMapPassable;
-  if (Imported["SuperOrangeMovement"] !== undefined) {
+  if (Imported["SuperOrangeMovement"] !== undefined || Imported["SuperOrangeMovementEx"] !== undefined) {
     var insignificantValue = 0.000001;
 
     $.runForAllPositions = function(x, y, callback) {
@@ -171,18 +171,7 @@ var OrangeRegionCollisions = OrangeRegionCollisions || {};
 
       return oldGamePlayer_isMapPassable.call(this, x, y, d);    
     };
-
   }
-
 })(OrangeRegionCollisions);
 
-// If MVCommons is imported, register the plugin with it's PluginManager.
-if (Imported['MVCommons'] !== undefined) {
-  PluginManager.register("OrangeRegionCollisions", "1.1.0", "Allows the usage of regions to overwrite the passability configuration of tiles", {
-    email: "plugins@hudell.com",
-    name: "Hudell",
-    website: "http://www.hudell.com"
-  }, "2015-10-21");
-} else {
-  Imported["OrangeRegionCollisions"] = true;
-}
+Imported["OrangeRegionCollisions"] = 1.2;
