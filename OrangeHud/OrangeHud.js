@@ -2,11 +2,11 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 1.9
+ * Version: 2.0
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Creates a custom HUD based on the params
+ * @plugindesc OrangeHud 2.0 - Creates a custom HUD based on the params
  *
  * @author Hudell
  *
@@ -78,6 +78,10 @@
  * @desc Set this to true to hide the HUD under tint and fade effects
  * @default false
  *
+ * @param AutoRefresh
+ * @desc Set this to false to disable automatic refresh of the HUD
+ * @default true
+ *
  * @help
  * ============================================================================
  * Latest Version
@@ -140,6 +144,7 @@ if (Imported["MVCommons"] === undefined) {
   $.Param.ShowOnMenu = $.Parameters.ShowOnMenu === "true";
   $.Param.ShowOnBattle = $.Parameters.ShowOnBattle === "true";
   $.Param.ShowOnMap = $.Parameters.ShowOnMap !== "false";
+  $.Param.AutoRefresh = $.Parameters.AutoRefresh !== "false";
 
   $._addons = {};
   $._groups = {};
@@ -147,6 +152,10 @@ if (Imported["MVCommons"] === undefined) {
 
   $.setDirty = function() {
     $._isDirty = true;
+  };
+
+  $.refresh = function() {
+    $.setDirty();
   };
 
   $.validateGroupParams = function(params) {
@@ -282,21 +291,24 @@ if (Imported["MVCommons"] === undefined) {
 
     var shouldRefresh = $._isDirty;
     var self = this;
-    
-    for (var lineType in $._addons) {
-      var addOn = $._addons[lineType];
 
-      addOn.params.forEach(function(line){
-        if (line.GroupName == self.group.GroupName || (!line.GroupName && self.group.GroupName == "main")) {
-          var key = addOn.manager.getKey(line);
-          var value = addOn.manager.getValue(line);
+    if ($.Param.AutoRefresh) {
+      for (var lineType in $._addons) {
+        var addOn = $._addons[lineType];
 
-          if (value != addOn.lines[key]) {
-            shouldRefresh = true;
+        addOn.params.forEach(function(line){
+          if (line.GroupName == self.group.GroupName || (!line.GroupName && self.group.GroupName == "main")) {
+            var key = addOn.manager.getKey(line);
+            var value = addOn.manager.getValue(line);
+
+            if (value != addOn.lines[key]) {
+              shouldRefresh = true;
+            }
           }
-        }
-      });
+        });
+      }
     }
+    
 
     if (shouldRefresh) {
       this.refresh();
@@ -418,4 +430,4 @@ if (Imported["MVCommons"] === undefined) {
   $.configureGroups();
 })(OrangeHud);
 
-Imported.OrangeHud = 1.9;
+Imported.OrangeHud = 2.0;

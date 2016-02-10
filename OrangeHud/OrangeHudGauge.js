@@ -2,7 +2,7 @@
  * Orange - Gauge HUD
  * By HUDell - www.hudell.com
  * OrangeHudGauge.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -21,6 +21,14 @@
  * @desc The number of the variable that holds the maximum value of the gauge.
  * @default 2
  *
+ * @param ScriptValue
+ * @desc A script to run to get the current value of the gauge.
+ * @default 
+ *
+ * @param ScriptMaxValue
+ * @desc A script to run to get the max value of the gauge.
+ * @default 
+ *
  * @param SwitchId
  * @desc Set this to a switch number to use it to control the visibility of this line
  * @default 0
@@ -36,6 +44,10 @@
  * @param Width
  * @desc The width of the Gauge
  * @default 100
+ *
+ * @param Height
+ * @desc The height of the Gauge
+ * @default 6
  *
  * @param VariableX
  * @desc The number of the variable that holds the X position of the picture inside the HUD
@@ -56,6 +68,10 @@
  * @param AllowOverflow
  * @desc Set this to true if you want the gauge bar to overflow when the value is too high
  * @default false
+ *
+ * @param AutoRefresh
+ * @desc Set this to false to disable automatic refresh of the gauge
+ * @default true
  *
  * @help
  * */
@@ -81,12 +97,26 @@ if (Imported["OrangeHudGauge"] === undefined) {
     paramsLine.X = Number(paramsLine.X || 0);
     paramsLine.Y = Number(paramsLine.Y || 0);
     paramsLine.Width = Number(paramsLine.Width || 0);
+    paramsLine.Height = Number(paramsLine.Height || 0);
 
     paramsLine.VariableX = Number(paramsLine.VariableX || 0);
     paramsLine.VariableY = Number(paramsLine.VariableY || 0);
     paramsLine.SwitchId = Number(paramsLine.SwitchId || 0);
 
+    if (paramsLine.ScriptValue !== undefined && paramsLine.ScriptValue.trim() === "") {
+      paramsLine.ScriptValue = undefined;
+    } else {
+      paramsLine.ScriptValue = Function("return " + paramsLine.ScriptValue);
+    }
+
+    if (paramsLine.ScriptMaxValue !== undefined && paramsLine.ScriptMaxValue.trim() === "") {
+      paramsLine.ScriptMaxValue = undefined;
+    } else {
+      paramsLine.ScriptMaxValue = Function("return " + paramsLine.ScriptMaxValue);
+    }
+
     paramsLine.AllowOverflow = paramsLine.AllowOverflow === "true";
+    paramsLine.AutoRefresh = paramsLine.AutoRefresh !== "false";
 
     if (!paramsLine.GaugeColor1) {
       paramsLine.GaugeColor1 = 20;
@@ -145,14 +175,19 @@ if (Imported["OrangeHudGauge"] === undefined) {
 
     var color1 = this.getRealColor(hudWindow, variableData.GaugeColor1);
     var color2 = this.getRealColor(hudWindow, variableData.GaugeColor2);
-    var value = this.getVariableValue(variableData);
+    var value = this.getCurrentValue(variableData);
     var maxValue = this.getMaxValue(variableData);
     var rate;
     var width = variableData.Width;
+    var height = variableData.Height;
 
     if (maxValue > 0) {
       rate = parseFloat((value / maxValue).toPrecision(12));
     } else {
+      rate = 0;
+    }
+
+    if (isNaN(rate)) {
       rate = 0;
     }
 
@@ -161,16 +196,29 @@ if (Imported["OrangeHudGauge"] === undefined) {
     }
 
     if (width > 0) {
-      hudWindow.drawGauge(x, y, width, rate, color1, color2);
+      var fillW = Math.floor(width * rate);
+      var gaugeY = y + hudWindow.lineHeight() - height - 2;
+      hudWindow.contents.fillRect(x, gaugeY, width, height, hudWindow.gaugeBackColor());
+      hudWindow.contents.gradientFillRect(x, gaugeY, fillW, height, color1, color2);
     }
   };
 
   OrangeHudGauge.getValue = function(variableData) {
-    return this.getVariableValue(variableData) + ' / ' + this.getMaxValue(variableData);
+    if (variableData.AutoRefresh) {
+      return this.getCurrentValue(variableData) + ' / ' + this.getMaxValue(variableData);
+    } else {
+      return 0;
+    }
   };
   
-  OrangeHudGauge.getVariableValue = function(variableData) {
-    if (variableData.ValueVariableId > 0) {
+  OrangeHudGauge.getCurrentValue = function(variableData) {
+    if (variableData.ScriptValue !== undefined) {
+      if (typeof(variableData.ScriptValue) == "function") {
+        return parseFloat(variableData.ScriptValue());
+      } else {
+        return parseFloat(Function("return " + variableData.ScriptValue)());
+      }
+    } else if (variableData.ValueVariableId > 0) {
       return $gameVariables.value(variableData.ValueVariableId);
     } else {
       return 0;
@@ -178,7 +226,13 @@ if (Imported["OrangeHudGauge"] === undefined) {
   };
 
   OrangeHudGauge.getMaxValue = function(variableData) {
-    if (variableData.MaxValueVariableId > 0) {
+    if (variableData.ScriptMaxValue !== undefined) {
+      if (typeof(variableData.ScriptValue) == "function") {
+        return parseFloat(variableData.ScriptMaxValue());
+      } else {
+        return parseFloat(Function("return " + variableData.ScriptMaxValue)());
+      }
+    } else if (variableData.MaxValueVariableId > 0) {
       return $gameVariables.value(variableData.MaxValueVariableId);
     } else {
       return 0;
@@ -190,5 +244,5 @@ if (Imported["OrangeHudGauge"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudGauge', OrangeHudGauge);
-  Imported["OrangeHudGauge"] = 1.0;
+  Imported["OrangeHudGauge"] = 1.1;
 }
