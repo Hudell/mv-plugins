@@ -2,11 +2,11 @@
  * Orange - Face Picture HUD
  * By HUDell - www.hudell.com
  * OrangeHudFacePicture.js
- * Version: 1.3
+ * Version: 1.3.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Adds a new Variable to Orange Hud
+ * @plugindesc Draws a character's face on the OrangeHud
  * @author Hudell
  *
  * @param GroupName
