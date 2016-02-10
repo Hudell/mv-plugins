@@ -35,7 +35,7 @@
  *
  * @param Width
  * @desc The width of the Gauge
- * @default 
+ * @default 100
  *
  * @param VariableX
  * @desc The number of the variable that holds the X position of the picture inside the HUD
