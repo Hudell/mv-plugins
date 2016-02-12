@@ -2,7 +2,7 @@
  * Orange Lighting - Event Light
  * By Hudell - www.hudell.com
  * OrangeLightingEventLight.js
- * Version: 1.0.2
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -253,12 +253,17 @@ if (!Hudell || !Hudell.OrangeLighting) {
 
         if (this.event().meta.light_flickle !== undefined) {
           add = true;
-          orangeLight.flickler = this.event().meta.light_flickle;
+          orangeLight.flicker = this.event().meta.light_flickle;
         }
 
         if (this.event().meta.light_flickler !== undefined) {
           add = true;
-          orangeLight.flickler = this.event().meta.light_flickler;
+          orangeLight.flicker = this.event().meta.light_flickler;
+        }
+
+        if (this.event().meta.light_flicker !== undefined) {
+          add = true;
+          orangeLight.flicker = this.event().meta.light_flicker;
         }
 
         if (this.event().meta.light) {
@@ -289,4 +294,4 @@ if (!Hudell || !Hudell.OrangeLighting) {
 
 })(Hudell.OrangeLighting);
 
-Imported["OrangeLighting.EventLight"] = 1.0;
+Imported["OrangeLighting.EventLight"] = 1.1;
