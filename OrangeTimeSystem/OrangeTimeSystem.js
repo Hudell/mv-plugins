@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 2.6
+ * Version: 2.7
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -1280,7 +1280,7 @@ var DayPeriods = {
     }
 
     if (args.length < (nextIndex + 2)) return;
-    var value = parseInt(args[nextIndex], 10);
+    var value = $.getNumericValue(args[nextIndex]);
 
     switch (args[nextIndex +1].toUpperCase()) {
       case 'MINUTE' :
@@ -1327,31 +1327,31 @@ var DayPeriods = {
 
       switch(args[nextIndex].toUpperCase()) {
         case 'HOUR' :
-          hour = parseInt(args[nextIndex + 1], 10);
+          hour = $.getNumericValue(args[nextIndex + 1]);
           nextIndex++;
           break;
         case 'MINUTE' :
-          minute = parseInt(args[nextIndex + 1], 10);
+          minute = $.getNumericValue(args[nextIndex + 1]);
           nextIndex++;
           break;
         case 'SECOND' :
-          seconds = parseInt(args[nextIndex + 1], 10);
+          seconds = $.getNumericValue(args[nextIndex + 1]);
           nextIndex++;
           break;
         case 'DAY' :
-          day = parseInt(args[nextIndex + 1], 10);
+          day = $.getNumericValue(args[nextIndex + 1]);
           nextIndex++;
           break;
         case 'MONTH' :
-          month = parseInt(args[nextIndex + 1], 10);
+          month = $.getNumericValue(args[nextIndex + 1]);
           nextIndex++;
           break;
         case 'YEAR' :
-          year = parseInt(args[nextIndex + 1], 10);
+          year = $.getNumericValue(args[nextIndex + 1]);
           nextIndex++;
           break;
         case 'PERIOD' :
-          dayPeriod = parseInt(args[nextIndex + 1], 10);
+          dayPeriod = $.getNumericValue(args[nextIndex + 1]);
           nextIndex++;
           break;
         case 'ONCE' :
@@ -1415,6 +1415,19 @@ var DayPeriods = {
     }
   };
 
+  $.getNumericValue = function(stringValue) {
+    if (stringValue.substr(0, 1) == '[' && stringValue.substr(-1) == ']') {
+      var variableId = parseInt(stringValue.substr(1, stringValue.length - 2), 10);
+
+      if (variableId > 0) {
+        return $gameVariables.value(variableId);
+      }
+    } else {
+      return parseInt(stringValue, 10);
+    }
+  };
+
+
   $.checkRunCommands = function(command, args) {
     if (args.length < 4) return;
 
@@ -1422,7 +1435,7 @@ var DayPeriods = {
     if (args[0].toUpperCase() != 'COMMON') return;
     if (args[1].toUpperCase() != 'EVENT') return;
 
-    var eventId = parseInt(args[2], 10);
+    var eventId = $.getNumericValue(args[2]);
     if (eventId <= 0) return;
 
     if (args[3].toUpperCase() == 'ON') {
@@ -1541,4 +1554,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 2.6;
+Imported.OrangeTimeSystem = 2.7;

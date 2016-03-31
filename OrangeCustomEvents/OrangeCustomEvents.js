@@ -2,7 +2,7 @@
  * Orange - Custom Event
  * By Hudell - www.hudell.com
  * OrangeCustomEvents.js
- * Version: 1.6.1
+ * Version: 1.7
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -302,6 +302,18 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     }
   };
 
+  Game_Interpreter.prototype.getNumericValue = function(stringValue) {
+    if (stringValue.substr(0, 1) == '[' && stringValue.substr(-1) == ']') {
+      var variableId = parseInt(stringValue.substr(1, stringValue.length - 2), 10);
+
+      if (variableId > 0) {
+        return $gameVariables.value(variableId);
+      }
+    } else {
+      return parseInt(stringValue, 10);
+    }
+  };
+
   Game_Interpreter.prototype.checkCopyCommands = function(command, args) {
     if (args.length < 2) return;
 
@@ -324,7 +336,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
 
     if (args.length >= nextIndex + 3) {
       if (args[nextIndex].toUpperCase() == 'FROM' && args[nextIndex + 1].toUpperCase() == 'MAP') {
-        mapIdOrigin = parseInt(args[nextIndex + 2], 10);
+        mapIdOrigin = this.getNumericValue(args[nextIndex + 2]);
         nextIndex += 3;
       }
     }
@@ -364,8 +376,8 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
           y = $gamePlayer.y;
           nextIndex++;
         } else if (args.length >= nextIndex + 2) {
-          x = parseInt(args[nextIndex], 10);
-          y = parseInt(args[nextIndex + 1], 10);
+          x = this.getNumericValue(args[nextIndex]);
+          y = this.getNumericValue(args[nextIndex + 1]);
 
           nextIndex += 2;
         }
@@ -376,7 +388,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     }
     else {
       if (args.length > nextIndex) {
-        regionId = parseInt(args[nextIndex], 10);
+        regionId = this.getNumericValue(args[nextIndex]);
         nextIndex++;
       }
       else {
@@ -396,7 +408,7 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
 
     if (args.length > nextIndex + 2) {
       if (args[nextIndex].toUpperCase().startsWith('WITH') && args[nextIndex + 1].toUpperCase().startsWith('ID')) {
-        userIndex = parseInt(args[nextIndex + 2], 10);
+        userIndex = this.getNumericValue(args[nextIndex + 2]);
       }
     }
 
@@ -444,4 +456,4 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
   };
 })(OrangeCustomEvents);
 
-Imported.OrangeCustomEvents = 1.6;
+Imported.OrangeCustomEvents = 1.7;
