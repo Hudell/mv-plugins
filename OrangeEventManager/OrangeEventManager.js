@@ -2,7 +2,7 @@
  * Orange - Event Manager
  * By Hudell - www.hudell.com
  * OrangeEventManager.js
- * Version: 1.1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -42,6 +42,8 @@ var OrangeEventManager = OrangeEventManager || {};
 
   var oldGameInterpreter_setupReservedCommonEvent = Game_Interpreter.prototype.setupReservedCommonEvent;
   Game_Interpreter.prototype.setupReservedCommonEvent = function() {
+    if (!$gameTemp) return false;
+
     var result = oldGameInterpreter_setupReservedCommonEvent.call(this);
     if (result) return result;
 
@@ -90,16 +92,64 @@ var OrangeEventManager = OrangeEventManager || {};
       if (parseInt(callback, 10) == callback.trim()) {
         $gameTemp.reserveOrangeCommonEvent(parseInt(callback, 10));
         return true;
+      } else if (callback.substr(0, 2) == 'SS') {
+        //Self Switch
+        var selfSwitchData = callback.split(',');
+        var usedData = [0, 0, 'A', 'TRUE'];
+
+        for (var i = 0; i < selfSwitchData.length; i++) {
+          if (usedData.length > i) {
+            usedData[i] = selfSwitchData[i];
+          }
+        }
+
+        var mapId = parseInt(usedData[0].substr(2), 10);
+        var eventId = parseInt(usedData[1], 10);
+        var switchName = usedData[2].toUpperCase();
+        var switchValue = usedData[3].toUpperCase();
+
+        var key = [mapId, eventId, switchName];
+
+        if (!!$gameSelfSwitches) {
+          if (switchValue == 'TOGGLE') {
+            switchValue = !$gameSelfSwitches.value(key);
+          } else if (switchValue === 'FALSE' || switchValue === 'OFF') {
+            switchValue = false;
+          } else {
+            switchValue = true;
+          }
+
+          $gameSelfSwitches.setValue(key, switchValue);
+          return true;
+        } else {
+          return false;
+        }
       } else if (callback.substr(0, 1) == 'S') {
+        //Switch
+
         var data = callback.split(',');
         var value = 'TRUE';
 
         if (data.length >= 2) {
-          value = data[1].toUppercase();
+          value = data[1].toUpperCase();
         }
 
-        $gameSwitches.setValue(id, value !== 'FALSE' && value !== 'OFF');
-        return true;
+        id = parseInt(data[0].substr(1));
+
+        if (!!$gameSwitches) {
+          if (value == 'TOGGLE') {
+            value = !$gameSwitches.value(id);
+          } else if (value === 'FALSE' || value === 'OFF') {
+            value = false;
+          } else {
+            value = true;
+          }
+
+          $gameSwitches.setValue(id, value);
+          return true;
+        } else {
+          return false;
+        }
       }
 
       return eval(callback);
@@ -122,4 +172,4 @@ var OrangeEventManager = OrangeEventManager || {};
   };
 })(OrangeEventManager);
 
-Imported["OrangeEventManager"] = 1.1;
+Imported.OrangeEventManager = 1.2;

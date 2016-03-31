@@ -267,14 +267,14 @@ if (Imported['MVCommons'] === undefined) {
   }
 }
 
-if (Imported['OrangeEventManager'] === undefined) {
+if (Imported.OrangeEventManager === undefined) {
   var OrangeEventManager = {};
-  (function($) {"use strict";$._events = [];var oldGameTemp_initialize = Game_Temp.prototype.initialize;Game_Temp.prototype.initialize = function() {oldGameTemp_initialize.call(this);this._orangeCommonEvents = [];};Game_Temp.prototype.reserveOrangeCommonEvent = function(commonEventId) {if (commonEventId > 0) {this._orangeCommonEvents = this._orangeCommonEvents || [];this._orangeCommonEvents.push(commonEventId);}};var oldGameInterpreter_setupReservedCommonEvent = Game_Interpreter.prototype.setupReservedCommonEvent;Game_Interpreter.prototype.setupReservedCommonEvent = function() {var result = oldGameInterpreter_setupReservedCommonEvent.call(this);if (result) return result;if (!$gameTemp._orangeCommonEvents) return result;if ($gameTemp._orangeCommonEvents.length > 0) {var commonEventId = $gameTemp._orangeCommonEvents.shift();var commonEvent = $dataCommonEvents[commonEventId];this.setup(commonEvent.list);return true;}return result;};$.on = function(eventName, callback) {if (this._events[eventName] === undefined) this._events[eventName] = [];this._events[eventName].push(callback);};$.un = function(eventName, callback) {if (this._events[eventName] === undefined) return;for (var i = 0; i < this._events[eventName].length; i++) {if (this._events[eventName][i] == callback) {this._events[eventName][i] = undefined;return;}}};$.executeCallback = function(callback) {if (typeof(callback) == "function") {return callback.call(this);}if (typeof(callback) == "number") {$gameTemp.reserveOrangeCommonEvent(callback);return true;}if (typeof(callback) == "string") {var id = parseInt(callback, 10);if (parseInt(callback, 10) == callback.trim()) {$gameTemp.reserveOrangeCommonEvent(parseInt(callback, 10));return true;} else if (callback.substr(0, 1) == 'S') {var data = callback.split(',');var value = 'TRUE';if (data.length >= 2) {value = data[1].toUppercase();}$gameSwitches.setValue(id, value !== 'FALSE' && value !== 'OFF'); return true;}return eval(callback);}console.error("Unknown callback type: ", callback);return undefined;};$.runEvent = function(eventName) {if (this._events[eventName] === undefined) return;for (var i = 0; i < this._events[eventName].length; i++) {var callback = this._events[eventName][i];if (this.executeCallback(callback) === false) {break;}}};})(OrangeEventManager);
+  (function($) {"use strict"; $._events = [];var oldGameTemp_initialize = Game_Temp.prototype.initialize;Game_Temp.prototype.initialize = function() {oldGameTemp_initialize.call(this);this._orangeCommonEvents = [];};Game_Temp.prototype.reserveOrangeCommonEvent = function(commonEventId) {if (commonEventId > 0) {this._orangeCommonEvents = this._orangeCommonEvents || [];this._orangeCommonEvents.push(commonEventId);}};var oldGameInterpreter_setupReservedCommonEvent = Game_Interpreter.prototype.setupReservedCommonEvent;Game_Interpreter.prototype.setupReservedCommonEvent = function() {if (!$gameTemp) return false;var result = oldGameInterpreter_setupReservedCommonEvent.call(this);if (result) return result;if (!$gameTemp._orangeCommonEvents) return result;if ($gameTemp._orangeCommonEvents.length > 0) {var commonEventId = $gameTemp._orangeCommonEvents.shift();var commonEvent = $dataCommonEvents[commonEventId];this.setup(commonEvent.list);return true;}return result;};$.on = function(eventName, callback) {if (this._events[eventName] === undefined) this._events[eventName] = [];this._events[eventName].push(callback);};$.un = function(eventName, callback) {if (this._events[eventName] === undefined) return;for (var i = 0; i < this._events[eventName].length; i++) {if (this._events[eventName][i] == callback) {this._events[eventName][i] = undefined;return;}}};$.executeCallback = function(callback) {if (typeof(callback) == "function") {return callback.call(this);}if (typeof(callback) == "number") {$gameTemp.reserveOrangeCommonEvent(callback);return true;}if (typeof(callback) == "string") {var id = parseInt(callback, 10);if (parseInt(callback, 10) == callback.trim()) {$gameTemp.reserveOrangeCommonEvent(parseInt(callback, 10));return true;} else if (callback.substr(0, 2) == 'SS') {var selfSwitchData = callback.split(',');var usedData = [0, 0, 'A', 'TRUE'];for (var i = 0; i < selfSwitchData.length; i++) {if (usedData.length > i) {usedData[i] = selfSwitchData[i];}}var mapId = parseInt(usedData[0].substr(2), 10);var eventId = parseInt(usedData[1], 10);var switchName = usedData[2].toUpperCase();var switchValue = usedData[3].toUpperCase();var key = [mapId, eventId, switchName];if (!!$gameSelfSwitches) {if (switchValue == 'TOGGLE') {switchValue = !$gameSelfSwitches.value(key);} else if (switchValue === 'FALSE' || switchValue === 'OFF') {switchValue = false;} else {switchValue = true;}$gameSelfSwitches.setValue(key, switchValue);return true;} else {return false;}} else if (callback.substr(0, 1) == 'S') {var data = callback.split(',');var value = 'TRUE';if (data.length >= 2) {value = data[1].toUpperCase();}id = parseInt(data[0].substr(1));if (!!$gameSwitches) {if (value == 'TOGGLE') {value = !$gameSwitches.value(id);} else if (value === 'FALSE' || value === 'OFF') {value = false;} else {value = true;}$gameSwitches.setValue(id, value);return true;} else {return false;}}return eval(callback);}console.error("Unknown callback type: ", callback);return undefined;};$.runEvent = function(eventName) {if (this._events[eventName] === undefined) return;for (var i = 0; i < this._events[eventName].length; i++) {var callback = this._events[eventName][i];if (this.executeCallback(callback) === false) {break;}}};})(OrangeEventManager);
 
-  Imported["OrangeEventManager"] = 1.1;
+  Imported.OrangeEventManager = 1.2;
 
   if (Utils.isOptionValid('test')) {
-    console.log('OrangeTimeSystem will be using it\'s internal copy of OrangeEventManager 1.1.');
+    console.log('OrangeTimeSystem will be using it\'s internal copy of OrangeEventManager 1.2.');
   }
 }
 
@@ -1274,12 +1274,15 @@ var DayPeriods = {
     }
   };
 
-  $.checkRunInCommands = function(eventId, args) {
-    if (args.length < 6) return;
-    
-    var value = parseInt(args[4], 10);
+  $.checkRunInCommands = function(eventId, args, nextIndex) {
+    if (nextIndex === undefined) {
+      nextIndex = 4;
+    }
 
-    switch (args[5].toUpperCase()) {
+    if (args.length < (nextIndex + 2)) return;
+    var value = parseInt(args[nextIndex], 10);
+
+    switch (args[nextIndex +1].toUpperCase()) {
       case 'MINUTE' :
       case 'MINUTES' :
         $.runInMinutes(eventId, value);
@@ -1309,11 +1312,14 @@ var DayPeriods = {
     }
   };
 
-  $.checkRunOnCommands = function(eventId, args) {
-    if (args.length < 5) return;
+  $.checkRunOnCommands = function(eventId, args, nextIndex) {
+    if (nextIndex === undefined) {
+      nextIndex = 4;
+    }
+
+    if (args.length < (nextIndex + 1)) return;
 
     var hour, minute, seconds, day, month, year, dayPeriod;
-    var nextIndex = 4;
     var autoRemove = false;
 
     while (true) {
@@ -1372,10 +1378,14 @@ var DayPeriods = {
     $.registerTimeEvent(config);
   };
 
-  $.checkRunEveryCommands = function(eventId, args) {
-    if (args.length < 5) return;
+  $.checkRunEveryCommands = function(eventId, args, nextIndex) {
+    if (nextIndex === undefined) {
+      nextIndex = 4;
+    }
 
-    switch (args[4].toUpperCase()) {
+    if (args.length < (nextIndex + 1)) return;
+
+    switch (args[nextIndex].toUpperCase()) {
       case 'HOUR' :
         $.on('changeHour', eventId);
         break;
@@ -1421,6 +1431,56 @@ var DayPeriods = {
       this.checkRunInCommands(eventId, args);
     } else if (args[3].toUpperCase() == 'EVERY') {
       this.checkRunEveryCommands(eventId, args);
+    }
+  };
+
+  $.checkSwitchCommands = function(command, args) {
+    if (args.length < 2) return;
+    
+    var commandName = command.toUpperCase();
+    
+    if (commandName != 'ENABLE' && commandName != 'DISABLE' && commandName != 'TOGGLE') return;
+    var nextArg = 0;
+
+    var switchId;
+    var configString = '';
+
+    if (args[nextArg].toUpperCase() == 'SWITCH') {
+      nextArg++;
+      configString = 'S';
+    } else if (args[nextArg].toUpperCase() == 'SELF' && args[nextArg + 1].toUpperCase() == 'SWITCH') {
+      nextArg += 2;
+
+      if (!$gameMap || !$gameMap._interpreter) {
+        return;
+      }
+
+      var mapId = $gameMap._interpreter._mapId;
+      var eventId = $gameMap._interpreter._eventId;
+      configString = 'SS' + mapId + ',' + eventId + ',';
+    }
+
+    if (args.length > nextArg + 1) {
+      configString = configString + args[nextArg];
+      nextArg++;
+
+      if (commandName == 'ENABLE') {
+        configString += ',TRUE';
+      } else if (commandName == 'DISABLE') {
+        configString += ',FALSE';
+      } else {
+        configString += ',TOGGLE';
+      }
+
+      console.log(configString);
+
+      if (args[nextArg].toUpperCase() == 'ON') {
+        this.checkRunOnCommands(configString, args, nextArg + 1);
+      } else if (args[nextArg].toUpperCase() == 'IN') {
+        this.checkRunInCommands(configString, args, nextArg + 1);
+      } else if (args[nextArg].toUpperCase() == 'EVERY') {
+        this.checkRunEveryCommands(configString, args, nextArg + 1);
+      }
     }
   };
 
@@ -1474,6 +1534,7 @@ var DayPeriods = {
     oldGameInterpreter_pluginCommand.call(this, command, args);
 
     $.checkRunCommands(command, args);
+    $.checkSwitchCommands(command, args);
     $.checkSystemCommands(command, args);
   };
 
