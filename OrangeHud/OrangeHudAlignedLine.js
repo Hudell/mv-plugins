@@ -2,7 +2,7 @@
  * Orange - Aligned Line HUD
  * By HUDell - www.hudell.com
  * OrangeHudAlignedLine.js
- * Version: 1.6
+ * Version: 1.0
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -183,5 +183,5 @@ if (Imported["OrangeHudAlignedLine"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudAlignedLine', OrangeHudDefaultLine);
-  Imported["OrangeHudAlignedLine"] = 1.6;
+  Imported["OrangeHudAlignedLine"] = 1.0;
 }
