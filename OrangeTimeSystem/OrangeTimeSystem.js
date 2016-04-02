@@ -2,7 +2,7 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 2.7
+ * Version: 2.7.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -1447,7 +1447,7 @@ var DayPeriods = {
     }
   };
 
-  $.checkSwitchCommands = function(command, args) {
+  $.checkSwitchCommands = function(command, args, mapId, eventId) {
     if (args.length < 2) return;
     
     var commandName = command.toUpperCase();
@@ -1468,8 +1468,6 @@ var DayPeriods = {
         return;
       }
 
-      var mapId = $gameMap._interpreter._mapId;
-      var eventId = $gameMap._interpreter._eventId;
       configString = 'SS' + mapId + ',' + eventId + ',';
     }
 
@@ -1547,7 +1545,7 @@ var DayPeriods = {
     oldGameInterpreter_pluginCommand.call(this, command, args);
 
     $.checkRunCommands(command, args);
-    $.checkSwitchCommands(command, args);
+    $.checkSwitchCommands(command, args, this._mapId, this._eventId);
     $.checkSystemCommands(command, args);
   };
 
