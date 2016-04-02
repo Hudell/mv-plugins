@@ -1483,8 +1483,6 @@ var DayPeriods = {
         configString += ',TOGGLE';
       }
 
-      console.log(configString);
-
       if (args[nextArg].toUpperCase() == 'ON') {
         this.checkRunOnCommands(configString, args, nextArg + 1);
       } else if (args[nextArg].toUpperCase() == 'IN') {

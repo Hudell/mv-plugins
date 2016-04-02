@@ -2,11 +2,11 @@
  * Orange - Gauge HUD
  * By HUDell - www.hudell.com
  * OrangeHudGauge.js
- * Version: 1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc OrangeHudGauge 1.5.1 - Adds a new Variable Picture to Orange Hud
+ * @plugindesc OrangeHudGauge 1.2 - Adds a new Gauge to Orange Hud
  * @author Hudell
  *
  * @param GroupName
@@ -44,6 +44,10 @@
  * @param Width
  * @desc The width of the Gauge
  * @default 100
+ *
+ * @param Direction
+ * @desc The direction in which the gauge is filled
+ * @default right
  *
  * @param Height
  * @desc The height of the Gauge
@@ -102,6 +106,15 @@ if (Imported["OrangeHudGauge"] === undefined) {
     paramsLine.VariableX = Number(paramsLine.VariableX || 0);
     paramsLine.VariableY = Number(paramsLine.VariableY || 0);
     paramsLine.SwitchId = Number(paramsLine.SwitchId || 0);
+    if (!paramsLine.Direction) {
+      paramsLine.Direction = 'right';
+    } else {
+      paramsLine.Direction = paramsLine.Direction.toLowerCase().trim();
+
+      if (paramsLine.Direction !== 'left' && paramsLine.Direction !== 'up' && paramsLine.Direction !== 'down') {
+        paramsLine.Direction = 'right';
+      }
+    }
 
     if (paramsLine.ScriptValue !== undefined && paramsLine.ScriptValue.trim() === "") {
       paramsLine.ScriptValue = undefined;
@@ -195,11 +208,33 @@ if (Imported["OrangeHudGauge"] === undefined) {
       rate = rate.clamp(0, 1);
     }
 
-    if (width > 0) {
-      var fillW = Math.floor(width * rate);
-      var gaugeY = y + hudWindow.lineHeight() - height - 2;
+    if (width > 0 && height > 0) {
+      var fillW;
+      var fillH;
+      var fillX = x;
+      var gaugeY = y;
+      var fillY = gaugeY;
+
+      if (variableData.Direction === 'left' || variableData.Direction === 'right') {
+        fillW = Math.floor(width * rate);
+        fillH = height;
+
+        if (variableData.Direction === 'left') {
+          fillX = fillX + width - fillW;
+        }
+      } else {
+        fillW = width;
+        fillH = Math.floor(height * rate);
+
+        if (variableData.Direction == 'up') {
+          fillY = fillY + height - fillH;
+        }
+      }
+
+      console.log(x, gaugeY, width, height);
       hudWindow.contents.fillRect(x, gaugeY, width, height, hudWindow.gaugeBackColor());
-      hudWindow.contents.gradientFillRect(x, gaugeY, fillW, height, color1, color2);
+      console.log(fillX, fillY, fillW, fillH);
+      hudWindow.contents.gradientFillRect(fillX, fillY, fillW, fillH, color1, color2);
     }
   };
 
@@ -244,5 +279,5 @@ if (Imported["OrangeHudGauge"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudGauge', OrangeHudGauge);
-  Imported["OrangeHudGauge"] = 1.1;
+  Imported.OrangeHudGauge = 1.2;
 }
