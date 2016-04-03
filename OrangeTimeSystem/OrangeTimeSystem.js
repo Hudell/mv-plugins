@@ -2,11 +2,11 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 2.7.1
+ * Version: 2.7.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
- * @plugindesc Adds a time system to your game
+ * @plugindesc <OrangeTimeSystem> 2.7.2 - Adds a time system to your game
  * @author Hudell
  *
  * @param useRealTimeStructure
@@ -1130,7 +1130,7 @@ var DayPeriods = {
   };
 
   $.checkEventsToRun = function(eventList, after) {
-    var config = undefined;
+    var config;
     var i;
     var keysToRemove = [];
 
@@ -1170,7 +1170,8 @@ var DayPeriods = {
       }
     }
 
-    for (var key in keysToRemove) {
+    for (i = 0; i < keysToRemove.length; i++) {
+      var key = keysToRemove[i];
       delete eventList[key];
     }
   };
