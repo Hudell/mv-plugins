@@ -51,12 +51,12 @@ var OrangeRegionCollisions = OrangeRegionCollisions || {};
   $.Parameters = PluginManager.parameters('OrangeRegionCollisions');
   $.Param = $.Param || {};
 
-  $.Param.BlockRegionId = Number($.Parameters['BlockRegionId'] || 0);
-  $.Param.UnblockRegionId = Number($.Parameters['UnblockRegionId'] || 0);
-  $.Param.BlockPlayerRegionId = Number($.Parameters['BlockPlayerRegionId'] || 0);
-  $.Param.UnblockPlayerRegionId = Number($.Parameters['UnblockPlayerRegionId'] || 0);
-  $.Param.BlockEventRegionId = Number($.Parameters['BlockEventRegionId'] || 0);
-  $.Param.UnblockEventRegionId = Number($.Parameters['UnblockEventRegionId'] || 0);
+  $.Param.BlockRegionId = Number($.Parameters.BlockRegionId || 0);
+  $.Param.UnblockRegionId = Number($.Parameters.UnblockRegionId || 0);
+  $.Param.BlockPlayerRegionId = Number($.Parameters.BlockPlayerRegionId || 0);
+  $.Param.UnblockPlayerRegionId = Number($.Parameters.UnblockPlayerRegionId || 0);
+  $.Param.BlockEventRegionId = Number($.Parameters.BlockEventRegionId || 0);
+  $.Param.UnblockEventRegionId = Number($.Parameters.UnblockEventRegionId || 0);
 
   var oldGame_Map_checkPassage = Game_Map.prototype.checkPassage;
   Game_Map.prototype.checkPassage = function(x, y, bit) {
@@ -99,7 +99,7 @@ var OrangeRegionCollisions = OrangeRegionCollisions || {};
   };
 
   var oldGamePlayer_isMapPassable = Game_Player.prototype.isMapPassable;
-  if (Imported["SuperOrangeMovement"] !== undefined || Imported["SuperOrangeMovementEx"] !== undefined) {
+  if (Imported.SuperOrangeMovement !== undefined || Imported.SuperOrangeMovementEx !== undefined) {
     var insignificantValue = 0.000001;
 
     $.runForAllPositions = function(x, y, callback) {
@@ -174,4 +174,4 @@ var OrangeRegionCollisions = OrangeRegionCollisions || {};
   }
 })(OrangeRegionCollisions);
 
-Imported["OrangeRegionCollisions"] = 1.2;
+Imported.OrangeRegionCollisions = 1.2;
