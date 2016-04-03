@@ -1,8 +1,8 @@
 /*=============================================================================
- * Orange - Change Save File Name
+ * Orange - Event Hitboxes
  * By Hudell - www.hudell.com
  * OrangeEventHitboxes.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -43,9 +43,26 @@
  */
 
 var Imported = Imported || {};
-if (Imported['MVCommons'] === undefined) {
-  console.log('Download MVCommons: http://link.hudell.com/mvcommons');
-  throw new Error("This library needs MVCommons to work properly!");
+
+if (Imported.MVCommons === undefined) {
+  var MVC = MVC || {};
+
+  (function($){ 
+    $.defaultGetter = function(name) { return function () { return this['_' + name]; }; };
+    $.defaultSetter = function(name) { return function (value) { var prop = '_' + name; if ((!this[prop]) || this[prop] !== value) { this[prop] = value; if (this._refresh) { this._refresh(); } } }; };
+    $.accessor = function(value, name /* , setter, getter */) { Object.defineProperty(value, name, { get: arguments.length > 3 ? arguments[3] : $.defaultGetter(name), set: arguments.length > 2 ? arguments[2] : $.defaultSetter(name), configurable: true });};
+    $.reader = function(obj, name /*, getter */) { Object.defineProperty(obj, name, { get: arguments.length > 2 ? arguments[2] : defaultGetter(name), configurable: true }); };
+
+    $.getProp = function(meta, propName){ if (meta === undefined) return undefined; if (meta[propName] !== undefined) return meta[propName]; for (var key in meta) { if (key.toLowerCase() == propName.toLowerCase()) { return meta[key]; } } return undefined; };
+    $.extractEventMeta = function(event) { var the_event = event; if (the_event instanceof Game_Event) { the_event = event.event(); } var pages = the_event.pages; if (pages === undefined) return; var re = /<([^<>:]+)(:?)([^>]*)>/g; for (var i = 0; i < pages.length; i++) { var page = pages[i]; page.meta = page.meta || {}; for (var j = 0; j < page.list.length; j++) { var command = page.list[j]; if (command.code !== 108 && command.code !== 408) continue; for (;;) { var match = re.exec(command.parameters[0]); if (match) { if (match[2] === ':') { page.meta[match[1]] = match[3]; } else { page.meta[match[1]] = true; } } else { break; } } } } };
+  })(MVC);
+
+  Number.prototype.fix = function() { return parseFloat(this.toPrecision(12)); };
+  Number.prototype.floor = function() { return Math.floor(this.fix()); };
+
+  if (Utils.isOptionValid('test')) {
+    console.log('MVC not found, OrangeEventHitboxes will be using essentials (copied from MVC 1.2.1).');
+  }
 }
 
 var OrangeEventHitboxes = OrangeEventHitboxes || {};
@@ -178,7 +195,7 @@ var OrangeEventHitboxes = OrangeEventHitboxes || {};
       MVC.extractEventMeta(this);
     }
 
-    var result = undefined;
+    var result;
     if (page.meta !== undefined) {
       result = MVC.getProp(page.meta, notetag);
     }
@@ -222,9 +239,4 @@ var OrangeEventHitboxes = OrangeEventHitboxes || {};
   };
 })(OrangeEventHitboxes);
 
-// Register the plugin with MVCommons
-PluginManager.register("OrangeEventHitboxes", "1.0.0", "Allows the configuration of custom hitboxes for events", {
-  email: "plugins@hudell.com",
-  name: "Hudell",
-  website: "http://www.hudell.com"
-}, "2015-10-21");
+Imported.OrangeEventHitboxes = 1.1;
