@@ -2,7 +2,7 @@
  * Orange - CircularJSON
  * By Hudell - www.hudell.com
  * OrangeCircularJSON.js
- * Version: 1.0
+ * Version: 1.0.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -96,6 +96,14 @@ Hudell.OrangeCircularJSON = Hudell.OrangeCircularJSON || {};
       // let's call it here rather than "too late"
       if (replacer) value = replacer.call(this, key, value);
 
+      var type = Object.prototype.toString.call(value);
+      if (type === '[object Object]' || type === '[object Array]') {
+        var constructorName = JsonEx._getConstructorName(value);
+        if (constructorName !== 'Object' && constructorName !== 'Array') {
+          value['@'] = constructorName;
+        }
+      }
+
       // did you know ? Safari passes keys as integers for arrays
       // which means if (key) when key === 0 won't pass the check
       if (key !== '') {
@@ -116,14 +124,6 @@ Hudell.OrangeCircularJSON = Hudell.OrangeCircularJSON || {};
           lvl = all.length;
           i = indexOf.call(seen, value);
           if (i < 0) {
-            var type = Object.prototype.toString.call(value);
-            if (type === '[object Object]' || type === '[object Array]') {
-              var constructorName = JsonEx._getConstructorName(value);
-              if (constructorName !== 'Object' && constructorName !== 'Array') {
-                value['@'] = constructorName;
-              }
-            }
-
             i = seen.push(value) - 1;
             if (resolve) {
               // key cannot contain specialChar but could be not a string
