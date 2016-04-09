@@ -2,11 +2,11 @@
  * Orange - Actor Status HUD
  * By HUDell - www.hudell.com
  * OrangeHudActorStatus.js
- * Version: 1.5.1
+ * Version: 1.5.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Adds a new Variable to Orange Hud
+ * @plugindesc Adds a new line to Orange Hud to display an actor's status
  * @author Hudell
  *
  * @param GroupName
@@ -94,6 +94,8 @@
  * <mdr>
  * <fdr>
  * <exr>
+ * <level>
+ * <maxlevel>
  * */
 
 var Imported = Imported || {};
@@ -201,6 +203,8 @@ if (Imported["OrangeHudActorStatus"] === undefined) {
       line = line.replace(/\<mdr\>/gi, actorData.mdr);
       line = line.replace(/\<fdr\>/gi, actorData.fdr);
       line = line.replace(/\<exr\>/gi, actorData.exr);
+      line = line.replace(/\<level\>/gi, actorData.level);
+      line = line.replace(/\<maxlevel\>/gi, actorData.maxLevel());
       line = line.replace(/\<exp\>/gi, actorData.currentExp());
 
       return line;
@@ -218,5 +222,5 @@ if (Imported["OrangeHudActorStatus"] === undefined) {
   };
 
   OrangeHud.registerLineType('OrangeHudActorStatus', OrangeHudActorStatusLine);
-  Imported["OrangeHudActorStatus"] = 1.5;
+  Imported.OrangeHudActorStatus = 1.5;
 }
