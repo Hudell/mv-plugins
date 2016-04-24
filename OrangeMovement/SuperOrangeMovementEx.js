@@ -2,7 +2,7 @@
  * Orange - Super Movement
  * By Hudell - www.hudell.com
  * SuperOrangeMovementEx.js
- * Version: 1.5.1
+ * Version: 1.5.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -393,10 +393,6 @@ if (Imported['MVCommons'] === undefined) {
   Number.prototype.floor = function() {return Math.floor(this.fix());};
   Number.prototype.ceil = function() {return Math.ceil(this.fix());};
   Number.prototype.abs = function() {return Math.abs(this);};
-
-  if (Utils.isOptionValid('test')) {
-    console.log('MVC not found, SuperOrangeMovementEx will be using essentials (copied from MVC 1.2.1).');
-  }
 }
 
 var SuperOrangeMovementEx = SuperOrangeMovementEx || {};

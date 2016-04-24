@@ -261,10 +261,6 @@ if (Imported['MVCommons'] === undefined) {
 
   Number.prototype.fix = function() { return parseFloat(this.toPrecision(12)); };
   Number.prototype.floor = function() { return Math.floor(this.fix()); };
-
-  if (Utils.isOptionValid('test')) {
-    console.log('MVC not found, OrangeTimeSystem will be using essentials (copied from MVC 1.2.1).');
-  }
 }
 
 if (Imported.OrangeEventManager === undefined) {

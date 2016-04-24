@@ -2,7 +2,7 @@
  * Orange - Custom Event Creator
  * By Hudell - www.hudell.com
  * OrangeCustomEventCreator.js
- * Version: 1.1
+ * Version: 1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -20,13 +20,22 @@
  *=============================================================================*/
 
 var Imported = Imported || {};
-if (Imported['MVCommons'] === undefined) {
-  console.log('Download MVCommons: http://link.hudell.com/mvcommons');
-  throw new Error("This library needs MVCommons to work properly!");
+
+if (Imported.MVCommons === undefined) {
+  var MVC = MVC || {};
+
+  (function($){ 
+    $.defaultGetter = function(name) { return function () { return this['_' + name]; }; };
+    $.defaultSetter = function(name) { return function (value) { var prop = '_' + name; if ((!this[prop]) || this[prop] !== value) { this[prop] = value; if (this._refresh) { this._refresh(); } } }; };
+    $.accessor = function(value, name /* , setter, getter */) { Object.defineProperty(value, name, { get: arguments.length > 3 ? arguments[3] : $.defaultGetter(name), set: arguments.length > 2 ? arguments[2] : $.defaultSetter(name), configurable: true });};
+    $.reader = function(obj, name /*, getter */) { Object.defineProperty(obj, name, { get: arguments.length > 2 ? arguments[2] : defaultGetter(name), configurable: true }); };
+  })(MVC);
 }
-if (Imported['OrangeCustomEvents'] === undefined) {
+
+
+if (Imported.OrangeCustomEvents === undefined) {
   console.log('Download OrangeCustomEvents: http://link.hudell.com/custom-events');
-  throw new Error("This library needs OrangeCustomEvents to work properly!");
+  throw new Error("This library needs OrangeCustomEvents to work!");
 }
 
 var OrangeCustomEventCreator = OrangeCustomEventCreator || {};
@@ -442,4 +451,4 @@ var EventPriorities = {
   $.createParallelProcess = createParallelProcess;
 })(OrangeCustomEventCreator);
 
-Imported.OrangeCustomEventCreator = 1.1;
+Imported.OrangeCustomEventCreator = 1.2;

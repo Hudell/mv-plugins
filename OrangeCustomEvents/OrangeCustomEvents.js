@@ -27,10 +27,6 @@ if (Imported.MVCommons === undefined) {
   (function($){ 
     $.ajaxLoadFileAsync = function(filePath, mimeType, onLoad, onError){ mimeType = mimeType || "application/json"; var xhr = new XMLHttpRequest(); var name = '$' + filePath.replace(/^.*(\\|\/|\:)/, '').replace(/\..*/, ''); xhr.open('GET', filePath); if (mimeType && xhr.overrideMimeType) { xhr.overrideMimeType(mimeType); } if(onLoad === undefined){ onLoad = function(xhr, filePath, name) { if (xhr.status < 400) { window[name] = JSON.parse(xhr.responseText); DataManager.onLoad(window[name]); } }; } if(onError === undefined) { onError = function() { DataManager._errorUrl = DataManager._errorUrl || filePath; }; } xhr.onload = function() { onLoad.call(this, xhr, filePath, name); }; xhr.onerror = onError; window[name] = null; xhr.send(); };
   })(MVCommons);
-
-  if (Utils.isOptionValid('test')) {
-    console.log('MVC not found, OrangeCustomEvents will be using essentials (copied from MVC 1.4.0).');
-  }
 }
 
 var OrangeCustomEvents = OrangeCustomEvents || {};
