@@ -186,7 +186,7 @@ var OrangeEventHitboxes = OrangeEventHitboxes || {};
     return (this.top + this.hitboxHeight).fix();
   });
 
-  // Adds a method that searches for a notetag value on all comments of the 
+  // Adds a method that searches for a notetag value on all comments of the page
   Game_Event.prototype.findNoteTagValue = function(notetag) {
     var page = this.page();
     if (page === undefined) return false;
