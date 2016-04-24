@@ -119,6 +119,7 @@ if (Imported["MVCommons"] === undefined) {
   $.Param = $.Param || {};
 
   $.Param.GroupName = "main";
+  $.Param.DefaultFontFace = String($.Parameters.DefaultFontFace || "GameFont");
   $.Param.DefaultFontSize = Number($.Parameters.DefaultFontSize || 18);
   $.Param.DefaultFontColor = String($.Parameters.DefaultFontColor || '#FFFFFF');
   $.Param.DefaultFontItalic = $.Parameters.DefaultFontItalic === "true";
@@ -160,6 +161,7 @@ if (Imported["MVCommons"] === undefined) {
 
   $.validateGroupParams = function(params) {
     params.GroupName = params.GroupName || "group";
+    params.DefaultFontFace = String(params.DefaultFontFace || "GameFont");
     params.DefaultFontSize = Number(params.DefaultFontSize || 18);
     params.DefaultFontColor = String(params.DefaultFontColor || '#FFFFFF');
     params.DefaultFontItalic = params.DefaultFontItalic === "true";
