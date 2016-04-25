@@ -394,6 +394,13 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
       }
     }
 
+    if (args.length > nextIndex + 2) {
+      if (args[nextIndex].toUpperCase().startsWith('WITH') && args[nextIndex + 1].toUpperCase().startsWith('ID')) {
+        userIndex = this.getNumericValue(args[nextIndex + 2]);
+        nextIndex += 3;
+      }
+    }
+
     if (args.length > nextIndex) {
       if (args[nextIndex].toUpperCase().startsWith('TEMP')) {
         temporary = true;
@@ -401,12 +408,6 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
       } else if (args[nextIndex].toUpperCase() == 'SAVE') {
         temporary = false;
         nextIndex++;
-      }
-    }
-
-    if (args.length > nextIndex + 2) {
-      if (args[nextIndex].toUpperCase().startsWith('WITH') && args[nextIndex + 1].toUpperCase().startsWith('ID')) {
-        userIndex = this.getNumericValue(args[nextIndex + 2]);
       }
     }
 
