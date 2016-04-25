@@ -2,7 +2,7 @@
  * Orange - Custom Event Creator
  * By Hudell - www.hudell.com
  * OrangeCustomEventCreator.js
- * Version: 1.2
+ * Version: 1.2.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -419,13 +419,13 @@ var EventPriorities = {
   //----------------------------------------------|
 
   var oldGameMap_addEvent = Game_Map.prototype.addEvent;
-  Game_Map.prototype.addEvent = function(eventData, temporary) {
+  Game_Map.prototype.addEvent = function(eventData, temporary, index) {
     // Makes sure that all pages have all the "end" commands they need
     if (eventData instanceof CustomEventData) {
       eventData.endAllPages();
     }
 
-    return oldGameMap_addEvent.call(this, eventData, temporary);
+    return oldGameMap_addEvent.call(this, eventData, temporary, index);
   };
 
 
