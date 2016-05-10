@@ -2,7 +2,7 @@
  * Orange - Custom Event
  * By Hudell - www.hudell.com
  * OrangeCustomEvents.js
- * Version: 1.7.1
+ * Version: 1.8
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -266,16 +266,20 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
     }
   };
 
-  Game_Map.prototype.copyEventFrom = function(mapIdOrigin, eventIdOrigin, x, y, temporary, newIndex) {
+  Game_Map.prototype.copyEventFrom = function(mapIdOrigin, eventIdOrigin, x, y, temporary, newIndex, callback) {
     this.getEventDataFrom(mapIdOrigin, eventIdOrigin, function(eventData) {
-      $gameMap.addEventAt(eventData, x, y, temporary, newIndex);
+      var event = $gameMap.addEventAt(eventData, x, y, temporary, newIndex);
+
+      if (!!callback) {
+        callback.call(this, event);
+      }
     });
   };
 
-  Game_Map.prototype.copyEventFromMapToRegion = function(mapIdOrigin, eventIdOrigin, regionId, temporary, newIndex) {
+  Game_Map.prototype.copyEventFromMapToRegion = function(mapIdOrigin, eventIdOrigin, regionId, temporary, newIndex, callback) {
     var tile = this.getRandomRegionTile(regionId);
     if (tile !== undefined) {
-      this.copyEventFrom(mapIdOrigin, eventIdOrigin, tile.x, tile.y, temporary, newIndex);
+      this.copyEventFrom(mapIdOrigin, eventIdOrigin, tile.x, tile.y, temporary, newIndex, callback);
     }    
   };
 
@@ -455,4 +459,4 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
   };
 })(OrangeCustomEvents);
 
-Imported.OrangeCustomEvents = 1.7;
+Imported.OrangeCustomEvents = 1.8;
