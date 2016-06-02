@@ -2,11 +2,11 @@
  * Orange - Time System
  * By Hudell - www.hudell.com
  * OrangeTimeSystem.js
- * Version: 2.7.2
+ * Version: 2.8
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
- * @plugindesc <OrangeTimeSystem> 2.7.2 - Adds a time system to your game
+ * @plugindesc <OrangeTimeSystem> 2.8 - Adds a time system to your game
  * @author Hudell
  *
  * @param useRealTimeStructure
@@ -245,9 +245,8 @@
 
 
 var Imported = Imported || {};
-var none = undefined;
 
-if (Imported['MVCommons'] === undefined) {
+if (Imported.MVCommons === undefined) {
   var MVC = MVC || {};
 
   (function($){ 
@@ -289,16 +288,16 @@ var DayPeriods = {
   $.Parameters = PluginManager.parameters('OrangeTimeSystem');
   $.Param = $.Param || {};
 
-  $.Param.useRealTime = $.Parameters["useRealTime"] == "true";
-  $.Param.useRealTimeStructure = $.Parameters["useRealTimeStructure"] == "true";
+  $.Param.useRealTime = $.Parameters.useRealTime == "true";
+  $.Param.useRealTimeStructure = $.Parameters.useRealTimeStructure == "true";
   
   if ($.Param.useRealTime) {
     $.Param.secondLength = 1000;
   } else {
-    $.Param.secondLength = Number($.Parameters['secondLength'] || 100);
+    $.Param.secondLength = Number($.Parameters.secondLength || 100);
 
     if (Utils.isOptionValid('test')) {
-      var testingLength = Number($.Parameters["secondLengthDuringTest" || 0]);
+      var testingLength = Number($.Parameters.secondLengthDuringTest || 0);
       if (testingLength > 0) {
         $.Param.secondLength = testingLength;
       }
@@ -313,39 +312,39 @@ var DayPeriods = {
     $.Param.weekLength = 7;
     $.Param.monthLength = 31;
   } else {
-    $.Param.yearLength = Number($.Parameters['yearLength'] || 12);
-    $.Param.minuteLength = Number($.Parameters['minuteLength'] || 60);
-    $.Param.hourLength = Number($.Parameters['hourLength'] || 60);
-    $.Param.dayLength = Number($.Parameters['dayLength'] || 24);
-    $.Param.weekLength = Number($.Parameters['weekLength'] || 7);
-    $.Param.monthLength = Number($.Parameters['monthLength'] || 31);
+    $.Param.yearLength = Number($.Parameters.yearLength || 12);
+    $.Param.minuteLength = Number($.Parameters.minuteLength || 60);
+    $.Param.hourLength = Number($.Parameters.hourLength || 60);
+    $.Param.dayLength = Number($.Parameters.dayLength || 24);
+    $.Param.weekLength = Number($.Parameters.weekLength || 7);
+    $.Param.monthLength = Number($.Parameters.monthLength || 31);
   }
   
-  $.Param.secondLengthVariable = Number($.Parameters['secondLengthVariable'] || 0);
+  $.Param.secondLengthVariable = Number($.Parameters.secondLengthVariable || 0);
   
-  $.Param.initialSecond = Number($.Parameters['initialSecond'] || 0);
-  $.Param.initialMinute = Number($.Parameters['initialMinute'] || 0);
-  $.Param.initialHour = Number($.Parameters['initialHour'] || 6);
-  $.Param.initialDay = Number($.Parameters['initialDay'] || 1);
-  $.Param.initialMonth = Number($.Parameters['initialMonth'] || 1);
-  $.Param.initialYear = Number($.Parameters['initialYear'] || 1);
+  $.Param.initialSecond = Number($.Parameters.initialSecond || 0);
+  $.Param.initialMinute = Number($.Parameters.initialMinute || 0);
+  $.Param.initialHour = Number($.Parameters.initialHour || 6);
+  $.Param.initialDay = Number($.Parameters.initialDay || 1);
+  $.Param.initialMonth = Number($.Parameters.initialMonth || 1);
+  $.Param.initialYear = Number($.Parameters.initialYear || 1);
 
-  $.Param.dayPeriod1Hour = Number($.Parameters['dayPeriod1Hour'] || 6);
-  $.Param.dayPeriod2Hour = Number($.Parameters['dayPeriod2Hour'] || 9);
-  $.Param.dayPeriod3Hour = Number($.Parameters['dayPeriod3Hour'] || 18);
-  $.Param.dayPeriod4Hour = Number($.Parameters['dayPeriod4Hour'] || 20);
+  $.Param.dayPeriod1Hour = Number($.Parameters.dayPeriod1Hour || 6);
+  $.Param.dayPeriod2Hour = Number($.Parameters.dayPeriod2Hour || 9);
+  $.Param.dayPeriod3Hour = Number($.Parameters.dayPeriod3Hour || 18);
+  $.Param.dayPeriod4Hour = Number($.Parameters.dayPeriod4Hour || 20);
 
-  $.Param.insideSwitch = Number($.Parameters['insideSwitch'] || 0);
-  $.Param.tilesetList = ($.Parameters["tilesetList"] || '').split(',');
+  $.Param.insideSwitch = Number($.Parameters.insideSwitch || 0);
+  $.Param.tilesetList = ($.Parameters.tilesetList || '').split(',');
 
   for (var i = 0; i < $.Param.tilesetList.length; i++) {
     $.Param.tilesetList[i] = parseInt($.Param.tilesetList[i], 10);
   }  
 
-  $.Param.weekDayOffset = Number($.Parameters['weekDayOffset'] || 1);
-  $.Param.pauseClockDuringConversations = $.Parameters["pauseClockDuringConversations"] !== "false";  
+  $.Param.weekDayOffset = Number($.Parameters.weekDayOffset || 1);
+  $.Param.pauseClockDuringConversations = $.Parameters.pauseClockDuringConversations !== "false";  
 
-  var switchId = parseInt($.Parameters['mainSwitchId'], 10);
+  var switchId = parseInt($.Parameters.mainSwitchId, 10);
 
   var monthNames = ($.Parameters.monthNames || "").trim();
   var monthShortNames = ($.Parameters.monthShortNames || "").trim();
@@ -389,7 +388,7 @@ var DayPeriods = {
     $.Param.dayShortNames.push(($.Param.dayShortNames.length + 1).toString());
   }
 
-  if (switchId !== NaN && switchId > 0) {
+  if (!isNaN(switchId) && switchId > 0) {
     $.Param.mainSwitchId = switchId;
   } else {
     $.Param.mainSwitchId = undefined;
@@ -467,8 +466,10 @@ var DayPeriods = {
     return false;
   });
 
-  $._timeEvents = [];
-  $._afterTimeEvents = [];
+  $._timeEvents = {};
+  $._afterTimeEvents = {};
+  $._timeEventsNextId = 0;
+  $._afterTimeEventsNextId = 0;
   $.seconds = 0;
   $.minute = 0;
   $.hour = 0;
@@ -1044,8 +1045,11 @@ var DayPeriods = {
   $.atWeekDay = $.onWeekDay;
 
   $.registerAfterTimeEvent = function(config) {
-    this._afterTimeEvents.push(config);
-    return this._afterTimeEvents.indexOf(config);
+    var id = this._afterTimeEventsNextId;
+    this._afterTimeEvents[id] = config;
+    this._afterTimeEventsNextId++;
+    config.key = id;
+    return id;
   };
 
   $.runInDateTime = function(callback, years, months, days, hours, minutes, seconds, autoRemove) {
@@ -1076,11 +1080,7 @@ var DayPeriods = {
       after : true
     };
 
-    var key = undefined;
-
-    key = $.registerAfterTimeEvent(config);
-    config.key = key;
-    return key;
+    return $.registerAfterTimeEvent(config);
   };
 
   $.runInHours = function(callback, hours, minutes, seconds) {
@@ -1108,8 +1108,11 @@ var DayPeriods = {
   };
 
   $.registerTimeEvent = function(config) {
-    this._timeEvents.push(config);
-    return this._timeEvents.indexOf(config);
+    var id = this._timeEventsNextId;
+    this._timeEventsNextId++;
+    this._timeEvents[id] = config;
+    config.key = id;
+    return id;
   };
 
   $.checkIfEventShouldRun = function(config) {
@@ -1127,7 +1130,6 @@ var DayPeriods = {
 
   $.checkEventsToRun = function(eventList, after) {
     var config;
-    var i;
     var keysToRemove = [];
 
     var currentTimestamp = this.convertConfigToTimestamp(this.getDateTime());
@@ -1135,8 +1137,9 @@ var DayPeriods = {
       currentTimestamp = (currentTimestamp / 1000).floor();
     }
 
-    for (i = 0; i < eventList.length; i++) {
-      config = eventList[i];
+    for (var key in eventList) {
+      config = eventList[key];
+      if (!config) continue;
 
       if (config.callback === undefined) continue;
       
@@ -1166,22 +1169,15 @@ var DayPeriods = {
       }
     }
 
-    for (i = 0; i < keysToRemove.length; i++) {
-      var key = keysToRemove[i];
-      delete eventList[key];
+    for (var i = 0; i < keysToRemove.length; i++) {
+      var keyToRemove = keysToRemove[i];
+      eventList[keyToRemove] = null;
     }
-  };
-
-  $.checkIfConfigHasCallback = function(config) {
-    return config.callback !== undefined;
   };
 
   $._onUpdateTime = function() {
     $.checkEventsToRun(this._timeEvents, false);
     $.checkEventsToRun(this._afterTimeEvents, true);
-
-    this._timeEvents = this._timeEvents.filter($.checkIfConfigHasCallback);
-    this._afterTimeEvents = this._afterTimeEvents.filter($.checkIfConfigHasCallback);
   };
 
   $.getDateTime = function() {
@@ -1228,12 +1224,15 @@ var DayPeriods = {
     var callbackList = [];
 
     for (var key in eventList) {
-      if (eventList[key].callback === undefined) continue;
+      var config = eventList[key];
+      if (!config) continue;
+
+      if (config.callback === undefined) continue;
 
       //can't save functions
-      if (typeof(eventList[key].callback) == "function") continue;
+      if (typeof(config.callback) == "function") continue;
 
-      callbackList.push(MVC.shallowClone(eventList[key]));
+      callbackList.push(MVC.shallowClone(config));
     }
 
     return callbackList;
@@ -1248,26 +1247,36 @@ var DayPeriods = {
     return callbackList;
   };
 
-  $.setCallbacksToList = function(callbackList) {
-    var eventList = [];
+  $.setCallbacksToList = function(callbackList, nextId) {
+    var eventList = {};
 
     for (var i = 0; i < callbackList.length; i++) {
       var config = MVC.shallowClone(callbackList[i]);
 
-      eventList.push(config);
-      config.key = eventList.indexOf(config);
+      eventList[nextId] = config;
+      config.key = nextId;
+      nextId++;
     }
 
-    return eventList;
+    return {
+      list : eventList,
+      nextId : nextId
+    };
   };
 
   $.setCallbacks = function(callbackList) {
     if (callbackList.after !== undefined) {
-      this._afterTimeEvents = this.setCallbacksToList(callbackList.after);
+      var afterTimeEvents = this.setCallbacksToList(callbackList.after, this._afterTimeEventsNextId);
+
+      this._afterTimeEvents = afterTimeEvents.list;
+      this._afterTimeEventsNextId = afterTimeEvents.nextId;
     }
 
     if (callbackList.normal !== undefined) {
-      this._timeEvents = this.setCallbacksToList(callbackList.normal);
+      var timeEvents = this.setCallbacksToList(callbackList.normal, this._timeEventsNextId);
+
+      this._timeEvents = timeEvents.list;
+      this._timeEventsNextId = timeEvents.nextId;
     }
   };
 
@@ -1547,4 +1556,4 @@ var DayPeriods = {
   $.enableTime();
 })(OrangeTimeSystem);
 
-Imported.OrangeTimeSystem = 2.7;
+Imported.OrangeTimeSystem = 2.8;
