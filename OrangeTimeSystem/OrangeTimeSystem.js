@@ -1171,7 +1171,9 @@ var DayPeriods = {
 
     for (var i = 0; i < keysToRemove.length; i++) {
       var keyToRemove = keysToRemove[i];
-      eventList[keyToRemove] = null;
+      if (eventList.hasOwnProperty(keyToRemove)) {
+        delete eventList[keyToRemove];
+      }
     }
   };
 
