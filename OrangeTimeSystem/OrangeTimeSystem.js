@@ -6,7 +6,7 @@
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
- * @plugindesc <OrangeTimeSystem> 2.8 - Adds a time system to your game
+ * @plugindesc <OrangeTimeSystem> 2.8.1 - Adds a time system to your game
  * @author Hudell
  *
  * @param useRealTimeStructure
