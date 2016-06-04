@@ -143,6 +143,159 @@ var OrangeMapshot = OrangeMapshot || {};
     }
   };
 
+  function MapShotTileMap() {
+  }
+  
+  MapShotTileMap.prototype = Object.create(Tilemap.prototype);
+  MapShotTileMap.prototype.constructor = MapShotTileMap;
+
+  MapShotTileMap.prototype._drawAutotile = function(bitmap, tileId, dx, dy) {
+    var autotileTable = Tilemap.FLOOR_AUTOTILE_TABLE;
+    var kind = Tilemap.getAutotileKind(tileId);
+    var shape = Tilemap.getAutotileShape(tileId);
+    var tx = kind % 8;
+    var ty = Math.floor(kind / 8);
+    var bx = 0;
+    var by = 0;
+    var setNumber = 0;
+    var isTable = false;
+
+    if (Tilemap.isTileA1(tileId)) {
+      var waterSurfaceIndex = [0, 1, 2, 1][this.animationFrame % 4];
+      setNumber = 0;
+      if (kind === 0) {
+        bx = waterSurfaceIndex * 2;
+        by = 0;
+      } else if (kind === 1) {
+        bx = waterSurfaceIndex * 2;
+        by = 3;
+      } else if (kind === 2) {
+        bx = 6;
+        by = 0;
+      } else if (kind === 3) {
+        bx = 6;
+        by = 3;
+      } else {
+        bx = Math.floor(tx / 4) * 8;
+        by = ty * 6 + Math.floor(tx / 2) % 2 * 3;
+        if (kind % 2 === 0) {
+          bx += waterSurfaceIndex * 2;
+        }
+        else {
+          bx += 6;
+          autotileTable = Tilemap.WATERFALL_AUTOTILE_TABLE;
+          by += this.animationFrame % 3;
+        }
+      }
+    } else if (Tilemap.isTileA2(tileId)) {
+      setNumber = 1;
+      bx = tx * 2;
+      by = (ty - 2) * 3;
+      isTable = this._isTableTile(tileId);
+    } else if (Tilemap.isTileA3(tileId)) {
+      setNumber = 2;
+      bx = tx * 2;
+      by = (ty - 6) * 2;
+      autotileTable = Tilemap.WALL_AUTOTILE_TABLE;
+    } else if (Tilemap.isTileA4(tileId)) {
+      setNumber = 3;
+      bx = tx * 2;
+      by = Math.floor((ty - 10) * 2.5 + (ty % 2 === 1 ? 0.5 : 0));
+      if (ty % 2 === 1) {
+        autotileTable = Tilemap.WALL_AUTOTILE_TABLE;
+      }
+    }
+
+    var table = autotileTable[shape];
+    var source = this.bitmaps[setNumber];
+
+    if (table && source) {
+      var w1 = this._tileWidth / 2;
+      var h1 = this._tileHeight / 2;
+      for (var i = 0; i < 4; i++) {
+        var qsx = table[i][0];
+        var qsy = table[i][1];
+        var sx1 = (bx * 2 + qsx) * w1;
+        var sy1 = (by * 2 + qsy) * h1;
+        var dx1 = dx + (i % 2) * w1;
+        var dy1 = dy + Math.floor(i / 2) * h1;
+        if (isTable && (qsy === 1 || qsy === 5)) {
+          var qsx2 = qsx;
+          var qsy2 = 3;
+          if (qsy === 1) {
+            qsx2 = [0,3,2,1][qsx];
+          }
+          var sx2 = (bx * 2 + qsx2) * w1;
+          var sy2 = (by * 2 + qsy2) * h1;
+          bitmap.blt(source, sx2, sy2, w1, h1, dx1, dy1, w1, h1);
+          dy1 += h1/2;
+          bitmap.blt(source, sx1, sy1, w1, h1 / 2, dx1, dy1, w1, h1 / 2);
+        } else {
+          bitmap.blt(source, sx1, sy1, w1, h1, dx1, dy1, w1, h1);
+        }
+      }
+    }
+  };
+
+  MapShotTileMap.prototype._drawNormalTile = function(bitmap, tileId, dx, dy) {
+    var setNumber = 0;
+
+    if (Tilemap.isTileA5(tileId)) {
+      setNumber = 4;
+    } else {
+      setNumber = 5 + Math.floor(tileId / 256);
+    }
+
+    var w = this._tileWidth;
+    var h = this._tileHeight;
+    var sx = (Math.floor(tileId / 128) % 2 * 8 + tileId % 8) * w;
+    var sy = (Math.floor(tileId % 256 / 8) % 16) * h;
+
+    var source = this.bitmaps[setNumber];
+    if (source) {
+      bitmap.blt(source, sx, sy, w, h, dx, dy, w, h);
+    }
+  };
+
+  MapShotTileMap.prototype._drawTableEdge = function(bitmap, tileId, dx, dy) {
+    if (Tilemap.isTileA2(tileId)) {
+      var autotileTable = Tilemap.FLOOR_AUTOTILE_TABLE;
+      var kind = Tilemap.getAutotileKind(tileId);
+      var shape = Tilemap.getAutotileShape(tileId);
+      var tx = kind % 8;
+      var ty = Math.floor(kind / 8);
+      var setNumber = 1;
+      var bx = tx * 2;
+      var by = (ty - 2) * 3;
+      var table = autotileTable[shape];
+
+      if (table) {
+        var source = this.bitmaps[setNumber];
+        var w1 = this._tileWidth / 2;
+        var h1 = this._tileHeight / 2;
+        for (var i = 0; i < 2; i++) {
+          var qsx = table[2 + i][0];
+          var qsy = table[2 + i][1];
+          var sx1 = (bx * 2 + qsx) * w1;
+          var sy1 = (by * 2 + qsy) * h1 + h1/2;
+          var dx1 = dx + (i % 2) * w1;
+          var dy1 = dy + Math.floor(i / 2) * h1;
+          bitmap.blt(source, sx1, sy1, w1, h1/2, dx1, dy1, w1, h1/2);
+        }
+      }
+    }
+  };
+
+  Tilemap.prototype._drawTileOldStyle = function(bitmap, tileId, dx, dy) {
+    if (Tilemap.isVisibleTile(tileId)) {
+      if (Tilemap.isAutotile(tileId)) {
+        MapShotTileMap.prototype._drawAutotile.call(this, bitmap, tileId, dx, dy);
+      } else {
+        MapShotTileMap.prototype._drawNormalTile.call(this, bitmap, tileId, dx, dy);
+      }
+    }
+  };  
+
   Tilemap.prototype._paintEverything = function(lowerBitmap, upperBitmap) {
     var tileCols = $dataMap.width;
     var tileRows = $dataMap.height;
@@ -235,12 +388,12 @@ var OrangeMapshot = OrangeMapshot || {};
     function drawTiles(bitmap, tileId, shadowBits, upperTileId1) {
       if (tileId < 0) {
         if ($.Param.drawAutoShadows && shadowBits !== undefined) {
-          me._drawShadow(bitmap, shadowBits, dx, dy);
+          MapShotTileMap.prototype._drawShadow.call(me, bitmap, shadowBits, dx, dy);
         }
       } else if (tileId >= tableEdgeVirtualId) {
-        me._drawTableEdge(bitmap, upperTileId1, dx, dy);
+        MapShotTileMap.prototype._drawTableEdge.call(me, bitmap, upperTileId1, dx, dy);
       } else {
-        me._drawTile(bitmap, tileId, dx, dy);
+        me._drawTileOldStyle(bitmap, tileId, dx, dy);
       }
     }
 
@@ -336,17 +489,17 @@ var OrangeMapshot = OrangeMapshot || {};
       var lowerTileId = lowerTiles[i];
       if (lowerTileId < 0) {
         if ($.Param.drawAutoShadows) {
-          this._drawShadow(lowerBitmap, shadowBits, dx, dy);
+          MapShotTileMap.prototype._drawShadow.call(this, lowerBitmap, shadowBits, dx, dy);
         }
       } else if (lowerTileId >= tableEdgeVirtualId) {
-        this._drawTableEdge(lowerBitmap, upperTileId1, dx, dy);
+        MapShotTileMap.prototype._drawTableEdge.call(this, lowerBitmap, upperTileId1, dx, dy);
       } else {
-        this._drawTile(lowerBitmap, lowerTileId, dx, dy);
+        this._drawTileOldStyle(lowerBitmap, lowerTileId, dx, dy);
       }
     }
 
     for (var j = 0; j < upperTiles.length; j++) {
-      this._drawTile(upperBitmap, upperTiles[j], dx, dy);
+      this._drawTileOldStyle(upperBitmap, upperTiles[j], dx, dy);
     }
   };
 
