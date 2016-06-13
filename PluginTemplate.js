@@ -45,4 +45,4 @@ Hudell.OrangePluginName = Hudell.OrangePluginName || {};
 })(Hudell.OrangePluginName);
 
 OrangePluginName = Hudell.OrangePluginName;
-Imported["OrangePluginName"] = 1.0;
+Imported.OrangePluginName = 1.0;
