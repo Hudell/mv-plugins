@@ -2,7 +2,7 @@
  * Orange - Overlay
  * By Hudell - www.hudell.com
  * OrangeOverlay.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -680,9 +680,23 @@ Hudell.OrangeOverlay = Hudell.OrangeOverlay || {};
         }
       }
     };
-
   }
+
+  var oldSpriteCharacter_startBallon = Sprite_Character.prototype.startBalloon;
+  Sprite_Character.prototype.startBalloon = function() {
+    oldSpriteCharacter_startBallon.call(this);
+    if (!!this._balloonSprite) {
+      this._balloonSprite.z = 30;
+    }
+  };
+
+  var oldSpriteAnimation_initMembers = Sprite_Animation.prototype.initMembers;
+  Sprite_Animation.prototype.initMembers = function() {
+    oldSpriteAnimation_initMembers.apply(this, arguments);
+    this.z = 30;
+  };
+
 })(Hudell.OrangeOverlay);
 
 OrangeOverlay = Hudell.OrangeOverlay;
-Imported.OrangeOverlay = 1.0;
+Imported.OrangeOverlay = 1.1;
