@@ -2,7 +2,7 @@
  * Orange - Overlay
  * By Hudell - www.hudell.com
  * OrangeOverlay.js
- * Version: 1.1
+ * Version: 1.1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -261,7 +261,7 @@ Hudell.OrangeOverlay = Hudell.OrangeOverlay || {};
     this._tilemap.addChild(layer);
 
     if (switchId > 0) {
-      this.opacity = $gameSwitches.value(switchId) ? 255 : 0;
+      this.opacity = $gameSwitches.value(switchId) ? maxOpacity : 0;
     }
 
     return layer;
