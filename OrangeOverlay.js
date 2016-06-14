@@ -2,11 +2,11 @@
  * Orange - Overlay
  * By Hudell - www.hudell.com
  * OrangeOverlay.js
- * Version: 1.1
+ * Version: 1.1.2
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc Adds overlay images to the map <OrangeOverlay>
+ * @plugindesc v1.1.2 - Adds overlay images to the map <OrangeOverlay>
  * @author Hudell
  *
  * @param Organized Folders
@@ -130,6 +130,11 @@
  * ----------------------------------------------------------------------------
  * Removes an extra fog that was added with the addfog command
  *
+ * ============================================================================
+ * Changelog
+ * ============================================================================
+ * Version 1.1.2:
+ * Fixed several small issues with the opacity
  *=============================================================================*/
 var Imported = Imported || {};
 var Hudell = Hudell || {};
@@ -261,7 +266,7 @@ Hudell.OrangeOverlay = Hudell.OrangeOverlay || {};
     this._tilemap.addChild(layer);
 
     if (switchId > 0) {
-      this.opacity = $gameSwitches.value(switchId) ? 255 : 0;
+      layer.opacity = $gameSwitches.value(switchId) ? maxOpacity : 0;
     }
 
     return layer;
@@ -426,12 +431,12 @@ Hudell.OrangeOverlay = Hudell.OrangeOverlay || {};
   };
 
   Spriteset_Map.prototype.updateParallaxLayer = function() {
-    this.updateLayer('_parallaxLayer', $.updateParallax, 'pars', $.Param.parallaxLayerFileName, 'par', 20, $.parallaxSwitchId);
+    this.updateLayer('_parallaxLayer', $.updateParallax, 'pars', $.Param.parallaxLayerFileName, 'par', 20, $.Param.parallaxSwitchId);
     $.updateParallax = false;
   };
 
   Spriteset_Map.prototype.updateShadowLayer = function() {
-    this.updateLayer('_shadowLayer', $.updateShadow, 'shadows', $.Param.shadowLayerFileName, 'shadow', 21, $.shadowSwitchId);
+    this.updateLayer('_shadowLayer', $.updateShadow, 'shadows', $.Param.shadowLayerFileName, 'shadow', 21, $.Param.shadowSwitchId);
     $.updateShadow = false;
   };
 
@@ -527,7 +532,7 @@ Hudell.OrangeOverlay = Hudell.OrangeOverlay || {};
   };
 
   Spriteset_Map.prototype.updateLightLayer = function() {
-    this.updateLayer('_lightLayer', $.updateLight, 'lights', $.Param.lightLayerFileName, 'light', 23, $.lightSwitchId, $.Param.lightOpacity, 1);
+    this.updateLayer('_lightLayer', $.updateLight, 'lights', $.Param.lightLayerFileName, 'light', 23, $.Param.lightSwitchId, $.Param.lightOpacity, 1);
     $.updateLight = false;
   };
 
