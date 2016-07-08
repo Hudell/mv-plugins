@@ -2,7 +2,7 @@
  * Orange - Aligned Line HUD
  * By HUDell - www.hudell.com
  * OrangeHudAlignedLine.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -62,11 +62,15 @@
  * @default 
  *
  * @param VariableX
- * @desc The number of the variable that holds the X position of the picture inside the HUD
+ * @desc The number of the variable that holds the X position of the text inside the HUD
  * @default 0
  *
  * @param VariableY
- * @desc The number of the variable that holds the Y position of the picture inside the HUD
+ * @desc The number of the variable that holds the Y position of the text inside the HUD
+ * @default 0
+ *
+ * @param VariableWidth
+ * @desc The number of the variable that holds the width of the text inside the HUD
  * @default 0
  *
  * @help
@@ -111,6 +115,7 @@ if (Imported["OrangeHudAlignedLine"] === undefined) {
 
     line.FontSize = Number(line.FontSize || OrangeHud.Param.DefaultFontSize);
     line.VariableX = Number(line.VariableX || 0);
+    line.VariableWidth = Number(line.VariableWidth || 0);
     line.VariableY = Number(line.VariableY || 0);
     line.X = Number(line.X || 0);
     line.Y = Number(line.Y || 0);
@@ -148,7 +153,7 @@ if (Imported["OrangeHudAlignedLine"] === undefined) {
     window.contents.fontItalic = variableData.FontItalic;
     window.changeTextColor(variableData.FontColor);
 
-    window.drawText(line, this.realX(variableData), this.realY(variableData), variableData.Width, variableData.Align);
+    window.drawText(line, this.realX(variableData), this.realY(variableData), this.realWidth(variableData), variableData.Align);
 
     window.resetFontSettings();
   };
@@ -173,6 +178,14 @@ if (Imported["OrangeHudAlignedLine"] === undefined) {
     return y;
   };
 
+  OrangeHudDefaultLine.realWidth = function(variableData) {
+    var width = variableData.width;
+    if (variableData.VariableWidth > 0) {
+      width = $gameVariables.value(variableData.VariableWidth);
+    }
+
+    return width;
+  };
 
   OrangeHudDefaultLine.getValue = function(variableData) {
     return $gameVariables.value(variableData.VariableId);
