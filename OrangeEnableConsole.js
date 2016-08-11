@@ -19,6 +19,9 @@
  * 
  *=============================================================================*/
 
-Game_Temp.prototype.isPlaytest = function() {
-  return true;
+Utils.isOptionValid = function(name) {
+  if (name == 'test') {
+    return true;
+  }
+  return location.search.slice(1).split('&').contains(name);
 };
