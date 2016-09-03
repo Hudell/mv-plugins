@@ -2,7 +2,7 @@
  * Orange - Aligned Line HUD
  * By HUDell - www.hudell.com
  * OrangeHudAlignedLine.js
- * Version: 1.1
+ * Version: 1.1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -88,10 +88,10 @@ if (Imported["OrangeHud"] === undefined) {
   throw new Error("Please add OrangeHud before OrangeHudAlignedLine!");
 }
 
-var OrangeHudDefaultLine = OrangeHudDefaultLine || {};
+var OrangeHudAlignedLine = OrangeHudAlignedLine || {};
 
 if (Imported["OrangeHudAlignedLine"] === undefined) {
-  OrangeHudDefaultLine.validateParams = function(line) {
+  OrangeHudAlignedLine.validateParams = function(line) {
     line.GroupName = line.GroupName || "main";
     
     if (line.ScriptPattern !== undefined && line.ScriptPattern.trim() === "") {
@@ -134,7 +134,7 @@ if (Imported["OrangeHudAlignedLine"] === undefined) {
     line.SwitchId = Number(line.SwitchId || 0);
   };
 
-  OrangeHudDefaultLine.drawLine = function(window, variableData) {
+  OrangeHudAlignedLine.drawLine = function(window, variableData) {
     if (variableData.SwitchId > 0) {
       if (!$gameSwitches.value(variableData.SwitchId)) {
         return;
@@ -158,7 +158,7 @@ if (Imported["OrangeHudAlignedLine"] === undefined) {
     window.resetFontSettings();
   };
 
-  OrangeHudDefaultLine.realX = function(variableData) {
+  OrangeHudAlignedLine.realX = function(variableData) {
     var x = variableData.X;
 
     if (variableData.VariableX > 0) {
@@ -168,7 +168,7 @@ if (Imported["OrangeHudAlignedLine"] === undefined) {
     return x;
   };
 
-  OrangeHudDefaultLine.realY = function(variableData) {
+  OrangeHudAlignedLine.realY = function(variableData) {
     var y = variableData.Y;
 
     if (variableData.VariableY > 0) {
@@ -178,8 +178,8 @@ if (Imported["OrangeHudAlignedLine"] === undefined) {
     return y;
   };
 
-  OrangeHudDefaultLine.realWidth = function(variableData) {
-    var width = variableData.width;
+  OrangeHudAlignedLine.realWidth = function(variableData) {
+    var width = variableData.Width;
     if (variableData.VariableWidth > 0) {
       width = $gameVariables.value(variableData.VariableWidth);
     }
@@ -187,14 +187,14 @@ if (Imported["OrangeHudAlignedLine"] === undefined) {
     return width;
   };
 
-  OrangeHudDefaultLine.getValue = function(variableData) {
+  OrangeHudAlignedLine.getValue = function(variableData) {
     return $gameVariables.value(variableData.VariableId);
   };
 
-  OrangeHudDefaultLine.getKey = function(variableData) {
+  OrangeHudAlignedLine.getKey = function(variableData) {
     return variableData.VariableId;
   };
 
-  OrangeHud.registerLineType('OrangeHudAlignedLine', OrangeHudDefaultLine);
+  OrangeHud.registerLineType('OrangeHudAlignedLine', OrangeHudAlignedLine);
   Imported["OrangeHudAlignedLine"] = 1.0;
 }

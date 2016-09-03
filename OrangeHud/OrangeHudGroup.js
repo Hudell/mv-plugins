@@ -61,21 +61,9 @@
  * @desc The number of pixels to use on the padding of the hud window
  * @default 18
  *
- * @param ShowOnMap
- * @desc Display this HUD on the map
+ * @param AutoRefresh
+ * @desc Set this to false to disable automatic refresh of the HUD
  * @default true
- *
- * @param ShowOnBattle
- * @desc Display this HUD on battles?
- * @default false
- *
- * @param ShowOnMenu
- * @desc Display this HUD on the menu?
- * @default false
- *
- * @param ShowOnTitle
- * @desc Display this HUD on the title screen?
- * @default false
  *
  * @param ShowUnderTintLayer
  * @desc Set this to true to hide the HUD under tint and face effects

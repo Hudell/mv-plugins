@@ -161,6 +161,7 @@ if (Imported["MVCommons"] === undefined) {
 
   $.validateGroupParams = function(params) {
     params.GroupName = params.GroupName || "group";
+    params.AutoRefresh = params.AutoRefresh !== "false";
     params.DefaultFontFace = String(params.DefaultFontFace || "GameFont");
     params.DefaultFontSize = Number(params.DefaultFontSize || 18);
     params.DefaultFontColor = String(params.DefaultFontColor || '#FFFFFF');
@@ -234,6 +235,10 @@ if (Imported["MVCommons"] === undefined) {
     return this.group.HudHeight;
   };
 
+  Window_OrangeHud.prototype.standardPadding = function() {
+    return this.group.WindowPadding;
+  };
+
   Window_OrangeHud.prototype.drawTextEx = function(text, x, y) {
     if (text) {
       var textState = {
@@ -264,8 +269,6 @@ if (Imported["MVCommons"] === undefined) {
   };
 
   Window_OrangeHud.prototype.refresh = function() {
-    $._isDirty = false;
-
     if (this.contents) {
       this.contents.clear();
       this.drawHud();
@@ -294,7 +297,7 @@ if (Imported["MVCommons"] === undefined) {
     var shouldRefresh = $._isDirty;
     var self = this;
 
-    if ($.Param.AutoRefresh) {
+    if (self.group.AutoRefresh) {
       for (var lineType in $._addons) {
         var addOn = $._addons[lineType];
 
@@ -401,6 +404,8 @@ if (Imported["MVCommons"] === undefined) {
         hudWindow.update();
       }
     }
+
+    $._isDirty = false;
   };
 
   var oldSceneMap_updateScene = Scene_Map.prototype.updateScene;

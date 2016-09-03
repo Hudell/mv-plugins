@@ -136,29 +136,29 @@ if (Imported["OrangeHudClock"] === undefined) {
   window.resetFontSettings();
   };
 
-  OrangeHudClock.getValue = function(variableData) {
-  var pattern = variableData.Pattern;
-  if (variableData.ScriptPattern !== undefined) {
-    pattern = Function("return " + variableData.ScriptPattern)();
-  }
+    OrangeHudClock.getValue = function(variableData) {
+    var pattern = variableData.Pattern;
+    if (variableData.ScriptPattern !== undefined) {
+      pattern = Function("return " + variableData.ScriptPattern)();
+    }
 
-  var hour = '';
-  var minute = '';
-  var second = '';
+    var hour = '';
+    var minute = '';
+    var second = '';
 
-  if (variableData.VariableHour > 0) {
-    hour = Number($gameVariables.value(variableData.VariableHour)).padZero(2);
-  }
+    if (variableData.VariableHour > 0) {
+      hour = Number($gameVariables.value(variableData.VariableHour)).padZero(2);
+    }
 
-  if (variableData.VariableMinute > 0) {
-    minute = Number($gameVariables.value(variableData.VariableMinute)).padZero(2);
-  }
+    if (variableData.VariableMinute > 0) {
+      minute = Number($gameVariables.value(variableData.VariableMinute)).padZero(2);
+    }
 
-  if (variableData.VariableSecond > 0) {
-    second = Number($gameVariables.value(variableData.VariableSecond)).padZero(2);
-  }
+    if (variableData.VariableSecond > 0) {
+      second = Number($gameVariables.value(variableData.VariableSecond)).padZero(2);
+    }
 
-  return pattern.format(hour, minute, second);
+    return pattern.format(hour, minute, second);
   };
 
   OrangeHudClock.getKey = function(variableData) {

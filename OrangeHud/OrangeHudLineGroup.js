@@ -149,7 +149,7 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
     line.X = Number(line.X || 0);
     line.Y = Number(line.Y || 0);
 
-    if (line.FontItalic === undefined || line.FontItalic.trim() === "") {
+    if (line.FontItalic === undefined || (typeof line.FontItalic == "string" && line.FontItalic.trim() === "")) {
       line.FontItalic = OrangeHud.Param.DefaultFontItalic;
     } else {
       line.FontItalic = line.FontItalic == "true";

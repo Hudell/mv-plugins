@@ -231,9 +231,7 @@ if (Imported["OrangeHudGauge"] === undefined) {
         }
       }
 
-      console.log(x, gaugeY, width, height);
       hudWindow.contents.fillRect(x, gaugeY, width, height, hudWindow.gaugeBackColor());
-      console.log(fillX, fillY, fillW, fillH);
       hudWindow.contents.gradientFillRect(fillX, fillY, fillW, fillH, color1, color2);
     }
   };
