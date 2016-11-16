@@ -81,7 +81,7 @@ Hudell.OrangeAutoSave = Hudell.OrangeAutoSave || {};
   // Code
 
   $.getSaveSlot = function() {
-    return $.Param.saveSlot;
+    return $.Param.currentSaveSlot;
   };
 
   $.skipNextCall = function() {
