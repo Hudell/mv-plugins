@@ -25,6 +25,7 @@ Hudell.OrangeSteamCloud = Hudell.OrangeSteamCloud || {};
 
 (function($) {
   "use strict";
+  if (!Utils.isNwjs()) return;
 
   if (Imported.OrangeGreenworks === undefined || isNaN(Imported.OrangeGreenworks) || Imported.OrangeGreenworks < 1.1) {
     console.error('OrangeGreenworks not found.');
@@ -42,10 +43,10 @@ Hudell.OrangeSteamCloud = Hudell.OrangeSteamCloud || {};
     return;
   }
 
-  if (!Utils.isNwjs()) return;
-
   $.syncAllSaves = function() {
     if (!g.isSteamRunning()) return;
+    if (!g.isCloudEnabled()) return;
+    if (!g.isCloudEnabledForUser()) return;
 
     g.readTextFromFile('globalInfo', function(json){
       var localJson;
@@ -93,6 +94,8 @@ Hudell.OrangeSteamCloud = Hudell.OrangeSteamCloud || {};
 
   $.saveFile = function(fileName, fileContent) {
     if (!g.isSteamRunning()) return;
+    if (!g.isCloudEnabled()) return;
+    if (!g.isCloudEnabledForUser()) return;
 
     g.saveTextToFile(fileName, fileContent, function(){
       console.log('Save file uploaded successfully', arguments);
@@ -118,6 +121,8 @@ Hudell.OrangeSteamCloud = Hudell.OrangeSteamCloud || {};
 
   $.downloadFile = function(savefileId, header) {
     if (!g.isSteamRunning()) return;
+    if (!g.isCloudEnabled()) return;
+    if (!g.isCloudEnabledForUser()) return;
 
     if (savefileId > 0) {
       g.readTextFromFile('save_' + savefileId, function(fileContent){
