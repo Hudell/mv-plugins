@@ -2,7 +2,7 @@
  * Orange - Greenworks
  * By Hudell - www.hudell.com
  * OrangeGreenworks.js
- * Version: 1.0
+ * Version: 1.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -25,10 +25,25 @@ Hudell.OrangeGreenworks = Hudell.OrangeGreenworks || {};
 (function($) {
   "use strict";
 
-  var parameters = $plugins.filter(function(plugin) { return plugin.description.contains('<OrangeGreenworks>'); });
-  if (parameters.length === 0) {
-    throw new Error("Couldn't find Hudell's OrangeGreenworks parameters.");
-  }
+  $.getScreenName = function() {
+    return 'Play Test';
+  };
+
+  $.getUILanguage = function() {
+    return 'english';
+  };
+
+  $.getGameLanguage = function() {
+    return 'english';
+  };
+  
+  $.activateAchievement = function(achievementName) {
+    console.log('Activate achievement ', achievementName);
+  };
+
+  $.isSteamRunning = function() {
+    return false;
+  };
 
   if (Utils.isNwjs()) {
     $.initialized = false;
@@ -63,34 +78,46 @@ Hudell.OrangeGreenworks = Hudell.OrangeGreenworks || {};
         return $.greenworks.getCurrentGameLanguage();
       };
 
+      $.isSteamRunning = function() {
+        return $.greenworks.isSteamRunning();
+      };
+
+      $._achievementSuccess = function(){
+        console.log('Achievement activated', arguments);
+      };
+
+      $._achievementError = function(){
+        console.log('Achievement activation error', arguments);
+      };
+
       $.activateAchievement = function(achievementName) {
-        if (!!achievementName) {
-          $.greenworks.activateAchievement(achievementName, function(){
-          }, function(){
-          });
+        if (!achievementName) {
+          console.log('Achievement name not provided.');
+          return;
         }
+
+        if (!$.isSteamRunning()) {
+          console.log('Steam isn\'t running');
+          return;
+        }
+        
+        $.greenworks.activateAchievement(achievementName, $._achievementSuccess, $._achievementError);
+      };
+
+      $.getFriendCount = function() {
+        return $.greenworks.getFriendCount($.greenworks.FriendFlags.Immediate);
+      };
+
+      $.isCloudEnabled = function() {
+        return $.greenworks.isCloudEnabled();
+      };
+
+      $.isCloudEnabledForUser = function() {
+        return $.greenworks.isCloudEnabledForUser();
       };
     }
   }
-
-  if (!$.initialized) {
-    $.getScreenName = function() {
-      return 'Play Test';
-    };
-
-    $.getUILanguage = function() {
-      return 'english';
-    };
-
-    $.getGameLanguage = function() {
-      return 'english';
-    };
-    
-    $.activateAchievement = function(achievementName) {
-      console.log('Activate achievement ', achievementName);
-    };
-  }  
 })(Hudell.OrangeGreenworks);
 
 OrangeGreenworks = Hudell.OrangeGreenworks;
-Imported.OrangeGreenworks = 1.0;
+Imported.OrangeGreenworks = 1.1;
