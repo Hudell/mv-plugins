@@ -64,6 +64,12 @@
  * @param ScriptPattern
  * @desc A script call to be used instead of the Pattern
  * @default 
+ *
+ * @help
+ * ============================================================================
+ * My Blog:
+ * ============================================================================
+ * http://hudell.com
  * */
 
 var Imported = Imported || {};

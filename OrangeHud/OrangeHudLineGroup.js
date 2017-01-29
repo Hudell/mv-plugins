@@ -2,7 +2,7 @@
  * Orange - Line Group HUD
  * By HUDell - www.hudell.com
  * OrangeHudLineGroup.js
- * Version: 1.2
+ * Version: 1.3
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -101,13 +101,99 @@
  * @desc The pattern of the line 10. Leave empty to use the default pattern.
  * @default 
  *
+ * @param VariableXGroup
+ * @desc The number of the variable that holds the X position of the line group inside the HUD
+ * @default 0
+ *
+ * @param VariableYGroup
+ * @desc The number of the variable that holds the Y position of the line group inside the HUD
+ * @default 0
+ *
+ * @param VariableXLine1
+ * @desc The number of the variable that holds the X position of the line 1 inside the HUD
+ * @default 0
+ *
+ * @param VariableXLine2
+ * @desc The number of the variable that holds the X position of the line 2 inside the HUD
+ * @default 0
+ *
+ * @param VariableXLine3
+ * @desc The number of the variable that holds the X position of the line 3 inside the HUD
+ * @default 0
+ *
+ * @param VariableXLine4
+ * @desc The number of the variable that holds the X position of the line 4 inside the HUD
+ * @default 0
+ *
+ * @param VariableXLine5
+ * @desc The number of the variable that holds the X position of the line 5 inside the HUD
+ * @default 0
+ *
+ * @param VariableXLine6
+ * @desc The number of the variable that holds the X position of the line 6 inside the HUD
+ * @default 0
+ *
+ * @param VariableXLine7
+ * @desc The number of the variable that holds the X position of the line 7 inside the HUD
+ * @default 0
+ *
+ * @param VariableXLine8
+ * @desc The number of the variable that holds the X position of the line 8 inside the HUD
+ * @default 0
+ *
+ * @param VariableXLine9
+ * @desc The number of the variable that holds the X position of the line 9 inside the HUD
+ * @default 0
+ *
+ * @param VariableXLine10
+ * @desc The number of the variable that holds the X position of the line 10 inside the HUD
+ * @default 0
+ *
+ * @param VariableYLine1
+ * @desc The number of the variable that holds the Y position of the line 1 inside the HUD
+ * @default 0
+ *
+ * @param VariableYLine2
+ * @desc The number of the variable that holds the Y position of the line 2 inside the HUD
+ * @default 0
+ *
+ * @param VariableYLine3
+ * @desc The number of the variable that holds the Y position of the line 3 inside the HUD
+ * @default 0
+ *
+ * @param VariableYLine4
+ * @desc The number of the variable that holds the Y position of the line 4 inside the HUD
+ * @default 0
+ *
+ * @param VariableYLine5
+ * @desc The number of the variable that holds the Y position of the line 5 inside the HUD
+ * @default 0
+ *
+ * @param VariableYLine6
+ * @desc The number of the variable that holds the Y position of the line 6 inside the HUD
+ * @default 0
+ *
+ * @param VariableYLine7
+ * @desc The number of the variable that holds the Y position of the line 7 inside the HUD
+ * @default 0
+ *
+ * @param VariableYLine8
+ * @desc The number of the variable that holds the Y position of the line 8 inside the HUD
+ * @default 0
+ *
+ * @param VariableYLine9
+ * @desc The number of the variable that holds the Y position of the line 9 inside the HUD
+ * @default 0
+ *
+ * @param VariableYLine10
+ * @desc The number of the variable that holds the Y position of the line 10 inside the HUD
+ * @default 0
+ *
  * @help
  * ============================================================================
- * Latest Version
+ * My Blog:
  * ============================================================================
- * 
- * Get the latest version of this script on
- * http://link.hudell.com/hud-line
+ * http://hudell.com
  * */
 
 var Imported = Imported || {};
@@ -144,6 +230,8 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
     }
 
     line.FontSize = Number(line.FontSize || OrangeHud.Param.DefaultFontSize);
+    line.VariableXGroup = Number(line.VariableXGroup || 0);
+    line.VariableYGroup = Number(line.VariableYGroup || 0);
     line.LineHeight = Number(line.LineHeight || line.FontSize + 4);
     line.LineWidth = Number(line.LineWidth || 0);
     line.X = Number(line.X || 0);
@@ -166,8 +254,8 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
     }
 
     var defaultPattern = variableData.DefaultPattern;
-    var x = variableData.X;
-    var y = variableData.Y;
+    var x = OrangeHudLineGroup.realX(variableData);
+    var y = OrangeHudLineGroup.realY(variableData);
 
     window.contents.fontFace = variableData.FontFace;
     window.contents.fontSize = variableData.FontSize;
@@ -184,13 +272,39 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
       }
 
       if (variableData.UseScriptPattern) {
-        pattern = Function("return " + pattern)();
+        pattern = Function("return " + pattern)(); // jshint ignore:line
       }
 
       var variableId = parseInt(variableData.VariableList[i], 10);
       if (variableId > 0) {
         var line = pattern.format($gameVariables.value(variableId));
-        window.drawTextEx(line, x, y);
+
+
+        var customX = variableData['VariableXLine' + lineNumber];
+        if (customX === undefined || customX === "") {
+          customX = x;
+        } else {
+          customX = Number(customX);
+          if (isNaN(customX) || customX === 0) {
+            customX = x;
+          } else {
+            customX = $gameVariables.value(customX);
+          }
+        }
+
+        var customY = variableData['VariableYLine' + lineNumber];
+        if (customY === undefined || customY === "") {
+          customY = y;
+        } else {
+          customY = Number(customY);
+          if (isNaN(customY) || customY === 0) {
+            customY = y;
+          } else {
+            customY = $gameVariables.value(customY);
+          }
+        }
+
+        window.drawTextEx(line, customX, customY);
 
         y += variableData.LineHeight;
         x += variableData.LineWidth;
@@ -215,10 +329,31 @@ if (Imported["OrangeHudLineGroup"] === undefined) {
     return values.join(',');
   };
 
+  OrangeHudLineGroup.realX = function(variableData) {
+    var x = variableData.X;
+
+    if (variableData.VariableXGroup > 0) {
+      x = $gameVariables.value(variableData.VariableXGroup);
+    }
+
+    return x;
+  };
+
+  OrangeHudLineGroup.realY = function(variableData) {
+    var y = variableData.Y;
+
+    if (variableData.VariableYGroup > 0) {
+      y = $gameVariables.value(variableData.VariableYGroup);
+    }
+
+    return y;
+  };
+
+
   OrangeHudLineGroup.getKey = function(variableData) {
     return variableData.VariableList.join(',');
   };
 
   OrangeHud.registerLineType('OrangeHudLineGroup', OrangeHudLineGroup);
-  Imported["OrangeHudLineGroup"] = 1.2;
+  Imported["OrangeHudLineGroup"] = 1.3;
 }

@@ -1,25 +1,29 @@
 /*=============================================================================
- * Orange - Gauge HUD
+ * Orange - Actor Gauge HUD
  * By HUDell - www.hudell.com
- * OrangeHudGauge.js
- * Version: 1.2
+ * OrangeHudActorGauge.js
+ * Version: 1.0
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc OrangeHudGauge 1.2 - Adds a new Gauge to Orange Hud
+ * @plugindesc OrangeHudActorGauge 1.2 - Adds a new Gauge to Orange Hud
  * @author Hudell
  *
  * @param GroupName
  * @desc The name of the HUD group where this line should be displayed
  * @default main
  *
- * @param ValueVariableId
- * @desc The number of the variable that holds the value of the gauge.
- * @default 1
+ * @param ActorIndex
+ * @desc The index of the actor in the party. If the index is invalid, nothing will be shown
+ * @default 0
  *
- * @param MaxValueVariableId
- * @desc The number of the variable that holds the maximum value of the gauge.
- * @default 2
+ * @param ValueExpression
+ * @desc The expression for the the value. Click the help button for more info.
+ * @default <hp>
+ *
+ * @param MaxValueExpression
+ * @desc The expression for the the max value. Click the help button for more info.
+ * @default <mhp>
  *
  * @param ScriptValue
  * @desc A script to run to get the current value of the gauge.
@@ -82,25 +86,61 @@
  * My Blog:
  * ============================================================================
  * http://hudell.com
+ * ============================================================================
+ * Valid variables:
+ * ============================================================================
+ * <hp>
+ * <mp>
+ * <tp>
+ * <mhp>
+ * <mmp>
+ * <atk>
+ * <def>
+ * <mat>
+ * <mdf>
+ * <agi>
+ * <luk>
+ * <hit>
+ * <eva>
+ * <cri>
+ * <cev>
+ * <mev>
+ * <mrf>
+ * <cnt>
+ * <hrg>
+ * <mrg>
+ * <trg>
+ * <tgr>
+ * <grd>
+ * <rec>
+ * <pha>
+ * <mcr>
+ * <tcr>
+ * <pdr>
+ * <mdr>
+ * <fdr>
+ * <exr>
+ * <level>
+ * <maxlevel>
  * */
 
 var Imported = Imported || {};
 
-if (Imported["OrangeHud"] === undefined) {
-  throw new Error("Please add OrangeHud before OrangeHudGauge!");
+if (Imported.OrangeHud === undefined) {
+  throw new Error("Please add OrangeHud before OrangeHudActorGauge!");
 }
-if (Imported["OrangeHud"] < 1.7) {
+if (Imported.OrangeHud < 1.7) {
   throw new Error("Please update OrangeHud!");
 }
 
-var OrangeHudGauge = OrangeHudGauge || {};
+var OrangeHudActorGauge = OrangeHudActorGauge || {};
 
-if (Imported["OrangeHudGauge"] === undefined) {
-  OrangeHudGauge.validateParams = function(paramsLine) {
+if (Imported.OrangeHudActorGauge === undefined) {
+  OrangeHudActorGauge.validateParams = function(paramsLine) {
     paramsLine.GroupName = paramsLine.GroupName || "main";
     
-    paramsLine.ValueVariableId = Number(paramsLine.ValueVariableId || 0);
-    paramsLine.MaxValueVariableId = Number(paramsLine.MaxValueVariableId || 0);
+    paramsLine.ValueExpression = paramsLine.ValueExpression || "";
+    paramsLine.MaxValueExpression = paramsLine.MaxValueExpression || "";
 
     paramsLine.X = Number(paramsLine.X || 0);
     paramsLine.Y = Number(paramsLine.Y || 0);
@@ -123,13 +163,13 @@ if (Imported["OrangeHudGauge"] === undefined) {
     if (paramsLine.ScriptValue !== undefined && paramsLine.ScriptValue.trim() === "") {
       paramsLine.ScriptValue = undefined;
     } else {
-      paramsLine.ScriptValue = Function("return " + paramsLine.ScriptValue);
+      paramsLine.ScriptValue = Function("return " + paramsLine.ScriptValue); // jshint ignore:line
     }
 
     if (paramsLine.ScriptMaxValue !== undefined && paramsLine.ScriptMaxValue.trim() === "") {
       paramsLine.ScriptMaxValue = undefined;
     } else {
-      paramsLine.ScriptMaxValue = Function("return " + paramsLine.ScriptMaxValue);
+      paramsLine.ScriptMaxValue = Function("return " + paramsLine.ScriptMaxValue); //jshint ignore:line
     }
 
     paramsLine.AllowOverflow = paramsLine.AllowOverflow === "true";
@@ -148,7 +188,7 @@ if (Imported["OrangeHudGauge"] === undefined) {
     }
   };
 
-  OrangeHudGauge.realX = function(variableData) {
+  OrangeHudActorGauge.realX = function(variableData) {
     var x = variableData.X;
 
     if (variableData.VariableX > 0) {
@@ -158,7 +198,7 @@ if (Imported["OrangeHudGauge"] === undefined) {
     return x;
   };
 
-  OrangeHudGauge.realY = function(variableData) {
+  OrangeHudActorGauge.realY = function(variableData) {
     var y = variableData.Y;
 
     if (variableData.VariableY > 0) {
@@ -168,7 +208,7 @@ if (Imported["OrangeHudGauge"] === undefined) {
     return y;
   };
 
-  OrangeHudGauge.drawLine = function(hudWindow, variableData) {
+  OrangeHudActorGauge.drawLine = function(hudWindow, variableData) {
     if (variableData.SwitchId > 0) {
       if (!$gameSwitches.value(variableData.SwitchId)) {
         return;
@@ -178,7 +218,7 @@ if (Imported["OrangeHudGauge"] === undefined) {
     this.drawGauge(hudWindow, variableData);
   };
 
-  OrangeHudGauge.getRealColor = function(hudWindow, color) {
+  OrangeHudActorGauge.getRealColor = function(hudWindow, color) {
     if (typeof(color) == "number") {
       return hudWindow.textColor(color);
     } else {
@@ -186,7 +226,7 @@ if (Imported["OrangeHudGauge"] === undefined) {
     }
   };
 
-  OrangeHudGauge.drawGauge = function(hudWindow, variableData) {
+  OrangeHudActorGauge.drawGauge = function(hudWindow, variableData) {
     var x = this.realX(variableData);
     var y = this.realY(variableData);
 
@@ -240,7 +280,7 @@ if (Imported["OrangeHudGauge"] === undefined) {
     }
   };
 
-  OrangeHudGauge.getValue = function(variableData) {
+  OrangeHudActorGauge.getValue = function(variableData) {
     if (variableData.AutoRefresh) {
       return this.getCurrentValue(variableData) + ' / ' + this.getMaxValue(variableData);
     } else {
@@ -248,38 +288,86 @@ if (Imported["OrangeHudGauge"] === undefined) {
     }
   };
   
-  OrangeHudGauge.getCurrentValue = function(variableData) {
+  OrangeHudActorGauge.getCurrentValue = function(variableData) {
     if (variableData.ScriptValue !== undefined) {
       if (typeof(variableData.ScriptValue) == "function") {
         return parseFloat(variableData.ScriptValue());
       } else {
-        return parseFloat(Function("return " + variableData.ScriptValue)());
+        return parseFloat(Function("return " + variableData.ScriptValue)()); //jshint ignore:line
       }
-    } else if (variableData.ValueVariableId > 0) {
-      return $gameVariables.value(variableData.ValueVariableId);
+    } else {
+      return OrangeHudActorGauge.getActorValue(variableData, variableData.ValueExpression);
+    }
+  };
+
+  OrangeHudActorGauge.getActorValue = function(variableData, expression) {
+    var members = $gameParty.members();
+    if (members.length > variableData.ActorIndex) {
+      var actorData = members[variableData.ActorIndex];
+
+      expression = expression.replace(/<hp>/gi, actorData.hp);
+      expression = expression.replace(/<mp>/gi, actorData.mp);
+      expression = expression.replace(/<tp>/gi, actorData.tp);
+      expression = expression.replace(/<mhp>/gi, actorData.mhp);
+      expression = expression.replace(/<mmp>/gi, actorData.mmp);
+      expression = expression.replace(/<atk>/gi, actorData.atk);
+      expression = expression.replace(/<def>/gi, actorData.def);
+      expression = expression.replace(/<mat>/gi, actorData.mat);
+      expression = expression.replace(/<mdf>/gi, actorData.mdf);
+      expression = expression.replace(/<agi>/gi, actorData.agi);
+      expression = expression.replace(/<luk>/gi, actorData.luk);
+      expression = expression.replace(/<hit>/gi, actorData.hit);
+      expression = expression.replace(/<eva>/gi, actorData.eva);
+      expression = expression.replace(/<cri>/gi, actorData.cri);
+      expression = expression.replace(/<cev>/gi, actorData.cev);
+      expression = expression.replace(/<mev>/gi, actorData.mev);
+      expression = expression.replace(/<mrf>/gi, actorData.mrf);
+      expression = expression.replace(/<cnt>/gi, actorData.cnt);
+      expression = expression.replace(/<hrg>/gi, actorData.hrg);
+      expression = expression.replace(/<mrg>/gi, actorData.mrg);
+      expression = expression.replace(/<trg>/gi, actorData.trg);
+      expression = expression.replace(/<tgr>/gi, actorData.tgr);
+      expression = expression.replace(/<grd>/gi, actorData.grd);
+      expression = expression.replace(/<rec>/gi, actorData.rec);
+      expression = expression.replace(/<pha>/gi, actorData.pha);
+      expression = expression.replace(/<mcr>/gi, actorData.mcr);
+      expression = expression.replace(/<tcr>/gi, actorData.tcr);
+      expression = expression.replace(/<pdr>/gi, actorData.pdr);
+      expression = expression.replace(/<mdr>/gi, actorData.mdr);
+      expression = expression.replace(/<fdr>/gi, actorData.fdr);
+      expression = expression.replace(/<exr>/gi, actorData.exr);
+      expression = expression.replace(/<level>/gi, actorData.level);
+      expression = expression.replace(/<maxlevel>/gi, actorData.maxLevel());
+      expression = expression.replace(/<exp>/gi, actorData.currentExp());
+
+      try {
+        return parseFloat(Function("return " + expression)()); //jshint ignore:line
+      }
+      catch(e) {
+        console.error(e);
+        return 0;
+      }
     } else {
       return 0;
     }
   };
 
-  OrangeHudGauge.getMaxValue = function(variableData) {
+  OrangeHudActorGauge.getMaxValue = function(variableData) {
     if (variableData.ScriptMaxValue !== undefined) {
       if (typeof(variableData.ScriptMaxValue) == "function") {
         return parseFloat(variableData.ScriptMaxValue());
       } else {
-        return parseFloat(Function("return " + variableData.ScriptMaxValue)());
+        return parseFloat(Function("return " + variableData.ScriptMaxValue)()); //jshint ignore:line
       }
-    } else if (variableData.MaxValueVariableId > 0) {
-      return $gameVariables.value(variableData.MaxValueVariableId);
     } else {
-      return 0;
+      return OrangeHudActorGauge.getActorValue(variableData, variableData.MaxValueExpression);
     }
   };
 
-  OrangeHudGauge.getKey = function(variableData) {
+  OrangeHudActorGauge.getKey = function(variableData) {
     return variableData.ValueVariableId;
   };
 
-  OrangeHud.registerLineType('OrangeHudGauge', OrangeHudGauge);
-  Imported.OrangeHudGauge = 1.2;
+  OrangeHud.registerLineType('OrangeHudActorGauge', OrangeHudActorGauge);
+  Imported.OrangeHudActorGauge = 1.0;
 }

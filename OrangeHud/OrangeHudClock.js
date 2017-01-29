@@ -63,11 +63,9 @@
  *
  * @help
  * ============================================================================
- * Latest Version
+ * My Blog:
  * ============================================================================
- * 
- * Get the latest version of this script on
- * http://link.hudell.com/hud-line-clock
+ * http://hudell.com
  * */
 
 var Imported = Imported || {};
