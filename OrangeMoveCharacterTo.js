@@ -397,6 +397,36 @@ var OrangeMoveCharacterTo = OrangeMoveCharacterTo || {};
     this._destinationCharacter = undefined;
     this._followCharacter = false;
   };
+
+  Game_Interpreter.prototype.waitForEventMovement = function(eventId) {
+    this._waitingForEventMovement = eventId;
+    if (!!this._waitingForEventMovement) {
+      this._waitMode = 'eventMovement';
+    }
+  };
+
+  var oldGameInterpreter_updateWaitMode = Game_Interpreter.prototype.updateWaitMode;
+  Game_Interpreter.prototype.updateWaitMode = function() {
+    if (this._waitMode == 'eventMovement') {
+      if (!!this._waitingForEventMovement) {
+        var eventId = this._waitingForEventMovement;
+        var event = this.character(eventId);
+
+        if (event.isMoving() || event.isJumping() || event.isBalloonPlaying()) {
+          return true;
+        }
+
+        if (event._xDestination !== undefined && event._yDestination !== undefined) {
+          return true;
+        }
+      }
+
+      this._waitMode = '';
+    }
+
+    return oldGameInterpreter_updateWaitMode.apply(this, arguments);
+  };
+
 })(OrangeMoveCharacterTo);
 
 Imported['OrangeMoveCharacterTo'] = 1.3;
