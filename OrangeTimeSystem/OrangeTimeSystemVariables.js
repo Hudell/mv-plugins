@@ -2,7 +2,7 @@
  * Orange - Time System Variables
  * By Hudell - www.hudell.com
  * OrangeTimeSystemVariables.js
- * Version: 1.3
+ * Version: 1.4
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -82,18 +82,18 @@ if (Imported["OrangeTimeSystem"] === undefined) {
   $.Parameters = PluginManager.parameters('OrangeTimeSystemVariables');
   $.Param = $.Param || {};
 
-  $.Param.secondVariable = Number($.Parameters['secondVariable'] || 0);
-  $.Param.minuteVariable = Number($.Parameters['minuteVariable'] || 0);
-  $.Param.hourVariable = Number($.Parameters['hourVariable'] || 0);
-  $.Param.dayVariable = Number($.Parameters['dayVariable'] || 0);
-  $.Param.monthVariable = Number($.Parameters['monthVariable'] || 0);
-  $.Param.yearVariable = Number($.Parameters['yearVariable'] || 0);
-  $.Param.weekDayVariable = Number($.Parameters['weekDayVariable'] || 0);
-  $.Param.dayPeriodVariable = Number($.Parameters['dayPeriodVariable'] || 0);
-  $.Param.monthNameVariable = Number($.Parameters['monthNameVariable'] || 0);
-  $.Param.monthShortNameVariable = Number($.Parameters['monthShortNameVariable'] || 0);
-  $.Param.dayNameVariable = Number($.Parameters['dayNameVariable'] || 0);
-  $.Param.dayShortNameVariable = Number($.Parameters['dayShortNameVariable'] || 0);
+  $.Param.secondVariable = Number($.Parameters.secondVariable || 0);
+  $.Param.minuteVariable = Number($.Parameters.minuteVariable || 0);
+  $.Param.hourVariable = Number($.Parameters.hourVariable || 0);
+  $.Param.dayVariable = Number($.Parameters.dayVariable || 0);
+  $.Param.monthVariable = Number($.Parameters.monthVariable || 0);
+  $.Param.yearVariable = Number($.Parameters.yearVariable || 0);
+  $.Param.weekDayVariable = Number($.Parameters.weekDayVariable || 0);
+  $.Param.dayPeriodVariable = Number($.Parameters.dayPeriodVariable || 0);
+  $.Param.monthNameVariable = Number($.Parameters.monthNameVariable || 0);
+  $.Param.monthShortNameVariable = Number($.Parameters.monthShortNameVariable || 0);
+  $.Param.dayNameVariable = Number($.Parameters.dayNameVariable || 0);
+  $.Param.dayShortNameVariable = Number($.Parameters.dayShortNameVariable || 0);
 
   $.configureVariables = function() {
     if ($gameVariables === undefined || $gameVariables === null) return;
@@ -136,8 +136,48 @@ if (Imported["OrangeTimeSystem"] === undefined) {
     }
   };
 
+  var oldGameVariablesSetValue = Game_Variables.prototype.setValue;
+  Game_Variables.prototype.setValue = function(variableId, value) {
+    oldGameVariablesSetValue.apply(this, arguments);
+
+    var changed = false;
+    if (variableId == $.Param.secondVariable) {
+      OrangeTimeSystem.seconds = value;
+      changed = true;
+    }
+
+    if (variableId == $.Param.minuteVariable) {
+      OrangeTimeSystem.minute = value;
+      changed = true;
+    }
+
+    if (variableId == $.Param.hourVariable) {
+      OrangeTimeSystem.hour = value;
+      changed = true;
+    }
+
+    if (variableId == $.Param.dayVariable) {
+      OrangeTimeSystem.day = value;
+      changed = true;
+    }
+
+    if (variableId == $.Param.monthVariable) {
+      OrangeTimeSystem.month = value;
+      changed = true;
+    }
+
+    if (variableId == $.Param.yearVariable) {
+      OrangeTimeSystem.year = value;
+      changed = true;
+    }
+
+    if (changed) {
+      OrangeTimeSystem.updateTime();
+    }
+  };
+
   // Updates the variables every in-game second
   OrangeTimeSystem.on('changeTime', $.configureVariables);
 })(OrangeTimeSystemVariables);
 
-Imported.OrangeTimeSystemVariables = 1.3;
+Imported.OrangeTimeSystemVariables = 1.4;
