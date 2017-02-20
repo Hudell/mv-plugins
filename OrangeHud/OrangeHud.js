@@ -2,11 +2,11 @@
  * Orange - HUD 
  * By HUDell - www.hudell.com
  * OrangeHud.js
- * Version: 2.0
+ * Version: 2.1
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
- * @plugindesc OrangeHud 2.0 - Creates a custom HUD based on the params
+ * @plugindesc <OrangeHud> 2.1 - Creates a custom HUD based on the params
  *
  * @author Hudell
  *
@@ -115,7 +115,8 @@ if (Imported["MVCommons"] === undefined) {
 (function($) {
   "use strict";
 
-  $.Parameters = PluginManager.parameters('OrangeHud');
+  var plugin = $plugins.filter(function(plugin) { return plugin.description.contains('<OrangeHud>'); })[0];
+  $.Parameters = plugin.parameters;
   $.Param = $.Param || {};
 
   $.Param.GroupName = "main";
@@ -138,8 +139,14 @@ if (Imported["MVCommons"] === undefined) {
   $.Param.HudOpacity = Number($.Parameters.HudOpacity || 0);
 
   $.Param.SwitchId = Number($.Parameters.SwitchId || 0);
-  $.Param.WindowMargin = Number($.Parameters.WindowMargin || 4);
-  $.Param.WindowPadding = Number($.Parameters.WindowPadding || 18);
+  $.Param.WindowMargin = Number($.Parameters.WindowMargin);
+  if (isNaN($.Param.WindowMargin)) {
+    $.Param.WindowMargin = 4;
+  }
+  $.Param.WindowPadding = Number($.Parameters.WindowPadding);
+  if (isNaN($.Param.WindowPadding)) {
+    $.Param.WindowPadding = 18;
+  }
 
   $.Param.ShowOnTitle = $.Parameters.ShowOnTitle === "true";
   $.Param.ShowOnMenu = $.Parameters.ShowOnMenu === "true";
@@ -437,4 +444,4 @@ if (Imported["MVCommons"] === undefined) {
   $.configureGroups();
 })(OrangeHud);
 
-Imported.OrangeHud = 2.0;
+Imported.OrangeHud = 2.1;
