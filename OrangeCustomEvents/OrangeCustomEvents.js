@@ -2,7 +2,7 @@
  * Orange - Custom Event
  * By Hudell - www.hudell.com
  * OrangeCustomEvents.js
- * Version: 1.8
+ * Version: 1.9
  * Free for commercial and non commercial use.
  *=============================================================================*/
  /*:
@@ -221,6 +221,9 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
       if (event === undefined) return;
 
       var eventData = JsonEx.makeDeepCopy(event);
+      if (eventData.note) {
+        DataManager.extractMetadata(eventData);
+      }
       callback.call(this, eventData);
     });    
   };
@@ -459,4 +462,4 @@ Game_Custom_Event.prototype.constructor = Game_Custom_Event;
   };
 })(OrangeCustomEvents);
 
-Imported.OrangeCustomEvents = 1.8;
+Imported.OrangeCustomEvents = 1.9;
