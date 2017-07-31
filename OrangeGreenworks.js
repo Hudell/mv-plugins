@@ -112,6 +112,9 @@ Hudell.OrangeGreenworks = Hudell.OrangeGreenworks || {};
     }
     catch(e) {
       $.greenworks = false;
+      console.log('Greenworks failed to load. Make sure you copied all files from the Steamworks SDK to the right folders;');
+      console.log('http://hudell.com/blog/orange-greenworks');
+      console.error(e);
     }
 
     if (!!$.greenworks) {
