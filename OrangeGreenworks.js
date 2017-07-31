@@ -100,6 +100,10 @@ Hudell.OrangeGreenworks = Hudell.OrangeGreenworks || {};
     return false;
   };
 
+  $.isSubscribedApp = function(appId) {
+    return false;
+  };
+
   if (Utils.isNwjs()) {
     $.initialized = false;
 
