@@ -2,7 +2,7 @@
  * Orange - Anti Lag
  * By Hudell - www.hudell.com
  * OrangeAntiLag.js
- * Version: 1.1
+ * Version: 1.0
  * Free for commercial and non commercial use.
  *=============================================================================*/
 /*:
@@ -191,6 +191,102 @@ var OrangeAntiLag = OrangeAntiLag || {};
 
     this.resetFontSettings();
   };
+
+
+  var uniqueMessageWindow = false;
+  Scene_Map.prototype.createMessageWindow = function() {
+    if (uniqueMessageWindow) {
+      this._messageWindow = uniqueMessageWindow;
+      this._messageWindow.openness = 0;
+      this._messageWindow.initMembers();
+      // this._messageWindow.updatePlacement();
+    } else {
+      this._messageWindow = new Window_Message();
+      uniqueMessageWindow = this._messageWindow;
+    }
+    this.addWindow(this._messageWindow);
+    this._messageWindow.subWindows().forEach(function(window) {
+        this.addWindow(window);
+    }, this);
+  };
+
+
+  var uniqueScrollTextWindow = false;
+  Scene_Map.prototype.createScrollTextWindow = function() {
+    if (uniqueScrollTextWindow) {
+      this._scrollTextWindow = uniqueScrollTextWindow;
+
+      this._scrollTextWindow.opacity = 0;
+      this._scrollTextWindow.hide();
+      this._scrollTextWindow._text = '';
+      this._scrollTextWindow._allTextHeight = 0;
+    } else {
+      this._scrollTextWindow = new Window_ScrollText();
+      uniqueScrollTextWindow = this._scrollTextWindow;
+    }
+
+    this.addWindow(this._scrollTextWindow);
+  };
+
+  var uniqueMapNameWindow = false;
+  Scene_Map.prototype.createMapNameWindow = function() {
+    if (uniqueMapNameWindow) {
+      this._mapNameWindow = uniqueMapNameWindow;
+      this._mapNameWindow.opacity = 0;
+      this._mapNameWindow.contentsOpacity = 0;
+      this._mapNameWindow._showCount = 0;
+      this._mapNameWindow.refresh();
+
+    } else {
+      this._mapNameWindow = new Window_MapName();
+      uniqueMapNameWindow = this._mapNameWindow;
+    }
+    this.addChild(this._mapNameWindow);
+  };
+
+  var uniqueDestinationSprite = false;
+  Spriteset_Map.prototype.createDestination = function() {
+    if (uniqueDestinationSprite) {
+      this._destinationSprite = uniqueDestinationSprite;
+      this._destinationSprite._frameCount = 0;
+    } else {
+      this._destinationSprite = new Sprite_Destination();
+      uniqueDestinationSprite = this._destinationSprite;
+    }
+
+    this._destinationSprite.z = 9;
+    this._tilemap.addChild(this._destinationSprite);
+  };
+
+  var uniqueTimerSprite = false;
+  Spriteset_Base.prototype.createTimer = function() {
+    if (uniqueTimerSprite) {
+      this._timerSprite = uniqueTimerSprite;
+      this._timerSprite._seconds = 0;
+      this._timerSprite.update();
+    } else {
+      this._timerSprite = new Sprite_Timer();
+      uniqueTimerSprite = this._timerSprite;
+    }
+    this.addChild(this._timerSprite);
+  };
+
+  var uniqueWeather = false;
+  Spriteset_Map.prototype.createWeather = function() {
+    if (uniqueWeather) {
+      this._weather = uniqueWeather;
+
+      this._weather.power = 0;
+      this._weather.type = 'none';
+      this._weather.origin = new Point();
+    } else {
+      this._weather = new Weather();
+      uniqueWeather = this._weather;
+    }
+    this.addChild(this._weather);
+  };
+
+
 
 
 })(OrangeAntiLag);
