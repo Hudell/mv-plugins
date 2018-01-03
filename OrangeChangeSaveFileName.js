@@ -40,7 +40,7 @@ var OrangeChangeSaveFileName = OrangeChangeSaveFileName || {};
 
     var oldStorageManager_localFilePath = StorageManager.localFilePath;
     StorageManager.localFilePath = function(savefileId) {
-      if (savefileId >= 0) {
+      if (savefileId <= 0) {
         return oldStorageManager_localFilePath.call(this, savefileId);
       }
 
@@ -56,7 +56,7 @@ var OrangeChangeSaveFileName = OrangeChangeSaveFileName || {};
 
     var oldStorageManager_webStorageKey = StorageManager.webStorageKey;
     StorageManager.webStorageKey = function(savefileId) {
-      if (savefileId >= 0) {
+      if (savefileId <= 0) {
         return oldStorageManager_webStorageKey.call(this, savefileId);
       }
 
