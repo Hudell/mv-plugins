@@ -61,7 +61,7 @@ var OrangeMouseData = OrangeMouseData || {};
   $.Param.switchMiddleButtonDown = Number($.Parameters['switchMiddleButtonDown'] || 0);
 
   $.getSwitchId = function(mouseButton) {
-    switch(event.button) {
+    switch(mouseButton) {
       case 0 :
         return $.Param.switchLeftButtonDown;
       case 1 :
