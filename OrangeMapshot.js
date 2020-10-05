@@ -26,7 +26,7 @@
  * @default true
  *
  * @param keyCode
- * @desc code of the key that will be used (44 = printscreen). http://link.hudell.com/js-keys
+ * @desc code of the key that will be used (44 = printscreen). http://www.javascriptkeycode.com
  * @default 44
  *
  * @param imageType
@@ -42,7 +42,7 @@
  * @default ./Mapshots
  *
  * @help
- * Check keycodes at  http://link.hudell.com/js-keys
+ * Check keycodes at  http://www.javascriptkeycode.com
  */
 var Imported = Imported || {};
 
